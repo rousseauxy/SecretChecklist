@@ -2,6 +2,8 @@
 
 A World of Warcraft addon that helps you track and check your progress on secret collectibles including mounts, pets, toys, achievements, and other hidden content.
 
+<img width="849" height="671" alt="secretscheckliste" src="https://github.com/user-attachments/assets/56602399-ff58-40d1-941f-a2ccaa8f68bc" />
+
 ## Features
 
 - **Automated Checking**: Automatically checks your collection status for pre-defined secret collectibles
