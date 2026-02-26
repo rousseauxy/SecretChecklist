@@ -1,0 +1,10 @@
+package-as: SecretChecklist
+
+enable-nolib-creation: no
+
+ignore:
+  - README.txt
+  - .git
+  - .gitignore
+
+license-output: LICENSE

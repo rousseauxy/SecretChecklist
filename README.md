@@ -6,11 +6,12 @@ A World of Warcraft addon that helps you track and check your progress on secret
 
 ## Features
 
+- **Minimap Button**: Quick access with a draggable minimap button
+- **Collections Journal Tab**: Beautiful UI integrated into WoW's Collections interface
 - **Automated Checking**: Automatically checks your collection status for pre-defined secret collectibles
-- **Interactive UI**: Journal-style UI that displays all tracked secrets with greyed-out icons for missing items
+- **Visual Feedback**: Icons are colored when collected, greyed out when missing
 - **Custom Lists**: Easily edit the list to track the secrets you want
-- **Progress Reports**: Generate reports showing what you've collected and what you're missing
-- **Export to Saved Variables**: Results are saved to disk for easy copying and sharing
+- **Pre-Configured**: Comes with 32+ popular secrets ready to track
 
 ## Installation
 
@@ -18,16 +19,19 @@ A World of Warcraft addon that helps you track and check your progress on secret
 2. Extract the `SecretChecklist` folder to `World of Warcraft\_retail_\Interface\AddOns\`
 3. Restart World of Warcraft or reload your UI with `/reload`
 
-## Commands
+## How to Use
+
+**Click the minimap button** to open your secret checklist in the Collections Journal. The UI displays all tracked secrets with colored icons for collected items and greyed-out icons for items you're still missing.
+
+You can also use `/secrets` to open the interface via chat command.
+
+### Additional Commands
 
 | Command | Description |
 |---------|-------------|
-| `/secrets` | Prints collected/missing items for the configured list |
-| `/secrets verbose` | Includes short failure reasons (e.g., "not cached") |
-| `/secrets quiet` | Turns verbose mode off |
-| `/secrets where` | Shows where the report is saved on disk |
-| `/secrets wait` | Waits 2 seconds then runs (useful if journals are still loading) |
-| `/secrets ui` | Opens the journal-style UI list with visual indicators |
+| `/secrets scan` | Run a text-based scan and save results to SavedVariables |
+| `/secrets wait` | Wait for collection data to load, then scan |
+| `/secrets where` | Show where scan reports are saved |
 
 ## Tracked Secrets
 
@@ -105,7 +109,7 @@ Some trackable items use different names in-game vs. in the Collections UI (e.g.
 
 ## Version History
 
-- **0.3**: Current version with Collections UI tab support
+- **1.0**: Initial public release with minimap button and Collections Journal UI
 - Supports WoW Interface 12.0.0 and 12.0.1 (The War Within)
 
 ## Code Quality
