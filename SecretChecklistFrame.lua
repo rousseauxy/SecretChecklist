@@ -37,10 +37,35 @@ frame.buttonPool = {}
 frame.currentPage = 1
 
 -- Filter state (persisted in SavedVariables)
-SecretChecklistDB.filters = SecretChecklistDB.filters or {
-	showCollected = true,
-	showUncollected = true,
-}
+SecretChecklistDB.filterStatus = SecretChecklistDB.filterStatus or "all"  -- "all", "collected", "missing"
+
+-- ==============================================
+-- FILTERING
+-- ==============================================
+
+local function GetFilteredEntries()
+	local entries = SC.entries or {}
+	local filterStatus = SecretChecklistDB.filterStatus or "all"
+	
+	-- If showing all, return everything
+	if filterStatus == "all" then
+		return entries
+	end
+	
+	-- Filter based on collection status
+	local filtered = {}
+	for _, entry in ipairs(entries) do
+		local status = SC.GetEntryStatus and SC:GetEntryStatus(entry) or "unknown"
+		
+		if filterStatus == "collected" and status == "collected" then
+			tinsert(filtered, entry)
+		elseif filterStatus == "missing" and (status == "missing" or status == "unknown" or status == "manual") then
+			tinsert(filtered, entry)
+		end
+	end
+	
+	return filtered
+end
 
 -- ==============================================
 -- BUTTON CREATION
@@ -204,33 +229,6 @@ local function GetButton(index)
 end
 
 -- ==============================================
--- FILTERING
--- ==============================================
-
-local function GetFilteredEntries()
-	local entries = SC.entries or {}
-	local filtered = {}
-	local filters = SecretChecklistDB.filters or {}
-	
-	for _, entry in ipairs(entries) do
-		local status = SC.GetEntryStatus and SC:GetEntryStatus(entry) or "unknown"
-		local showThis = false
-		
-		if status == "collected" and filters.showCollected then
-			showThis = true
-		elseif (status == "missing" or status == "unknown" or status == "manual") and filters.showUncollected then
-			showThis = true
-		end
-		
-		if showThis then
-			tinsert(filtered, entry)
-		end
-	end
-	
-	return filtered
-end
-
--- ==============================================
 -- LAYOUT FUNCTION
 -- ==============================================
 
@@ -239,7 +237,7 @@ local function LayoutCurrentPage()
 	
 	-- Calculate page boundaries
 	local startIndex = (frame.currentPage - 1) * BUTTONS_PER_PAGE + 1
-	local endIndex = math_min(startIndex + BUTTONS_PER_PAGE - 1, #entries)
+	local endIndex = math.min(startIndex + BUTTONS_PER_PAGE - 1, #entries)
 	
 	-- Hide all buttons first
 	for _, button in pairs(frame.buttonPool) do
@@ -319,7 +317,7 @@ end
 -- Function to calculate total pages
 local function CalculateTotalPages()
 	local entries = GetFilteredEntries()
-	return math_ceil(#entries / BUTTONS_PER_PAGE)
+	return math.ceil(#entries / BUTTONS_PER_PAGE)
 end
 
 -- Update progress bar
@@ -498,26 +496,31 @@ local function Initialize()
 	local fontPath, _, fontFlags = frame.PagingFrame.PageText:GetFont()
 	frame.PagingFrame.PageText:SetFont(fontPath, 12, fontFlags)
 	
-	-- Setup filter checkboxes
-	if frame.UncollectedFilterCheckbox then
-		frame.UncollectedFilterCheckbox:SetChecked(SecretChecklistDB.filters.showUncollected)
-		frame.UncollectedFilterCheckbox.Text:SetText("Not Collected")
-		frame.UncollectedFilterCheckbox:SetScript("OnClick", function(self)
-			SecretChecklistDB.filters.showUncollected = self:GetChecked()
-			frame.currentPage = 1
-			UpdatePage(frame.currentPage)
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-		end)
-	end
-	
-	if frame.CollectedFilterCheckbox then
-		frame.CollectedFilterCheckbox:SetChecked(SecretChecklistDB.filters.showCollected)
-		frame.CollectedFilterCheckbox.Text:SetText("Collected")
-		frame.CollectedFilterCheckbox:SetScript("OnClick", function(self)
-			SecretChecklistDB.filters.showCollected = self:GetChecked()
-			frame.currentPage = 1
-			UpdatePage(frame.currentPage)
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+	-- Setup filter dropdown
+	if frame.FilterDropdown then
+		frame.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:CreateTitle("Filter by Status")
+			
+			rootDescription:CreateRadio("All", 
+				function() return SecretChecklistDB.filterStatus == "all" end,
+				function()
+					SecretChecklistDB.filterStatus = "all"
+					UpdatePage(1)  -- Reset to page 1 when changing filter
+				end)
+			
+			rootDescription:CreateRadio("Collected", 
+				function() return SecretChecklistDB.filterStatus == "collected" end,
+				function()
+					SecretChecklistDB.filterStatus = "collected"
+					UpdatePage(1)
+				end)
+			
+			rootDescription:CreateRadio("Missing", 
+				function() return SecretChecklistDB.filterStatus == "missing" end,
+				function()
+					SecretChecklistDB.filterStatus = "missing"
+					UpdatePage(1)
+				end)
 		end)
 	end
 	

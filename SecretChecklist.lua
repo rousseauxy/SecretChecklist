@@ -332,9 +332,13 @@ function SC:CheckEntry(entry)
 		if type(entry.itemID) ~= "number" then
 			return nil, "Toy missing itemID."
 		end
-		if PlayerHasToy(entry.itemID) == true then
+		local hasToy = PlayerHasToy(entry.itemID)
+		if hasToy == true then
 			return true, "toy"
+		elseif hasToy == false then
+			return false, "toy"
 		end
+		-- If PlayerHasToy returns nil, toy data might not be loaded yet
 		if C_ToyBox and C_ToyBox.GetToyInfo then
 			local toyName = C_ToyBox.GetToyInfo(entry.itemID)
 			if toyName == nil then
