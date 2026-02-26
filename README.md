@@ -106,9 +106,20 @@ Some trackable items use different names in-game vs. in the Collections UI (e.g.
 - **0.3**: Current version with Collections UI tab support
 - Supports WoW Interface 12.0.0 and 12.0.1 (The War Within)
 
+## Code Quality
+
+This addon was created with the assistance of GitHub Copilot and Claude AI. The code is:
+
+- **Clean and Performant**: Optimized for minimal overhead and fast execution
+- **Global Namespace Safe**: Free of unnecessary global variables that pollute the WoW environment
+- **Modern API**: Uses current WoW APIs without deprecated functions
+- **Audited**: Code has been reviewed using Ketho's WoW API extension to ensure quality standards
+
+We maintain strict quality standards for this addon. Poorly optimized code or AI-generated spaghetti code that pollutes the global namespace will be removed to ensure a reliable and efficient user experience.
+
 ## Author
 
-Created by Local
+Created by Calaglyn - Emerald Dream (EU)
 
 ## License
 
