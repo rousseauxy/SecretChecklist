@@ -36,6 +36,12 @@ end
 frame.buttonPool = {}
 frame.currentPage = 1
 
+-- Filter state (persisted in SavedVariables)
+SecretChecklistDB.filters = SecretChecklistDB.filters or {
+	showCollected = true,
+	showUncollected = true,
+}
+
 -- ==============================================
 -- BUTTON CREATION
 -- ==============================================
@@ -198,15 +204,42 @@ local function GetButton(index)
 end
 
 -- ==============================================
+-- FILTERING
+-- ==============================================
+
+local function GetFilteredEntries()
+	local entries = SC.entries or {}
+	local filtered = {}
+	local filters = SecretChecklistDB.filters or {}
+	
+	for _, entry in ipairs(entries) do
+		local status = SC.GetEntryStatus and SC:GetEntryStatus(entry) or "unknown"
+		local showThis = false
+		
+		if status == "collected" and filters.showCollected then
+			showThis = true
+		elseif (status == "missing" or status == "unknown" or status == "manual") and filters.showUncollected then
+			showThis = true
+		end
+		
+		if showThis then
+			tinsert(filtered, entry)
+		end
+	end
+	
+	return filtered
+end
+
+-- ==============================================
 -- LAYOUT FUNCTION
 -- ==============================================
 
 local function LayoutCurrentPage()
-	local entries = SC.entries or {}
+	local entries = GetFilteredEntries()
 	
 	-- Calculate page boundaries
 	local startIndex = (frame.currentPage - 1) * BUTTONS_PER_PAGE + 1
-	local endIndex = math.min(startIndex + BUTTONS_PER_PAGE - 1, #entries)
+	local endIndex = math_min(startIndex + BUTTONS_PER_PAGE - 1, #entries)
 	
 	-- Hide all buttons first
 	for _, button in pairs(frame.buttonPool) do
@@ -285,8 +318,8 @@ end
 
 -- Function to calculate total pages
 local function CalculateTotalPages()
-	local entries = SC.entries or {}
-	return math.ceil(#entries / BUTTONS_PER_PAGE)
+	local entries = GetFilteredEntries()
+	return math_ceil(#entries / BUTTONS_PER_PAGE)
 end
 
 -- Update progress bar
@@ -464,6 +497,29 @@ local function Initialize()
 	-- Set proper font size for page text
 	local fontPath, _, fontFlags = frame.PagingFrame.PageText:GetFont()
 	frame.PagingFrame.PageText:SetFont(fontPath, 12, fontFlags)
+	
+	-- Setup filter checkboxes
+	if frame.UncollectedFilterCheckbox then
+		frame.UncollectedFilterCheckbox:SetChecked(SecretChecklistDB.filters.showUncollected)
+		frame.UncollectedFilterCheckbox.Text:SetText("Not Collected")
+		frame.UncollectedFilterCheckbox:SetScript("OnClick", function(self)
+			SecretChecklistDB.filters.showUncollected = self:GetChecked()
+			frame.currentPage = 1
+			UpdatePage(frame.currentPage)
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+		end)
+	end
+	
+	if frame.CollectedFilterCheckbox then
+		frame.CollectedFilterCheckbox:SetChecked(SecretChecklistDB.filters.showCollected)
+		frame.CollectedFilterCheckbox.Text:SetText("Collected")
+		frame.CollectedFilterCheckbox:SetScript("OnClick", function(self)
+			SecretChecklistDB.filters.showCollected = self:GetChecked()
+			frame.currentPage = 1
+			UpdatePage(frame.currentPage)
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+		end)
+	end
 	
 	-- Initial update
 	UpdatePage(1)
