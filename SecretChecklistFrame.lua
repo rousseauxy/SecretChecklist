@@ -462,7 +462,7 @@ local function Initialize()
 	end
 	
 	-- Set portrait icon
-	local iconTexture = 237388
+	local iconTexture = 454046
 	if frame.PortraitContainer and frame.PortraitContainer.portrait then
 		frame.PortraitContainer.portrait:SetTexture(iconTexture)
 		frame.PortraitContainer.portrait:SetTexCoord(0, 1, 0, 1)
@@ -601,7 +601,7 @@ local function CreateMinimapButton()
 	local icon = button:CreateTexture(nil, "ARTWORK")
 	icon:SetSize(20, 20)
 	icon:SetPoint("CENTER", 0, 1)
-	icon:SetTexture(237388)
+	icon:SetTexture(454046)
 	button.icon = icon
 	
 	-- Border
