@@ -5,6 +5,8 @@ local type, select, next, pairs, ipairs = type, select, next, pairs, ipairs
 local tostring, tonumber = tostring, tonumber
 local math_min = math.min
 
+local FALLBACK_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
+
 local SC = {}
 _G.SecretChecklist = SC
 
@@ -31,16 +33,6 @@ local function IsSpellKnownSafe(spellID)
 		return true
 	end
 	return false
-end
-
-local function ExtractFirstNumber(...)
-	for i = 1, select("#", ...) do
-		local v = select(i, ...)
-		if type(v) == "number" then
-			return v
-		end
-	end
-	return nil
 end
 
 local function NormalizeName(s)
@@ -103,13 +95,9 @@ local function ResolvePetSpeciesIDFromItemID(itemID, entry)
 	return bestSpeciesID
 end
 
-local function GetFallbackIcon()
-	return "Interface\\Icons\\INV_Misc_QuestionMark"
-end
-
 function SC:GetEntryIcon(entry)
 	if type(entry) ~= "table" then
-		return GetFallbackIcon()
+		return FALLBACK_ICON
 	end
 	
 	-- For mounts with mountID specified (e.g., Fathom Dweller)
@@ -163,7 +151,7 @@ function SC:GetEntryIcon(entry)
 	if type(entry.icon) == "number" or type(entry.icon) == "string" then
 		return entry.icon
 	end
-	return GetFallbackIcon()
+	return FALLBACK_ICON
 end
 
 function SC:RefreshCaches()
@@ -195,37 +183,28 @@ end
 
 function SC:EnsureCollectionsLoaded()
 	-- Rely on collection APIs directly (some clients don't ship Blizzard_Collections as a loadable addon).
-	-- We can still nudge the journals to refresh their data.
-	if C_ToyBox and C_ToyBox.ForceToyRefilter then
-		pcall(C_ToyBox.ForceToyRefilter)
-	end
-	if C_MountJournal and C_MountJournal.SetDefaultFilters then
-		pcall(C_MountJournal.SetDefaultFilters)
-	end
-	if C_PetJournal and C_PetJournal.SetDefaultFilters then
-		pcall(C_PetJournal.SetDefaultFilters)
+	local apis = {
+		{C_ToyBox, "ForceToyRefilter"},
+		{C_MountJournal, "SetDefaultFilters"},
+		{C_PetJournal, "SetDefaultFilters"}
+	}
+	for _, api in ipairs(apis) do
+		if api[1] and api[1][api[2]] then
+			pcall(api[1][api[2]])
+		end
 	end
 end
 
 function SC:BuildMountCache()
-	if self._mountCacheBuilt then
-		return
-	end
+	if self._mountCacheBuilt then return end
 	self._mountCacheBuilt = true
 	self._mountByNormName = {}
 	self._mountBySpellID = {}
 
-	if not C_MountJournal or not C_MountJournal.GetMountIDs or not C_MountJournal.GetMountInfoByID then
-		return
-	end
+	if not (C_MountJournal and C_MountJournal.GetMountIDs and C_MountJournal.GetMountInfoByID) then return end
 
 	local mountIDs = C_MountJournal.GetMountIDs()
-	if type(mountIDs) ~= "table" then
-		return
-	end
-	if #mountIDs == 0 then
-		return
-	end
+	if type(mountIDs) ~= "table" or #mountIDs == 0 then return end
 
 	for _, mountID in ipairs(mountIDs) do
 		local name, spellID, _, _, _, _, _, _, _, _, isCollected = C_MountJournal.GetMountInfoByID(mountID)
@@ -242,23 +221,14 @@ function SC:BuildMountCache()
 end
 
 function SC:BuildPetCache()
-	if self._petCacheBuilt then
-		return
-	end
+	if self._petCacheBuilt then return end
 	self._petCacheBuilt = true
 	self._petByNormName = {}
 
-	if not C_PetJournal or not C_PetJournal.GetNumPets or not C_PetJournal.GetPetInfoByIndex then
-		return
-	end
+	if not (C_PetJournal and C_PetJournal.GetNumPets and C_PetJournal.GetPetInfoByIndex) then return end
 
 	local _, total = C_PetJournal.GetNumPets(false)
-	if type(total) ~= "number" then
-		return
-	end
-	if total == 0 then
-		return
-	end
+	if not (type(total) == "number" and total > 0) then return end
 
 	for i = 1, total do
 		local _, speciesID = C_PetJournal.GetPetInfoByIndex(i)
@@ -287,18 +257,13 @@ function SC:BuildPetCache()
 end
 
 function SC:IsCollectionDataReady()
-	local toyReady = true
-	local mountReady = true
-	local petReady = true
+	local toyReady, mountReady, petReady = true, true, true
 
 	-- Toys: GetToyInfo returns nil when ToyBox hasn't populated yet.
 	if C_ToyBox and C_ToyBox.GetToyInfo then
 		for _, e in ipairs(self.entries) do
 			if e.kind == "toy" and type(e.itemID) == "number" then
-				local name = C_ToyBox.GetToyInfo(e.itemID)
-				if name == nil then
-					toyReady = false
-				end
+				if not C_ToyBox.GetToyInfo(e.itemID) then toyReady = false end
 				break
 			end
 		end
@@ -307,9 +272,7 @@ function SC:IsCollectionDataReady()
 	-- Mounts: mountIDs can be empty until journal initializes.
 	if C_MountJournal and C_MountJournal.GetMountIDs then
 		local ids = C_MountJournal.GetMountIDs()
-		if type(ids) ~= "table" or #ids == 0 then
-			mountReady = false
-		end
+		mountReady = type(ids) == "table" and #ids > 0
 	else
 		mountReady = false
 	end
@@ -317,9 +280,7 @@ function SC:IsCollectionDataReady()
 	-- Pets: total can be 0 until journal initializes.
 	if C_PetJournal and C_PetJournal.GetNumPets then
 		local _, total = C_PetJournal.GetNumPets(false)
-		if type(total) ~= "number" or total == 0 then
-			petReady = false
-		end
+		petReady = type(total) == "number" and total > 0
 	else
 		petReady = false
 	end
@@ -496,37 +457,34 @@ function SC:Run()
 		if entry.kind ~= "manual" and not entry.linkedSecret then
 			trackableTotal = trackableTotal + 1
 		end
+		
+		local statusChar, colorCode, line
 		if have == true then
 			if not entry.linkedSecret then
 				collected = collected + 1
 			end
-			local line = "[X] " .. entry.name
-			Print("[|cff00ff00X|r] " .. entry.name)
-			lines[#lines + 1] = line
+			statusChar, colorCode = "X", "|cff00ff00X|r"
 		elseif have == false then
 			if not entry.linkedSecret then
 				missing = missing + 1
 			end
-			local line = "[ ] " .. entry.name
-			Print("[|cffff0000 |r] " .. entry.name)
-			lines[#lines + 1] = line
-			if self.verbose and detail then
-				Print("    " .. detail)
-				lines[#lines + 1] = "    " .. detail
-			end
+			statusChar, colorCode = " ", "|cffff0000 |r"
 		else
 			if entry.kind == "manual" then
 				manual = manual + 1
 			elseif not entry.linkedSecret then
 				unknown = unknown + 1
 			end
-			local line = "[?] " .. entry.name
-			Print("[|cffffff00?|r] " .. entry.name)
-			lines[#lines + 1] = line
-			if detail then
-				Print("    " .. detail)
-				lines[#lines + 1] = "    " .. detail
-			end
+			statusChar, colorCode = "?", "|cffffff00?|r"
+		end
+		
+		line = "[" .. statusChar .. "] " .. entry.name
+		Print("[" .. colorCode .. "] " .. entry.name)
+		lines[#lines + 1] = line
+		
+		if detail and ((self.verbose and have == false) or have == nil) then
+			Print("    " .. detail)
+			lines[#lines + 1] = "    " .. detail
 		end
 	end
 
@@ -556,86 +514,28 @@ function SC:Run()
 end
 
 SLASH_SECRETCHECKLIST1 = "/secrets"
-SLASH_SECRETCHECKLIST2 = "/secretcheck"
-
+SLASH_SECRETCHECKLIST2 = "/secretchecklist"
 SlashCmdList.SECRETCHECKLIST = function(msg)
 	msg = (msg or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
-	if msg == "where" then
-		Print("Last report is saved to WTF/Account/<YourAccount>/SavedVariables/SecretChecklist.lua after you /logout or exit the game.")
-		return
-	end
-	if msg == "ui" or msg == "journal" or msg == "" then
+	
+	if msg == "minimap" then
+		if SC.ToggleMinimapButton then
+			SC:ToggleMinimapButton()
+		else
+			Print("Minimap button toggle not available.")
+		end
+	else
+		-- Default: open UI
 		if SC.OpenCollectionsSecretsTab then
 			SC:OpenCollectionsSecretsTab()
-			return
-		end
-		Print("Collections tab not available.")
-		return
-	end
-	if msg == "scan" then
-		SC:Run()
-		return
-	end
-	if msg == "wait" then
-		Print("Waiting for collection data, then running scan…")
-		local function SafeRun()
-			local ok, err = xpcall(function()
-				SC:Run()
-			end, function(e)
-				return tostring(e) .. (debugstack and ("\n" .. debugstack(2, 5, 5)) or "")
-			end)
-			if not ok then
-				Print("ERROR while running scan. See SavedVariables for details.")
-				Print(err)
-				SecretChecklistDB.lastError = {
-					timestamp = date("%Y-%m-%d %H:%M:%S"),
-					message = err,
-				}
-			end
-		end
-		local triesLeft = 6
-		local function TryRun()
-			triesLeft = triesLeft - 1
-			SC:EnsureCollectionsLoaded()
-			local toyReady, mountReady, petReady = SC:IsCollectionDataReady()
-			if toyReady and mountReady and petReady then
-				SafeRun()
-				return
-			end
-			if triesLeft <= 0 then
-				Print("Collection data still not fully ready; running anyway (some items may show [?]).")
-				SafeRun()
-				return
-			end
-			if C_Timer and C_Timer.After then
-				C_Timer.After(1.0, TryRun)
-			else
-				SafeRun()
-			end
-		end
-		if C_Timer and C_Timer.After then
-			C_Timer.After(0.5, TryRun)
 		else
-			TryRun()
+			Print("Collections tab not available.")
 		end
-		return
 	end
-	if msg == "verbose" then
-		SC.verbose = true
-		Print("Verbose mode ON for this session. Run /secrets again.")
-		return
-	end
-	if msg == "quiet" then
-		SC.verbose = false
-		Print("Verbose mode OFF for this session.")
-		return
-	end
-	-- Unknown command, show help
-	Print("Commands: /secrets (open Collections Journal tab), /secrets scan, /secrets wait, /secrets where, /secrets verbose, /secrets quiet")
 end
 
 local f = CreateFrame("Frame")
 f:RegisterEvent("PLAYER_LOGIN")
 f:SetScript("OnEvent", function()
-	Print("Loaded. Type /secrets to open the Collections Journal tab, or /secrets wait to run a scan.")
+	Print("Loaded. Type /secrets or /secretchecklist to open the window. Type /secrets minimap to toggle minimap button.")
 end)

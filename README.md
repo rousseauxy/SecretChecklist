@@ -9,9 +9,12 @@ A World of Warcraft addon that helps you track and check your progress on secret
 - **Minimap Button**: Quick access with a draggable minimap button
 - **Collections Journal Tab**: Beautiful UI integrated into WoW's Collections interface
 - **Automated Checking**: Automatically checks your collection status for pre-defined secret collectibles
+- **Advanced Filtering**: Filter by status (All/Collected/Missing) and type (Mounts, Pets, Toys, Achievements, Quests, Transmog)
+- **Bulk Filter Controls**: Select All / Deselect All buttons for quick filter management
 - **Visual Feedback**: Icons are colored when collected, greyed out when missing
+- **Progress Bar**: Track your completion percentage across all secrets
 - **Custom Lists**: Easily edit the list to track the secrets you want
-- **Pre-Configured**: Comes with 32+ popular secrets ready to track
+- **Pre-Configured**: Comes with 32 popular secrets ready to track
 
 ## Installation
 
@@ -23,19 +26,25 @@ A World of Warcraft addon that helps you track and check your progress on secret
 
 **Click the minimap button** to open your secret checklist in the Collections Journal. The UI displays all tracked secrets with colored icons for collected items and greyed-out icons for items you're still missing.
 
-You can also use `/secrets` to open the interface via chat command.
+### Slash Commands
 
-### Additional Commands
+Both `/secrets` and `/secretchecklist` work as aliases:
 
 | Command | Description |
 |---------|-------------|
-| `/secrets scan` | Run a text-based scan and save results to SavedVariables |
-| `/secrets wait` | Wait for collection data to load, then scan |
-| `/secrets where` | Show where scan reports are saved |
+| `/secrets` | Open the SecretChecklist window |
+| `/secrets minimap` | Toggle minimap button visibility |
+
+### Using Filters
+
+- **Status Filter**: Click the "Status: All" dropdown to show only Collected or Missing items
+- **Type Filter**: Click the "Filter" button to select which types to display (Mounts, Pets, Toys, etc.)
+- **Quick Actions**: Use "Select All" or "Deselect All" to quickly manage type filters
+- **Progress Bar**: Shows your overall completion percentage regardless of active filters
 
 ## Tracked Secrets
 
-The addon comes pre-configured with 32+ secret collectibles including:
+The addon comes pre-configured with 32 secret collectibles including:
 
 ### Mounts
 - Blanchy's Reins
@@ -67,7 +76,7 @@ The addon comes pre-configured with 32+ secret collectibles including:
 
 ### Editing the Secret List
 
-Open `SecretChecklist.lua` and edit the `SC.entries` table. Each entry follows this format:
+Open `SecretEntries.lua` and edit the `SC.entries` table. Each entry follows this format:
 
 ```lua
 {
@@ -83,12 +92,12 @@ Open `SecretChecklist.lua` and edit the `SC.entries` table. Each entry follows t
 }
 ```
 
-### Accessing Results
+### Saving Your Preferences
 
-1. Run `/secrets` in game
-2. Log out or exit WoW (this writes SavedVariables to disk)
-3. Open: `WTF\Account\<YourAccount>\SavedVariables\SecretChecklist.lua`
-4. Look for `SecretChecklistDB.lastReport.lines`
+Your filter preferences and minimap button position are automatically saved to SavedVariables when you log out or exit WoW:
+- Filter settings (status and type selections)
+- Minimap button position and visibility
+- These settings persist across characters and sessions
 
 ## Troubleshooting
 
@@ -109,7 +118,9 @@ Some trackable items use different names in-game vs. in the Collections UI (e.g.
 
 ## Version History
 
-- **1.0**: Initial public release with minimap button and Collections Journal UI
+- **1.1.0**: Added advanced filtering system (status + type filters), Select All/Deselect All buttons, simplified slash commands, code optimization (11% reduction)
+- **1.0.1**: Added status filter dropdown (All/Collected/Missing)
+- **1.0.0**: Initial public release with minimap button and Collections Journal UI
 - Supports WoW Interface 12.0.0 and 12.0.1 (The War Within)
 
 ## Code Quality

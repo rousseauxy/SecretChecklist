@@ -36,8 +36,16 @@ end
 frame.buttonPool = {}
 frame.currentPage = 1
 
--- Filter state (persisted in SavedVariables)
-SecretChecklistDB.filterStatus = SecretChecklistDB.filterStatus or "all"  -- "all", "collected", "missing"
+-- Filter state (local variables, synced with SavedVariables)
+local filterStatus = "all"
+local filterKinds = {
+	mount = true,
+	pet = true,
+	toy = true,
+	achievement = true,
+	quest = true,
+	transmog = true,
+}
 
 -- ==============================================
 -- FILTERING
@@ -45,26 +53,47 @@ SecretChecklistDB.filterStatus = SecretChecklistDB.filterStatus or "all"  -- "al
 
 local function GetFilteredEntries()
 	local entries = SC.entries or {}
-	local filterStatus = SecretChecklistDB.filterStatus or "all"
 	
-	-- If showing all, return everything
-	if filterStatus == "all" then
-		return entries
-	end
-	
-	-- Filter based on collection status
 	local filtered = {}
 	for _, entry in ipairs(entries) do
-		local status = SC.GetEntryStatus and SC:GetEntryStatus(entry) or "unknown"
+		local shouldInclude = true
 		
-		if filterStatus == "collected" and status == "collected" then
-			tinsert(filtered, entry)
-		elseif filterStatus == "missing" and (status == "missing" or status == "unknown" or status == "manual") then
+		-- First filter by kind/type
+		local entryKind = entry.kind or "unknown"
+		if not filterKinds[entryKind] then
+			shouldInclude = false
+		end
+		
+		-- Then filter by collection status if not "all"
+		if shouldInclude and filterStatus ~= "all" then
+			local status = SC.GetEntryStatus and SC:GetEntryStatus(entry) or "unknown"
+			
+			if filterStatus == "collected" and status ~= "collected" then
+				shouldInclude = false
+			elseif filterStatus == "missing" and not (status == "missing" or status == "unknown" or status == "manual") then
+				shouldInclude = false
+			end
+		end
+		
+		-- Entry passed all filters
+		if shouldInclude then
 			tinsert(filtered, entry)
 		end
 	end
 	
 	return filtered
+end
+
+local function UpdateFilterButtonText()
+	if not frame.FilterDropdown or not frame.FilterDropdown.Text then return end
+	
+	local count = 0
+	if filterStatus ~= "all" then count = count + 1 end
+	for _, enabled in pairs(filterKinds) do
+		if not enabled then count = count + 1 end
+	end
+	
+	frame.FilterDropdown.Text:SetText(count > 0 and string.format("Filter (%d)", count) or "Filter")
 end
 
 -- ==============================================
@@ -134,76 +163,62 @@ local function CreateSecretButton(parent, index)
 	highlight:SetPoint("CENTER", iconTexture, "CENTER", 0, 0)
 	button:SetHighlightTexture(highlight)
 	
+	-- Helper for safe tooltip calls
+	local function TryTooltip(fn)
+		return pcall(fn) == true
+	end
+	
 	-- Tooltip handler
 	button:SetScript("OnEnter", function(self)
 		if not self.entry then return end
+		local entry = self.entry
 		
 		GameTooltip:SetOwner(self, "ANCHOR_NONE")
 		GameTooltip:SetPoint("BOTTOMLEFT", self.slotFrameCollected, "TOPRIGHT", -2, -2)
 		
-		-- Show proper in-game tooltip based on entry type
-		local entry = self.entry
 		local success = false
-		
 		if entry.kind == "toy" and entry.itemID then
-			success = pcall(function() GameTooltip:SetToyByItemID(entry.itemID) end)
+			success = TryTooltip(function() GameTooltip:SetToyByItemID(entry.itemID) end)
 		elseif entry.kind == "mount" then
-			-- Try mountID first
 			if entry.mountID and C_MountJournal and C_MountJournal.GetMountInfoByID then
 				local _, spellID = C_MountJournal.GetMountInfoByID(entry.mountID)
-				if spellID then
-					success = pcall(function() GameTooltip:SetMountBySpellID(spellID) end)
-				end
+				if spellID then success = TryTooltip(function() GameTooltip:SetMountBySpellID(spellID) end) end
 			end
-			-- Then try spellID
 			if not success and entry.spellID then
-				success = pcall(function() GameTooltip:SetMountBySpellID(entry.spellID) end)
+				success = TryTooltip(function() GameTooltip:SetMountBySpellID(entry.spellID) end)
 			end
-			-- Finally try itemID
 			if not success and entry.itemID then
-				success = pcall(function() GameTooltip:SetItemByID(entry.itemID) end)
+				success = TryTooltip(function() GameTooltip:SetItemByID(entry.itemID) end)
 			end
 		elseif entry.kind == "pet" then
-			-- Try itemID first if available
 			if entry.itemID then
-				success = pcall(function() GameTooltip:SetItemByID(entry.itemID) end)
+				success = TryTooltip(function() GameTooltip:SetItemByID(entry.itemID) end)
 			end
-			-- For pets with speciesID but no itemID (like Jenafur), show custom tooltip
 			if not success and entry.speciesID and C_PetJournal then
 				local speciesName = C_PetJournal.GetPetInfoBySpeciesID(entry.speciesID)
 				if speciesName then
 					GameTooltip:SetText(speciesName, 1, 1, 1)
 					local numOwned = select(1, C_PetJournal.GetNumCollectedInfo(entry.speciesID))
-					if numOwned and numOwned > 0 then
-						GameTooltip:AddLine("Collected", 0, 1, 0)
-					else
-						GameTooltip:AddLine("Not collected", 1, 0, 0)
-					end
+					GameTooltip:AddLine(numOwned and numOwned > 0 and "Collected" or "Not collected", numOwned and numOwned > 0 and 0 or 1, numOwned and numOwned > 0 and 1 or 0, 0)
 					success = true
 				end
 			end
 		elseif entry.kind == "achievement" and entry.achievementID then
-			success = pcall(function() GameTooltip:SetHyperlink("achievement:" .. entry.achievementID) end)
+			success = TryTooltip(function() GameTooltip:SetHyperlink("achievement:" .. entry.achievementID) end)
 		elseif entry.kind == "spell" and entry.spellID then
-			success = pcall(function() GameTooltip:SetSpellByID(entry.spellID) end)
+			success = TryTooltip(function() GameTooltip:SetSpellByID(entry.spellID) end)
 		elseif entry.kind == "transmog" and entry.itemID then
-			success = pcall(function() GameTooltip:SetItemByID(entry.itemID) end)
+			success = TryTooltip(function() GameTooltip:SetItemByID(entry.itemID) end)
 		elseif entry.kind == "quest" and entry.questID then
-			-- Show custom tooltip for quests
 			GameTooltip:SetText(entry.name or "(unknown)", 1, 1, 1)
 			if C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
 				local completed = C_QuestLog.IsQuestFlaggedCompleted(entry.questID)
-				if completed then
-					GameTooltip:AddLine("Completed", 0, 1, 0)
-				else
-					GameTooltip:AddLine("Not completed", 1, 0, 0)
-				end
+				GameTooltip:AddLine(completed and "Completed" or "Not completed", completed and 0 or 1, completed and 1 or 0, 0)
 			end
 			success = true
 		end
 		
 		if not success then
-			-- Fallback: show name and details
 			GameTooltip:SetText(entry.name or "(unknown)", 1, 1, 1)
 			if entry.note then
 				GameTooltip:AddLine(entry.note, 0.8, 0.8, 0.8, true)
@@ -255,58 +270,48 @@ local function LayoutCurrentPage()
 		
 		-- Set button data
 		button.entry = entry
-		button.iconTexture:SetTexture(SC.GetEntryIcon and SC:GetEntryIcon(entry) or "Interface\\Icons\\INV_Misc_QuestionMark")
-		button.iconTextureUncollected:SetTexture(SC.GetEntryIcon and SC:GetEntryIcon(entry) or "Interface\\Icons\\INV_Misc_QuestionMark")
-		button.name:SetText(entry.name or "(unknown)")
-		
-		-- Check if player has the item
-		local status = "unknown"
-		if SC.GetEntryStatus then
-			status = SC:GetEntryStatus(entry)
-		end
-		
-		if status == "collected" then
-			button.iconTexture:Show()
-			button.iconTextureUncollected:Hide()
-			button.name:SetTextColor(1, 0.82, 0, 1)
-			button.name:SetShadowColor(0, 0, 0, 1)
-			button.slotFrameCollected:Show()
-			button.slotFrameUncollected:Hide()
-			button.slotFrameUncollectedInnerGlow:Hide()
-		elseif status == "missing" then
-			button.iconTexture:Hide()
-			button.iconTextureUncollected:Show()
-			button.name:SetTextColor(0.33, 0.27, 0.20, 1)
-			button.name:SetShadowColor(0, 0, 0, 0.33)
-			button.slotFrameCollected:Hide()
-			button.slotFrameUncollected:Show()
-			button.slotFrameUncollectedInnerGlow:Show()
-		else
-			-- Unknown/manual entries
-			button.iconTexture:Hide()
-			button.iconTextureUncollected:Show()
-			button.name:SetTextColor(1.0, 0.82, 0.0, 1)
-			button.name:SetShadowColor(0, 0, 0, 1)
-			button.slotFrameCollected:Hide()
-			button.slotFrameUncollected:Show()
-			button.slotFrameUncollectedInnerGlow:Hide()
-		end
-		
-		-- Position button in grid (relative to Inset frame)
-		local x = START_OFFSET_X + col * (BUTTON_WIDTH + BUTTON_PADDING_X)
-		local y = START_OFFSET_Y - row * (BUTTON_HEIGHT + BUTTON_PADDING_Y)
-		
-		button:SetPoint("TOPLEFT", frame.Inset, "TOPLEFT", x, y)
-		button:Show()
-		
-		buttonIndex = buttonIndex + 1
-		col = col + 1
-		
-		-- Move to next row if we've filled the current row
-		if col >= BUTTONS_PER_ROW then
-			row = row + 1
-			col = 0
-		end
+	local icon = SC.GetEntryIcon and SC:GetEntryIcon(entry) or "Interface\\Icons\\INV_Misc_QuestionMark"
+	button.iconTexture:SetTexture(icon)
+	button.iconTextureUncollected:SetTexture(icon)
+	button.name:SetText(entry.name or "(unknown)")
+	
+	-- Check status and apply visual state
+	local status = SC.GetEntryStatus and SC:GetEntryStatus(entry) or "unknown"
+	local isCollected = status == "collected"
+	local isMissing = status == "missing"
+	
+	button.iconTexture:SetShown(isCollected)
+	button.iconTextureUncollected:SetShown(not isCollected)
+	button.slotFrameCollected:SetShown(isCollected)
+	button.slotFrameUncollected:SetShown(not isCollected)
+	button.slotFrameUncollectedInnerGlow:SetShown(isMissing)
+	
+	if isCollected then
+		button.name:SetTextColor(1, 0.82, 0, 1)
+		button.name:SetShadowColor(0, 0, 0, 1)
+	elseif isMissing then
+		button.name:SetTextColor(0.33, 0.27, 0.20, 1)
+		button.name:SetShadowColor(0, 0, 0, 0.33)
+	else
+		button.name:SetTextColor(1.0, 0.82, 0.0, 1)
+		button.name:SetShadowColor(0, 0, 0, 1)
+	end
+	
+	-- Position button in grid (relative to Inset frame)
+	local x = START_OFFSET_X + col * (BUTTON_WIDTH + BUTTON_PADDING_X)
+	local y = START_OFFSET_Y - row * (BUTTON_HEIGHT + BUTTON_PADDING_Y)
+	
+	button:SetPoint("TOPLEFT", frame.Inset, "TOPLEFT", x, y)
+	button:Show()
+	
+	buttonIndex = buttonIndex + 1
+	col = col + 1
+	
+	-- Move to next row if we've filled the current row
+	if col >= BUTTONS_PER_ROW then
+		row = row + 1
+		col = 0
+	end
 	end
 end
 
@@ -320,40 +325,20 @@ local function CalculateTotalPages()
 	return math.ceil(#entries / BUTTONS_PER_PAGE)
 end
 
--- Update progress bar
 local function UpdateProgressBar()
-	local trackable = 0
-	local collected = 0
-	local entries = SC.entries or {}
-	
-	for _, entry in ipairs(entries) do
+	local trackable, collected = 0, 0
+	for _, entry in ipairs(SC.entries or {}) do
 		if entry.kind ~= "manual" and not entry.linkedSecret then
 			trackable = trackable + 1
-			local have = SC.CheckEntry and SC:CheckEntry(entry)
-			if have == true then
+			if SC.CheckEntry and SC:CheckEntry(entry) == true then
 				collected = collected + 1
 			end
 		end
 	end
 	
-	-- Update progress bar and text
 	frame.ProgressBar.Text:SetText(string.format("%d/%d", collected, trackable))
-	
-	if trackable > 0 then
-		frame.ProgressBar:SetMinMaxValues(0, trackable)
-		frame.ProgressBar:SetValue(collected)
-	else
-		frame.ProgressBar:SetMinMaxValues(0, 1)
-		frame.ProgressBar:SetValue(0)
-	end
-end
-
--- Update paging frame
-local function UpdatePagingFrame()
-	local maxPages = CalculateTotalPages()
-	frame.PagingFrame.PageText:SetText("Page " .. frame.currentPage .. " / " .. maxPages)
-	frame.PagingFrame.PrevPageButton:SetEnabled(frame.currentPage > 1)
-	frame.PagingFrame.NextPageButton:SetEnabled(frame.currentPage < maxPages)
+	frame.ProgressBar:SetMinMaxValues(0, math_max(trackable, 1))
+	frame.ProgressBar:SetValue(trackable > 0 and collected or 0)
 end
 
 -- Function to update page display
@@ -362,7 +347,12 @@ local function UpdatePage(newPage)
 	SC:RefreshCaches()
 	LayoutCurrentPage()
 	UpdateProgressBar()
-	UpdatePagingFrame()
+	
+	-- Update paging controls inline
+	local maxPages = CalculateTotalPages()
+	frame.PagingFrame.PageText:SetText("Page " .. frame.currentPage .. " / " .. maxPages)
+	frame.PagingFrame.PrevPageButton:SetEnabled(frame.currentPage > 1)
+	frame.PagingFrame.NextPageButton:SetEnabled(frame.currentPage < maxPages)
 end
 
 -- Mouse wheel scrolling through pages
@@ -498,38 +488,97 @@ local function Initialize()
 	
 	-- Setup filter dropdown
 	if frame.FilterDropdown then
+		-- Load saved preferences
+		if SecretChecklistDB.filterStatus then filterStatus = SecretChecklistDB.filterStatus end
+		if SecretChecklistDB.filterKinds then
+			for kind, enabled in pairs(SecretChecklistDB.filterKinds) do
+				filterKinds[kind] = enabled
+			end
+		end
+		
+		-- Helper to save state and refresh
+		local function OnFilterChanged()
+			SecretChecklistDB.filterStatus = filterStatus
+			SecretChecklistDB.filterKinds = filterKinds
+			UpdatePage(1)
+			UpdateFilterButtonText()
+		end
+		
 		frame.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
 			rootDescription:CreateTitle("Filter by Status")
 			
-			rootDescription:CreateRadio("All", 
-				function() return SecretChecklistDB.filterStatus == "all" end,
-				function()
-					SecretChecklistDB.filterStatus = "all"
-					UpdatePage(1)  -- Reset to page 1 when changing filter
-				end)
+			-- Status radio buttons
+			local statusOptions = {
+				{label = "All", value = "all"},
+				{label = "Collected", value = "collected"},
+				{label = "Missing", value = "missing"},
+			}
+			for _, opt in ipairs(statusOptions) do
+				rootDescription:CreateRadio(opt.label,
+					function() return filterStatus == opt.value end,
+					function() filterStatus = opt.value; OnFilterChanged() end)
+			end
 			
-			rootDescription:CreateRadio("Collected", 
-				function() return SecretChecklistDB.filterStatus == "collected" end,
-				function()
-					SecretChecklistDB.filterStatus = "collected"
-					UpdatePage(1)
-				end)
+			rootDescription:CreateDivider()
+			rootDescription:CreateTitle("Filter by Type")
 			
-			rootDescription:CreateRadio("Missing", 
-				function() return SecretChecklistDB.filterStatus == "missing" end,
-				function()
-					SecretChecklistDB.filterStatus = "missing"
-					UpdatePage(1)
-				end)
+			-- Type checkboxes
+			local typeOptions = {
+				{label = "Mounts", kind = "mount"},
+				{label = "Pets", kind = "pet"},
+				{label = "Toys", kind = "toy"},
+				{label = "Achievements", kind = "achievement"},
+				{label = "Quests", kind = "quest"},
+				{label = "Transmog", kind = "transmog"},
+			}
+		
+		-- Select All / Deselect All buttons
+		rootDescription:CreateButton("Select All", function()
+			for _, opt in ipairs(typeOptions) do
+				filterKinds[opt.kind] = true
+			end
+			OnFilterChanged()
 		end)
-	end
-	
+		rootDescription:CreateButton("Deselect All", function()
+			for _, opt in ipairs(typeOptions) do
+				filterKinds[opt.kind] = false
+			end
+			OnFilterChanged()
+		end)
+		
+		rootDescription:CreateDivider()
+		
+		for _, opt in ipairs(typeOptions) do
+			rootDescription:CreateCheckbox(opt.label,
+				function() return filterKinds[opt.kind] == true end,
+				function() filterKinds[opt.kind] = not filterKinds[opt.kind]; OnFilterChanged() end)
+		end
+	end)
+
+	-- Reset button callbacks
+	frame.FilterDropdown:SetIsDefaultCallback(function()
+		if filterStatus ~= "all" then return false end
+		for _, enabled in pairs(filterKinds) do
+			if not enabled then return false end
+		end
+		return true
+	end)
+
+	frame.FilterDropdown:SetDefaultCallback(function()
+		filterStatus = "all"
+		for kind in pairs(filterKinds) do filterKinds[kind] = true end
+		OnFilterChanged()
+	end)
+
+	UpdateFilterButtonText()
+end
+
 	-- Initial update
 	UpdatePage(1)
-	
+
 	-- Register frame for ESC key to close
 	tinsert(UISpecialFrames, "SecretChecklistFrame")
-	
+
 	Print("Standalone window ready. Use /secrets to open.")
 end
 
@@ -622,7 +671,24 @@ end
 -- Create the minimap button
 local minimapButton = CreateMinimapButton()
 
+-- Public API to toggle minimap button
+function SC:ToggleMinimapButton()
+	if SecretChecklistDB.hideMinimapButton then
+		SecretChecklistDB.hideMinimapButton = false
+		minimapButton:Show()
+		Print("Minimap button shown.")
+	else
+		SecretChecklistDB.hideMinimapButton = true
+		minimapButton:Hide()
+		Print("Minimap button hidden. Use /secrets minimap to show it again.")
+	end
+end
+
 -- Initialize when the frame is first loaded
 if frame then
 	Initialize()
+	-- Hide minimap button if user preference is set
+	if SecretChecklistDB.hideMinimapButton then
+		minimapButton:Hide()
+	end
 end

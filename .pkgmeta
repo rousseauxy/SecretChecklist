@@ -6,5 +6,6 @@ ignore:
   - README.txt
   - .git
   - .gitignore
+  - .github
 
 license-output: LICENSE
