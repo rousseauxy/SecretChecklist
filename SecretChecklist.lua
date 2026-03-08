@@ -12,10 +12,6 @@ _G.SecretChecklist = SC
 
 SecretChecklistDB = SecretChecklistDB or {}
 
-local function Print(msg)
-	DEFAULT_CHAT_FRAME:AddMessage("|cff66c0ffSecretChecklist|r: " .. tostring(msg))
-end
-
 -- Entries are now defined in data/SecretEntries.lua
 
 -- ==============================================
@@ -152,6 +148,63 @@ function SC:GetEntryIcon(entry)
 		return entry.icon
 	end
 	return FALLBACK_ICON
+end
+
+function SC:GetEntryName(entry)
+	if type(entry) ~= "table" then
+		return "Unknown"
+	end
+	
+	-- Try to get localized name from game APIs
+	if entry.kind == "mount" and type(entry.mountID) == "number" then
+		if C_MountJournal and C_MountJournal.GetMountInfoByID then
+			local name = C_MountJournal.GetMountInfoByID(entry.mountID)
+			if name and name ~= "" then
+				return name
+			end
+		end
+	end
+	
+	if entry.kind == "pet" and type(entry.speciesID) == "number" then
+		if C_PetJournal and C_PetJournal.GetPetInfoBySpeciesID then
+			local name = C_PetJournal.GetPetInfoBySpeciesID(entry.speciesID)
+			if name and name ~= "" then
+				return name
+			end
+		end
+	end
+	
+	if (entry.kind == "toy" or entry.kind == "transmog") and type(entry.itemID) == "number" then
+		if C_Item and C_Item.GetItemInfo then
+			local name = C_Item.GetItemInfo(entry.itemID)
+			if name and name ~= "" then
+				return name
+			end
+		end
+	end
+	
+	if entry.kind == "achievement" and type(entry.achievementID) == "number" then
+		local _, name = GetAchievementInfo(entry.achievementID)
+		if name and name ~= "" then
+			return name
+		end
+	end
+	
+	if entry.kind == "quest" and type(entry.questID) == "number" then
+		if C_QuestLog and C_QuestLog.GetQuestInfo then
+			local questInfo = C_QuestLog.GetQuestInfo(entry.questID)
+			if questInfo and questInfo.title and questInfo.title ~= "" then
+				return questInfo.title
+			end
+		end
+	end
+	
+	-- Fall back to hardcoded name in data file
+	if type(entry.name) == "string" and entry.name ~= "" then
+		return entry.name
+	end
+	
+	return "Unknown"
 end
 
 function SC:RefreshCaches()
@@ -437,105 +490,26 @@ function SC:CheckEntry(entry)
 	return nil, "Unknown kind"
 end
 
-function SC:Run()
-	self:RefreshCaches()
-
-	local totalEntries = #self.entries
-	local trackableTotal = 0
-	local collected = 0
-	local missing = 0
-	local unknown = 0
-	local manual = 0
-	local lines = {}
-
-	local header = "Checking your secret list…"
-	Print(header)
-	lines[#lines + 1] = header
-
-	for _, entry in ipairs(self.entries) do
-		local have, detail = self:CheckEntry(entry)
-		if entry.kind ~= "manual" and not entry.linkedSecret then
-			trackableTotal = trackableTotal + 1
-		end
-		
-		local statusChar, colorCode, line
-		if have == true then
-			if not entry.linkedSecret then
-				collected = collected + 1
-			end
-			statusChar, colorCode = "X", "|cff00ff00X|r"
-		elseif have == false then
-			if not entry.linkedSecret then
-				missing = missing + 1
-			end
-			statusChar, colorCode = " ", "|cffff0000 |r"
-		else
-			if entry.kind == "manual" then
-				manual = manual + 1
-			elseif not entry.linkedSecret then
-				unknown = unknown + 1
-			end
-			statusChar, colorCode = "?", "|cffffff00?|r"
-		end
-		
-		line = "[" .. statusChar .. "] " .. entry.name
-		Print("[" .. colorCode .. "] " .. entry.name)
-		lines[#lines + 1] = line
-		
-		if detail and ((self.verbose and have == false) or have == nil) then
-			Print("    " .. detail)
-			lines[#lines + 1] = "    " .. detail
-		end
-	end
-
-	local summary = string.format(
-		"Result: %d collected, %d missing, %d unknown (%d manual). Trackable: %d. Total entries: %d.",
-		collected,
-		missing,
-		unknown,
-		manual,
-		trackableTotal,
-		totalEntries
-	)
-	Print(summary)
-	lines[#lines + 1] = summary
-
-	SecretChecklistDB.lastReport = {
-		timestamp = date("%Y-%m-%d %H:%M:%S"),
-		totalEntries = totalEntries,
-		trackableTotal = trackableTotal,
-		collected = collected,
-		missing = missing,
-		unknown = unknown,
-		manual = manual,
-		verbose = self.verbose == true,
-		lines = lines,
-	}
-end
-
 SLASH_SECRETCHECKLIST1 = "/secrets"
 SLASH_SECRETCHECKLIST2 = "/secretchecklist"
 SlashCmdList.SECRETCHECKLIST = function(msg)
 	msg = (msg or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
+
+	if msg == "options" or msg == "settings" then
+		if SC.OpenOptionsPanel then
+			SC:OpenOptionsPanel()
+		end
+		return
+	end
 	
 	if msg == "minimap" then
 		if SC.ToggleMinimapButton then
 			SC:ToggleMinimapButton()
-		else
-			Print("Minimap button toggle not available.")
 		end
 	else
 		-- Default: open UI
 		if SC.OpenCollectionsSecretsTab then
 			SC:OpenCollectionsSecretsTab()
-		else
-			Print("Collections tab not available.")
 		end
 	end
 end
-
-local f = CreateFrame("Frame")
-f:RegisterEvent("PLAYER_LOGIN")
-f:SetScript("OnEvent", function()
-	Print("Loaded. Type /secrets or /secretchecklist to open the window. Type /secrets minimap to toggle minimap button.")
-end)

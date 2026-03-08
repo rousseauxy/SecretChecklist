@@ -1,8 +1,13 @@
 -- Localize frequently-used globals for performance
 local type, pairs, ipairs = type, pairs, ipairs
+local select = select
 local math_min, math_max, math_ceil = math.min, math.max, math.ceil
 local math_cos, math_sin, math_atan2, math_deg, math_rad = math.cos, math.sin, math.atan2, math.deg, math.rad
 local tinsert = table.insert
+local string_format = string.format
+
+-- Localization accessor
+local L = _G.SecretChecklistLocale or {}
 
 local SC = _G.SecretChecklist
 if not SC then return end
@@ -27,10 +32,6 @@ local BUTTON_PADDING_Y = 16
 -- ==============================================
 -- STATE
 -- ==============================================
-
-local function Print(msg)
-	DEFAULT_CHAT_FRAME:AddMessage("|cff66c0ffSecretChecklist|r: " .. tostring(msg))
-end
 
 -- Button pool
 frame.buttonPool = {}
@@ -93,7 +94,7 @@ local function UpdateFilterButtonText()
 		if not enabled then count = count + 1 end
 	end
 	
-	frame.FilterDropdown.Text:SetText(count > 0 and string.format("Filter (%d)", count) or "Filter")
+	frame.FilterDropdown.Text:SetText(count > 0 and string_format(L["FILTER_WITH_COUNT"] or "Filter (%d)", count) or L["FILTER"] or "Filter")
 end
 
 -- ==============================================
@@ -210,16 +211,19 @@ local function CreateSecretButton(parent, index)
 		elseif entry.kind == "transmog" and entry.itemID then
 			success = TryTooltip(function() GameTooltip:SetItemByID(entry.itemID) end)
 		elseif entry.kind == "quest" and entry.questID then
-			GameTooltip:SetText(entry.name or "(unknown)", 1, 1, 1)
+			local entryName = SC.GetEntryName and SC:GetEntryName(entry) or (entry.name or L["UNKNOWN"] or "(unknown)")
+			GameTooltip:SetText(entryName, 1, 1, 1)
 			if C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
 				local completed = C_QuestLog.IsQuestFlaggedCompleted(entry.questID)
-				GameTooltip:AddLine(completed and "Completed" or "Not completed", completed and 0 or 1, completed and 1 or 0, 0)
+				local statusText = completed and (L["TOOLTIP_COMPLETED"] or "Completed") or (L["TOOLTIP_NOT_COMPLETED"] or "Not completed")
+				GameTooltip:AddLine(statusText, completed and 0 or 1, completed and 1 or 0, 0)
 			end
 			success = true
 		end
 		
 		if not success then
-			GameTooltip:SetText(entry.name or "(unknown)", 1, 1, 1)
+			local entryName = SC.GetEntryName and SC:GetEntryName(entry) or (entry.name or L["UNKNOWN"] or "(unknown)")
+			GameTooltip:SetText(entryName, 1, 1, 1)
 			if entry.note then
 				GameTooltip:AddLine(entry.note, 0.8, 0.8, 0.8, true)
 			end
@@ -252,7 +256,7 @@ local function LayoutCurrentPage()
 	
 	-- Calculate page boundaries
 	local startIndex = (frame.currentPage - 1) * BUTTONS_PER_PAGE + 1
-	local endIndex = math.min(startIndex + BUTTONS_PER_PAGE - 1, #entries)
+	local endIndex = math_min(startIndex + BUTTONS_PER_PAGE - 1, #entries)
 	
 	-- Hide all buttons first
 	for _, button in pairs(frame.buttonPool) do
@@ -270,48 +274,49 @@ local function LayoutCurrentPage()
 		
 		-- Set button data
 		button.entry = entry
-	local icon = SC.GetEntryIcon and SC:GetEntryIcon(entry) or "Interface\\Icons\\INV_Misc_QuestionMark"
-	button.iconTexture:SetTexture(icon)
-	button.iconTextureUncollected:SetTexture(icon)
-	button.name:SetText(entry.name or "(unknown)")
-	
-	-- Check status and apply visual state
-	local status = SC.GetEntryStatus and SC:GetEntryStatus(entry) or "unknown"
-	local isCollected = status == "collected"
-	local isMissing = status == "missing"
-	
-	button.iconTexture:SetShown(isCollected)
-	button.iconTextureUncollected:SetShown(not isCollected)
-	button.slotFrameCollected:SetShown(isCollected)
-	button.slotFrameUncollected:SetShown(not isCollected)
-	button.slotFrameUncollectedInnerGlow:SetShown(isMissing)
-	
-	if isCollected then
-		button.name:SetTextColor(1, 0.82, 0, 1)
-		button.name:SetShadowColor(0, 0, 0, 1)
-	elseif isMissing then
-		button.name:SetTextColor(0.33, 0.27, 0.20, 1)
-		button.name:SetShadowColor(0, 0, 0, 0.33)
-	else
-		button.name:SetTextColor(1.0, 0.82, 0.0, 1)
-		button.name:SetShadowColor(0, 0, 0, 1)
-	end
-	
-	-- Position button in grid (relative to Inset frame)
-	local x = START_OFFSET_X + col * (BUTTON_WIDTH + BUTTON_PADDING_X)
-	local y = START_OFFSET_Y - row * (BUTTON_HEIGHT + BUTTON_PADDING_Y)
-	
-	button:SetPoint("TOPLEFT", frame.Inset, "TOPLEFT", x, y)
-	button:Show()
-	
-	buttonIndex = buttonIndex + 1
-	col = col + 1
-	
-	-- Move to next row if we've filled the current row
-	if col >= BUTTONS_PER_ROW then
-		row = row + 1
-		col = 0
-	end
+		local icon = SC.GetEntryIcon and SC:GetEntryIcon(entry) or "Interface\\Icons\\INV_Misc_QuestionMark"
+		button.iconTexture:SetTexture(icon)
+		button.iconTextureUncollected:SetTexture(icon)
+		local entryName = SC.GetEntryName and SC:GetEntryName(entry) or (entry.name or L["UNKNOWN"] or "(unknown)")
+		button.name:SetText(entryName)
+		
+		-- Check status and apply visual state
+		local status = SC.GetEntryStatus and SC:GetEntryStatus(entry) or "unknown"
+		local isCollected = status == "collected"
+		local isMissing = status == "missing"
+		
+		button.iconTexture:SetShown(isCollected)
+		button.iconTextureUncollected:SetShown(not isCollected)
+		button.slotFrameCollected:SetShown(isCollected)
+		button.slotFrameUncollected:SetShown(not isCollected)
+		button.slotFrameUncollectedInnerGlow:SetShown(isMissing)
+		
+		if isCollected then
+			button.name:SetTextColor(1, 0.82, 0, 1)
+			button.name:SetShadowColor(0, 0, 0, 1)
+		elseif isMissing then
+			button.name:SetTextColor(0.33, 0.27, 0.20, 1)
+			button.name:SetShadowColor(0, 0, 0, 0.33)
+		else
+			button.name:SetTextColor(1.0, 0.82, 0.0, 1)
+			button.name:SetShadowColor(0, 0, 0, 1)
+		end
+		
+		-- Position button in grid (relative to Inset frame)
+		local x = START_OFFSET_X + col * (BUTTON_WIDTH + BUTTON_PADDING_X)
+		local y = START_OFFSET_Y - row * (BUTTON_HEIGHT + BUTTON_PADDING_Y)
+		
+		button:SetPoint("TOPLEFT", frame.Inset, "TOPLEFT", x, y)
+		button:Show()
+		
+		buttonIndex = buttonIndex + 1
+		col = col + 1
+		
+		-- Move to next row if we've filled the current row
+		if col >= BUTTONS_PER_ROW then
+			row = row + 1
+			col = 0
+		end
 	end
 end
 
@@ -322,7 +327,7 @@ end
 -- Function to calculate total pages
 local function CalculateTotalPages()
 	local entries = GetFilteredEntries()
-	return math.ceil(#entries / BUTTONS_PER_PAGE)
+	return math_ceil(#entries / BUTTONS_PER_PAGE)
 end
 
 local function UpdateProgressBar()
@@ -336,7 +341,7 @@ local function UpdateProgressBar()
 		end
 	end
 	
-	frame.ProgressBar.Text:SetText(string.format("%d/%d", collected, trackable))
+	frame.ProgressBar.Text:SetText(string_format(L["PROGRESS_FORMAT"] or "%d/%d", collected, trackable))
 	frame.ProgressBar:SetMinMaxValues(0, math_max(trackable, 1))
 	frame.ProgressBar:SetValue(trackable > 0 and collected or 0)
 end
@@ -350,7 +355,7 @@ local function UpdatePage(newPage)
 	
 	-- Update paging controls inline
 	local maxPages = CalculateTotalPages()
-	frame.PagingFrame.PageText:SetText("Page " .. frame.currentPage .. " / " .. maxPages)
+	frame.PagingFrame.PageText:SetText(string_format(L["PAGE_FORMAT"] or "Page %d / %d", frame.currentPage, maxPages))
 	frame.PagingFrame.PrevPageButton:SetEnabled(frame.currentPage > 1)
 	frame.PagingFrame.NextPageButton:SetEnabled(frame.currentPage < maxPages)
 end
@@ -405,12 +410,12 @@ end)
 function SC:OpenSecretsFrame()
 	-- Set title using PortraitFrameTemplate method
 	if frame.SetTitle then
-		frame:SetTitle("Secrets Checklist")
+		frame:SetTitle(L["WINDOW_TITLE"] or "Secrets Checklist")
 	elseif frame.TitleText then
-		frame.TitleText:SetText("Secrets Checklist")
+		frame.TitleText:SetText(L["WINDOW_TITLE"] or "Secrets Checklist")
 	elseif frame.Title then
 		-- Fallback for older versions
-		frame.Title:SetText("Secrets Checklist")
+		frame.Title:SetText(L["WINDOW_TITLE"] or "Secrets Checklist")
 	end
 	frame:Show()
 	return true
@@ -443,7 +448,6 @@ local function Initialize()
 		inset:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, -60)
 		inset:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -6, 4)
 		frame.Inset = inset
-		Print("Created Inset frame manually (should have been in XML)")
 	end
 	
 	-- Add background to Inset for visibility
@@ -456,9 +460,9 @@ local function Initialize()
 	
 	-- Set title using PortraitFrameTemplate method
 	if frame.SetTitle then
-		frame:SetTitle("Secrets Checklist")
+		frame:SetTitle(L["WINDOW_TITLE"] or "Secrets Checklist")
 	elseif frame.TitleText then
-		frame.TitleText:SetText("Secrets Checklist")
+		frame.TitleText:SetText(L["WINDOW_TITLE"] or "Secrets Checklist")
 	end
 	
 	-- Set portrait icon
@@ -505,13 +509,13 @@ local function Initialize()
 		end
 		
 		frame.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
-			rootDescription:CreateTitle("Filter by Status")
+			rootDescription:CreateTitle(L["FILTER_BY_STATUS"] or "Filter by Status")
 			
 			-- Status radio buttons
 			local statusOptions = {
-				{label = "All", value = "all"},
-				{label = "Collected", value = "collected"},
-				{label = "Missing", value = "missing"},
+				{label = L["FILTER_ALL"] or "All", value = "all"},
+				{label = L["FILTER_COLLECTED"] or "Collected", value = "collected"},
+				{label = L["FILTER_MISSING"] or "Missing", value = "missing"},
 			}
 			for _, opt in ipairs(statusOptions) do
 				rootDescription:CreateRadio(opt.label,
@@ -520,26 +524,26 @@ local function Initialize()
 			end
 			
 			rootDescription:CreateDivider()
-			rootDescription:CreateTitle("Filter by Type")
+			rootDescription:CreateTitle(L["FILTER_BY_TYPE"] or "Filter by Type")
 			
 			-- Type checkboxes
 			local typeOptions = {
-				{label = "Mounts", kind = "mount"},
-				{label = "Pets", kind = "pet"},
-				{label = "Toys", kind = "toy"},
-				{label = "Achievements", kind = "achievement"},
-				{label = "Quests", kind = "quest"},
-				{label = "Transmog", kind = "transmog"},
+				{label = L["KIND_MOUNTS"] or "Mounts", kind = "mount"},
+				{label = L["KIND_PETS"] or "Pets", kind = "pet"},
+				{label = L["KIND_TOYS"] or "Toys", kind = "toy"},
+				{label = L["KIND_ACHIEVEMENTS"] or "Achievements", kind = "achievement"},
+				{label = L["KIND_QUESTS"] or "Quests", kind = "quest"},
+				{label = L["KIND_TRANSMOGS"] or "Transmog", kind = "transmog"},
 			}
-		
-		-- Select All / Deselect All buttons
-		rootDescription:CreateButton("Select All", function()
-			for _, opt in ipairs(typeOptions) do
-				filterKinds[opt.kind] = true
-			end
-			OnFilterChanged()
-		end)
-		rootDescription:CreateButton("Deselect All", function()
+			
+			-- Select All / Deselect All buttons
+			rootDescription:CreateButton(L["FILTER_SELECT_ALL"] or "Select All", function()
+				for _, opt in ipairs(typeOptions) do
+					filterKinds[opt.kind] = true
+				end
+				OnFilterChanged()
+			end)
+			rootDescription:CreateButton(L["FILTER_DESELECT_ALL"] or "Deselect All", function()
 			for _, opt in ipairs(typeOptions) do
 				filterKinds[opt.kind] = false
 			end
@@ -579,7 +583,6 @@ end
 	-- Register frame for ESC key to close
 	tinsert(UISpecialFrames, "SecretChecklistFrame")
 
-	Print("Standalone window ready. Use /secrets to open.")
 end
 
 -- ==============================================
@@ -626,9 +629,9 @@ local function CreateMinimapButton()
 	-- Tooltip
 	button:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-		GameTooltip:SetText("Secrets Checklist", 1, 1, 1)
-		GameTooltip:AddLine("Click to toggle window", 0.8, 0.8, 0.8)
-		GameTooltip:AddLine("Drag to move", 0.5, 0.5, 0.5)
+		GameTooltip:SetText(L["ADDON_NAME"] or "Secrets Checklist", 1, 1, 1)
+		GameTooltip:AddLine(L["TOOLTIP_CLICK_TOGGLE"] or "Click to toggle window", 0.8, 0.8, 0.8)
+		GameTooltip:AddLine(L["TOOLTIP_DRAG_MOVE"] or "Drag to move", 0.5, 0.5, 0.5)
 		GameTooltip:Show()
 	end)
 	
@@ -671,24 +674,72 @@ end
 -- Create the minimap button
 local minimapButton = CreateMinimapButton()
 
+-- Centralized minimap visibility setter used by slash commands and settings UI.
+function SC:SetMinimapButtonHidden(hidden)
+	hidden = hidden == true
+	SecretChecklistDB.hideMinimapButton = hidden
+
+	if hidden then
+		minimapButton:Hide()
+	else
+		minimapButton:Show()
+	end
+end
+
 -- Public API to toggle minimap button
 function SC:ToggleMinimapButton()
-	if SecretChecklistDB.hideMinimapButton then
-		SecretChecklistDB.hideMinimapButton = false
-		minimapButton:Show()
-		Print("Minimap button shown.")
-	else
-		SecretChecklistDB.hideMinimapButton = true
-		minimapButton:Hide()
-		Print("Minimap button hidden. Use /secrets minimap to show it again.")
+	self:SetMinimapButtonHidden(not SecretChecklistDB.hideMinimapButton)
+end
+
+local function CreateOptionsPanel()
+	if not (Settings and Settings.RegisterVerticalLayoutCategory and Settings.RegisterAddOnCategory and Settings.RegisterProxySetting and Settings.CreateCheckbox) then
+		return
 	end
+
+	local category = Settings.RegisterVerticalLayoutCategory("SecretChecklist")
+	SC.optionsCategory = category
+	if category and category.GetID then
+		SC.optionsCategoryID = category:GetID()
+	end
+	Settings.RegisterAddOnCategory(category)
+
+	local function GetMinimapValue()
+		return not SecretChecklistDB.hideMinimapButton
+	end
+
+	local function SetMinimapValue(value)
+		SC:SetMinimapButtonHidden(not value)
+	end
+
+	local minimapSetting = Settings.RegisterProxySetting(
+		category,
+		"SECRETCHECKLIST_MINIMAP_ICON",
+		Settings.VarType.Boolean,
+		L["SETTINGS_MINIMAP_BUTTON"] or "Show Minimap Button",
+		Settings.Default.True,
+		GetMinimapValue,
+		SetMinimapValue
+	)
+	Settings.CreateCheckbox(category, minimapSetting, L["SETTINGS_MINIMAP_BUTTON_DESC"] or "Show or hide the SecretChecklist minimap button.")
+end
+
+function SC:OpenOptionsPanel()
+	if Settings and Settings.OpenToCategory and self.optionsCategory and self.optionsCategory.GetID then
+		Settings.OpenToCategory(self.optionsCategory:GetID())
+		return true
+	end
+
+	if Settings and Settings.OpenToCategory and type(self.optionsCategoryID) == "number" then
+		Settings.OpenToCategory(self.optionsCategoryID)
+		return true
+	end
+
+	return false
 end
 
 -- Initialize when the frame is first loaded
 if frame then
 	Initialize()
-	-- Hide minimap button if user preference is set
-	if SecretChecklistDB.hideMinimapButton then
-		minimapButton:Hide()
-	end
+	CreateOptionsPanel()
+	SC:SetMinimapButtonHidden(SecretChecklistDB.hideMinimapButton == true)
 end
