@@ -15,7 +15,7 @@ A World of Warcraft addon that helps you track and check your progress on secret
 - **Visual Feedback**: Icons are colored when collected, greyed out when missing
 - **Progress Bar**: Track your completion percentage across all secrets
 - **Custom Lists**: Easily edit the list to track the secrets you want
-- **Pre-Configured**: Comes with 32 popular secrets ready to track
+- **Pre-Configured**: Comes with 33 secrets ready to track
 
 ## Installation
 
@@ -34,6 +34,7 @@ Both `/secrets` and `/secretchecklist` work as aliases:
 | Command | Description |
 |---------|-------------|
 | `/secrets` | Open the SecretChecklist window |
+| `/secrets options` | Open the SecretChecklist options |
 | `/secrets minimap` | Toggle minimap button visibility |
 
 ### Using Filters
@@ -45,7 +46,7 @@ Both `/secrets` and `/secretchecklist` work as aliases:
 
 ## Tracked Secrets
 
-The addon comes pre-configured with 32 secret collectibles including:
+The addon comes pre-configured with 33 secret collectibles including:
 
 ### Mounts
 - Blanchy's Reins
@@ -62,6 +63,7 @@ The addon comes pre-configured with 32 secret collectibles including:
 - Uuna
 - Wicker Pup
 - Phoenix Wishwing
+- Gortham
 
 ### Toys
 - Enlightened Hearthstone
@@ -69,29 +71,9 @@ The addon comes pre-configured with 32 secret collectibles including:
 - Black Dragon's Challenge Dummy
 
 ### Other
-- Achievements
+- Achievements (You Conduit!, and more)
 - Transmog items
 - Quest chains
-
-## Customization
-
-### Editing the Secret List
-
-Open `SecretEntries.lua` and edit the `SC.entries` table. Each entry follows this format:
-
-```lua
-{
-    name = "Display Name",
-    kind = "mount|pet|toy|achievement|quest|transmog",
-    itemID = 123456,        -- Optional: item ID
-    spellID = 123456,       -- Optional: spell ID
-    achievementID = 12345,  -- Optional: achievement ID
-    questID = 12345,        -- Optional: quest ID
-    speciesID = 1234,       -- Optional: pet species ID
-    mountID = 123,          -- Optional: mount ID
-    matchNames = { "Alt Name 1", "Alt Name 2" }  -- Optional: alternative names
-}
-```
 
 ### Saving Your Preferences
 
@@ -100,29 +82,14 @@ Your filter preferences and minimap button position are automatically saved to S
 - Minimap button position and visibility
 - These settings persist across characters and sessions
 
-## Troubleshooting
-
-### Items Showing as [?] or Uncached
-
-Some collection data needs to be loaded before the addon can check it:
-1. Open the relevant Collections tab (Toys/Mounts/Pets)
-2. Let it fully load
-3. Run `/secrets` again
-
-### Manual Entries
-
-Entries marked as "manual" cannot be auto-checked unless you add an achievement/quest/spell/item ID that maps to something trackable in the game's API.
-
-### Name Mismatches
-
-Some trackable items use different names in-game vs. in the Collections UI (e.g., "Blanchy's Reins" vs "Blanchy"). The addon includes name fallbacks to handle these cases.
-
 ## Version History
 
+- **1.2.1**: Added You Conduit! achievement (Midnight) and Gortham battle pet
+- **1.2.0**: Full localization system (11 languages supported), minimap button settings panel, performance optimizations, code quality audit
 - **1.1.0**: Added advanced filtering system (status + type filters), Select All/Deselect All buttons, simplified slash commands, code optimization (11% reduction)
 - **1.0.1**: Added status filter dropdown (All/Collected/Missing)
 - **1.0.0**: Initial public release with minimap button and Collections Journal UI
-- Supports WoW Interface 12.0.0 and 12.0.1 (The War Within)
+- Supports WoW Interface 12.0.0 and 12.0.1 (Midnight)
 
 ## Code Quality
 
@@ -132,8 +99,6 @@ This addon was created with the assistance of GitHub Copilot and Claude AI. The 
 - **Global Namespace Safe**: Free of unnecessary global variables that pollute the WoW environment
 - **Modern API**: Uses current WoW APIs without deprecated functions
 - **Audited**: Code has been reviewed using Ketho's WoW API extension to ensure quality standards
-
-We maintain strict quality standards for this addon. Poorly optimized code or AI-generated spaghetti code that pollutes the global namespace will be removed to ensure a reliable and efficient user experience.
 
 ## Author
 
