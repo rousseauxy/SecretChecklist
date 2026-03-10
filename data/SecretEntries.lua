@@ -40,5 +40,7 @@ SC.entries = {
 	{ name = "Waist of Time", kind = "transmog", itemID = 162690 },
 	{ name = "Wan'be's Buried Goods", kind = "quest", questID = 52192, icon = 133644 },
 	{ name = "Xy Trustee's Gearglider", kind = "mount", itemID = 186639 },
+	{ name = "You Conduit!", kind = "achievement", achievementID = 61585 },
+	{ name = "Gortham", kind = "pet", speciesID = 4967, itemID = 262774, linkedSecret = true  },
 	{ name = "Mind-Seeker", kind = "achievement", achievementID = 62189 },
 }
