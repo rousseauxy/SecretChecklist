@@ -28,6 +28,7 @@ SC.entries = {
 	{ name = "Nazjatar Blood Serpent", kind = "mount", itemID = 161479 },
 	{ name = "Nilganihmaht Control Ring", kind = "toy", itemID = 186713 },
 	{ name = "Otto", kind = "mount", itemID = 198870 },
+	{ name = "Terky", kind = "pet", speciesID =1073, itemID = 22780 },
 	{ name = "Phoenix Wishwing", kind = "pet", speciesID = 3292, itemID = 193373 },
 	{ name = "Long-Forgotten Hippogryph", kind = "mount", itemID = 138258, matchNames = { "Long-Forgotten Hippogryph", "Reins of the Long-Forgotten Hippogryph" } },
 	{ name = "Riddler's Mind-Worm", kind = "mount", itemID = 147835 },

@@ -106,4 +106,11 @@ Created by Calaglyn - Emerald Dream (EU)
 
 ## License
 
-MIT License - Feel free to use, modify, and distribute
+This addon is licensed under the **GNU General Public License v3.0 (GPL-3.0)**.
+
+You are free to use, modify, and distribute this addon, but any derivative work **must**:
+- Be released under the same GPL-3.0 license
+- Include prominent attribution crediting **SecretChecklist by Calaglyn** as the original work
+- Make the source code available
+
+See the [LICENSE](LICENSE) file for full details.
