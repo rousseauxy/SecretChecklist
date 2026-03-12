@@ -12,6 +12,8 @@ L["ADDON_LOADED"] = "Geladen. Gib /secrets ein, um zu öffnen."
 L["WINDOW_TITLE"] = "Geheimnisse-Checkliste"
 -- L["PROGRESS_FORMAT"] = "%d/%d" -- Use default
 -- L["PAGE_FORMAT"] = "Seite %d / %d"
+-- L["SECRETS"] = "Geheimnisse"
+-- L["MIND_SEEKER"] = "Gedankensucher"
 
 -- Filter
 L["FILTER"] = "Filter"

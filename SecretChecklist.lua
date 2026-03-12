@@ -1,9 +1,7 @@
 local addonName = ...
 
 -- Localize frequently-used globals for performance
-local type, select, next, pairs, ipairs = type, select, next, pairs, ipairs
-local tostring, tonumber = tostring, tonumber
-local math_min = math.min
+local type, pairs, ipairs = type, pairs, ipairs
 
 local FALLBACK_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
 
@@ -17,79 +15,6 @@ SecretChecklistDB = SecretChecklistDB or {}
 -- ==============================================
 -- HELPER FUNCTIONS
 -- ==============================================
-
-local function IsSpellKnownSafe(spellID)
-	if type(spellID) ~= "number" then
-		return false
-	end
-	if IsSpellKnown and IsSpellKnown(spellID) then
-		return true
-	end
-	if IsPlayerSpell and IsPlayerSpell(spellID) then
-		return true
-	end
-	return false
-end
-
-local function NormalizeName(s)
-	if type(s) ~= "string" then
-		return ""
-	end
-	s = s:lower()
-	s = s:gsub("’", "'")
-	s = s:gsub("[%(%)]", " ")
-	s = s:gsub("[^a-z0-9]+", "")
-	return s
-end
-
-local function GetCandidateNames(entry)
-	local candidates = {}
-	if type(entry.matchNames) == "table" then
-		for _, n in ipairs(entry.matchNames) do
-			if type(n) == "string" and n ~= "" then
-				candidates[#candidates + 1] = n
-			end
-		end
-	end
-	if type(entry.name) == "string" and entry.name ~= "" then
-		candidates[#candidates + 1] = entry.name
-	end
-	return candidates
-end
-
-local function ResolvePetSpeciesIDFromItemID(itemID, entry)
-	if not C_PetJournal or not C_PetJournal.GetPetInfoByItemID or not C_PetJournal.GetPetInfoBySpeciesID then
-		return nil
-	end
-	if type(itemID) ~= "number" then
-		return nil
-	end
-
-	local ret = { C_PetJournal.GetPetInfoByItemID(itemID) }
-	if #ret == 0 then
-		return nil
-	end
-
-	local wanted = {}
-	for _, candidate in ipairs(GetCandidateNames(entry)) do
-		wanted[NormalizeName(candidate)] = true
-	end
-
-	local bestSpeciesID = nil
-	for _, v in ipairs(ret) do
-		if type(v) == "number" then
-			local petName = C_PetJournal.GetPetInfoBySpeciesID(v)
-			if type(petName) == "string" and petName ~= "" then
-				if next(wanted) == nil or wanted[NormalizeName(petName)] then
-					return v
-				end
-				bestSpeciesID = bestSpeciesID or v
-			end
-		end
-	end
-
-	return bestSpeciesID
-end
 
 function SC:GetEntryIcon(entry)
 	if type(entry) ~= "table" then
@@ -123,20 +48,8 @@ function SC:GetEntryIcon(entry)
 				return icon
 			end
 		end
-		if GetItemInfoInstant then
-			local _, _, _, _, icon = GetItemInfoInstant(entry.itemID)
-			if icon then
-				return icon
-			end
-		end
-	end
+end
 	
-	if type(entry.spellID) == "number" and GetSpellTexture then
-		local icon = GetSpellTexture(entry.spellID)
-		if icon then
-			return icon
-		end
-	end
 	if type(entry.achievementID) == "number" then
 		local _, _, _, _, _, _, _, _, _, icon = GetAchievementInfo(entry.achievementID)
 		if icon then
@@ -209,11 +122,6 @@ end
 
 function SC:RefreshCaches()
 	self:EnsureCollectionsLoaded()
-	self._mountCacheBuilt = false
-	self._petCacheBuilt = false
-	self._mountByNormName = nil
-	self._mountBySpellID = nil
-	self._petByNormName = nil
 end
 
 function SC:GetEntryStatus(entry)
@@ -248,99 +156,6 @@ function SC:EnsureCollectionsLoaded()
 	end
 end
 
-function SC:BuildMountCache()
-	if self._mountCacheBuilt then return end
-	self._mountCacheBuilt = true
-	self._mountByNormName = {}
-	self._mountBySpellID = {}
-
-	if not (C_MountJournal and C_MountJournal.GetMountIDs and C_MountJournal.GetMountInfoByID) then return end
-
-	local mountIDs = C_MountJournal.GetMountIDs()
-	if type(mountIDs) ~= "table" or #mountIDs == 0 then return end
-
-	for _, mountID in ipairs(mountIDs) do
-		local name, spellID, _, _, _, _, _, _, _, _, isCollected = C_MountJournal.GetMountInfoByID(mountID)
-		-- If collection data isn't ready yet, isCollected can be nil. Don't cache "false" in that case.
-		if isCollected ~= nil then
-			if type(name) == "string" then
-				self._mountByNormName[NormalizeName(name)] = { mountID = mountID, collected = isCollected == true }
-			end
-			if type(spellID) == "number" then
-				self._mountBySpellID[spellID] = { mountID = mountID, collected = isCollected == true }
-			end
-		end
-	end
-end
-
-function SC:BuildPetCache()
-	if self._petCacheBuilt then return end
-	self._petCacheBuilt = true
-	self._petByNormName = {}
-
-	if not (C_PetJournal and C_PetJournal.GetNumPets and C_PetJournal.GetPetInfoByIndex) then return end
-
-	local _, total = C_PetJournal.GetNumPets(false)
-	if not (type(total) == "number" and total > 0) then return end
-
-	for i = 1, total do
-		local _, speciesID = C_PetJournal.GetPetInfoByIndex(i)
-		if type(speciesID) == "number" then
-			local petName = nil
-			if C_PetJournal.GetPetInfoBySpeciesID then
-				petName = C_PetJournal.GetPetInfoBySpeciesID(speciesID)
-			end
-			if type(petName) == "string" then
-				local numOwned = 0
-				if C_PetJournal.GetNumCollectedInfo then
-					local owned = select(1, C_PetJournal.GetNumCollectedInfo(speciesID))
-					if owned == nil then
-						-- Journal not ready; skip caching so we don't incorrectly mark as missing.
-						numOwned = nil
-					else
-						numOwned = owned
-					end
-				end
-				if numOwned ~= nil then
-					self._petByNormName[NormalizeName(petName)] = { speciesID = speciesID, owned = numOwned }
-				end
-			end
-		end
-	end
-end
-
-function SC:IsCollectionDataReady()
-	local toyReady, mountReady, petReady = true, true, true
-
-	-- Toys: GetToyInfo returns nil when ToyBox hasn't populated yet.
-	if C_ToyBox and C_ToyBox.GetToyInfo then
-		for _, e in ipairs(self.entries) do
-			if e.kind == "toy" and type(e.itemID) == "number" then
-				if not C_ToyBox.GetToyInfo(e.itemID) then toyReady = false end
-				break
-			end
-		end
-	end
-
-	-- Mounts: mountIDs can be empty until journal initializes.
-	if C_MountJournal and C_MountJournal.GetMountIDs then
-		local ids = C_MountJournal.GetMountIDs()
-		mountReady = type(ids) == "table" and #ids > 0
-	else
-		mountReady = false
-	end
-
-	-- Pets: total can be 0 until journal initializes.
-	if C_PetJournal and C_PetJournal.GetNumPets then
-		local _, total = C_PetJournal.GetNumPets(false)
-		petReady = type(total) == "number" and total > 0
-	else
-		petReady = false
-	end
-
-	return toyReady, mountReady, petReady
-end
-
 function SC:CheckEntry(entry)
 	if entry.kind == "toy" then
 		if type(entry.itemID) ~= "number" then
@@ -367,8 +182,6 @@ function SC:CheckEntry(entry)
 			return nil, "MountJournal API unavailable (try after fully logged in)."
 		end
 
-		self:BuildMountCache()
-
 		-- Check if mount specified by mountID (e.g., Fathom Dweller)
 		if type(entry.mountID) == "number" then
 			local isCollected = select(11, C_MountJournal.GetMountInfoByID(entry.mountID))
@@ -376,10 +189,6 @@ function SC:CheckEntry(entry)
 				return nil, "Mount journal data not ready yet. Try /secrets wait or open Collections → Mounts once."
 			end
 			return isCollected == true, "mount"
-		end
-
-		if type(entry.spellID) == "number" and self._mountBySpellID and self._mountBySpellID[entry.spellID] then
-			return self._mountBySpellID[entry.spellID].collected == true, "mount"
 		end
 
 		local mountID
@@ -394,16 +203,7 @@ function SC:CheckEntry(entry)
 			return isCollected == true, "mount"
 		end
 
-		-- Fallback: match by name in the journal
-		if self._mountByNormName then
-			for _, candidate in ipairs(GetCandidateNames(entry)) do
-				local norm = NormalizeName(candidate)
-				if self._mountByNormName[norm] ~= nil then
-					return self._mountByNormName[norm].collected == true, "mount"
-				end
-			end
-		end
-		return nil, "Could not map to a mount yet (name/item/spell mismatch or journal not cached)."
+		return nil, "Could not map to a mount yet (no mountID or itemID matched)."
 	end
 
 	if entry.kind == "pet" then
@@ -411,47 +211,22 @@ function SC:CheckEntry(entry)
 			return nil, "PetJournal API unavailable (try after fully logged in)."
 		end
 
-		local speciesID
-		-- Check if speciesID is directly provided
-		if type(entry.speciesID) == "number" then
-			speciesID = entry.speciesID
-		elseif type(entry.itemID) == "number" and C_PetJournal.GetPetInfoByItemID then
-			speciesID = ResolvePetSpeciesIDFromItemID(entry.itemID, entry)
+		if type(entry.speciesID) ~= "number" then
+			return nil, "Pet missing speciesID."
 		end
-		if type(speciesID) == "number" and C_PetJournal.GetNumCollectedInfo then
-			local numOwned = select(1, C_PetJournal.GetNumCollectedInfo(speciesID))
-			if numOwned == nil then
-				return nil, "Pet journal data not ready yet. Try /secrets wait or open Collections → Pets once."
-			end
-			return numOwned > 0, "pet"
+		if not C_PetJournal.GetNumCollectedInfo then
+			return nil, "PetJournal API unavailable."
 		end
-
-		-- Fallback: match by pet name
-		self:BuildPetCache()
-		if self._petByNormName then
-			for _, candidate in ipairs(GetCandidateNames(entry)) do
-				local norm = NormalizeName(candidate)
-				if self._petByNormName[norm] ~= nil then
-					return (self._petByNormName[norm].owned or 0) > 0, "pet"
-				end
-			end
+		local numOwned = select(1, C_PetJournal.GetNumCollectedInfo(entry.speciesID))
+		if numOwned == nil then
+			return nil, "Pet journal data not ready yet. Open Collections → Pets once."
 		end
-
-		return nil, "Could not map to a pet yet (name/item mismatch or journal not cached). Open Collections → Pets once."
+		return numOwned > 0, "pet"
 	end
 
 	if entry.kind == "achievement" then
 		local _, _, _, completed = GetAchievementInfo(entry.achievementID)
 		return completed == true, "achievement"
-	end
-
-	if entry.kind == "spell" then
-		-- Spells in this list are mounts (e.g., Slime Serpent). Check via Mount Journal when possible.
-		self:BuildMountCache()
-		if type(entry.spellID) == "number" and self._mountBySpellID and self._mountBySpellID[entry.spellID] then
-			return self._mountBySpellID[entry.spellID].collected == true, "mount"
-		end
-		return IsSpellKnownSafe(entry.spellID) == true, "spell"
 	end
 
 	if entry.kind == "quest" then
