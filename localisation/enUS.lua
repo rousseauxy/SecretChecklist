@@ -71,11 +71,17 @@ L["CMD_MINIMAP_HIDE"] = "Minimap button hidden."
 L["DATA_NOT_READY"] = "Collection data not ready yet. Try opening Collections once."
 L["UNKNOWN"] = "(unknown)"
 -- About tab
+L["TAB_ABOUT"]            = "About"
 L["ABOUT_BY"] = "By Calaglyn"
 L["ABOUT_DESC"] = "Track secret collectibles in World of Warcraft.\nMounts, Pets, Toys, Achievements, Quests, and Transmog."
 L["ABOUT_THANKS_HEADER"] = "Special Thanks"
 L["ABOUT_THANKS_TEXT"] = "A huge thank you to the Secret Finding Discord community\nfor all the incredible work they put into discovering\nthese secrets and documenting how to obtain them."
 L["ABOUT_DISCORD_LABEL"] = "Secret Finding Discord"
+-- Theme
+L["SETTINGS_THEME"]      = "Theme"
+L["SETTINGS_THEME_DESC"] = "Select a visual theme for SecretChecklist."
+-- Minimap button
+L["TOOLTIP_RIGHT_CLICK_OPTIONS"] = "Right-click to open options"
 -- Make the locale table available globally
 local LOCALE = GetLocale()
 if LOCALE == "enUS" or LOCALE == "enGB" then

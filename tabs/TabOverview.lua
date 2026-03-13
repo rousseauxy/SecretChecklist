@@ -93,6 +93,13 @@ function SC:BuildOverviewPanel(frame, L)
 		slotFrameUncollectedInnerGlow:Hide()
 		button.slotFrameUncollectedInnerGlow = slotFrameUncollectedInnerGlow
 
+		-- Thin container frame so flat themes (ElvUI) can attach a backdrop border
+		-- Same center as iconTexture; 1px wider on each side = 48x48.
+		local iconFrame = CreateFrame("Frame", nil, button)
+		iconFrame:SetSize(48, 48)
+		iconFrame:SetPoint("CENTER", iconTexture, "CENTER", 0, 0)
+		button.iconFrame = iconFrame
+
 		-- Name text beside icon
 		local name = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		name:SetSize(140, 0)
@@ -242,6 +249,27 @@ function SC:BuildOverviewPanel(frame, L)
 			GameTooltip:Hide()
 		end)
 
+		button:SetScript("OnClick", function(self)
+			if not self.entry then return end
+			local entry = self.entry
+			if IsControlKeyDown() then
+				-- Ctrl+Click: insert an item/achievement link into the active chat box
+				local link
+				if entry.itemID then
+					link = select(2, GetItemInfo(entry.itemID))
+				elseif entry.achievementID then
+					link = GetAchievementLink and GetAchievementLink(entry.achievementID)
+				end
+				if link then
+					ChatEdit_InsertLink(link)
+				end
+			else
+				if SC.OpenGuideForEntry then
+					SC:OpenGuideForEntry(entry)
+				end
+			end
+		end)
+
 		return button
 	end
 
@@ -285,9 +313,38 @@ function SC:BuildOverviewPanel(frame, L)
 
 			button.iconTexture:SetShown(isCollected)
 			button.iconTextureUncollected:SetShown(not isCollected)
-			button.slotFrameCollected:SetShown(isCollected)
-			button.slotFrameUncollected:SetShown(not isCollected)
-			button.slotFrameUncollectedInnerGlow:SetShown(isMissing)
+
+			local useFlat = ElvUI and SC.currentThemeName and SC.currentThemeName ~= "Default"
+			if useFlat then
+				-- Flat theme: hide round atlas borders, use ElvUI backdrop border instead
+				button.slotFrameCollected:Hide()
+				button.slotFrameUncollected:Hide()
+				button.slotFrameUncollectedInnerGlow:Hide()
+				if button.iconFrame then
+					-- Lazy-create ElvUI backdrop once per button
+					if not button.iconFrame.backdrop and button.iconFrame.CreateBackdrop then
+						button.iconFrame:CreateBackdrop()
+					end
+					if button.iconFrame.backdrop then
+						button.iconFrame.backdrop:Show()
+						if isCollected then
+							button.iconFrame.backdrop:SetBackdropBorderColor(0.85, 0.65, 0.13, 1)
+						else
+							local E = unpack(ElvUI)
+							local br, bg, bb = unpack(E.media.bordercolor)
+							button.iconFrame.backdrop:SetBackdropBorderColor(br, bg, bb, 1)
+						end
+					end
+				end
+			else
+				-- Default theme: restore round atlas borders, hide backdrop if present
+				if button.iconFrame and button.iconFrame.backdrop then
+					button.iconFrame.backdrop:Hide()
+				end
+				button.slotFrameCollected:SetShown(isCollected)
+				button.slotFrameUncollected:SetShown(not isCollected)
+				button.slotFrameUncollectedInnerGlow:SetShown(isMissing)
+			end
 
 			if isCollected then
 				button.name:SetTextColor(1, 0.82, 0, 1)
@@ -388,6 +445,8 @@ function SC:BuildOverviewPanel(frame, L)
 	end)
 
 	-- Expose UpdatePage for SwitchTab and OnFilterChanged in Frame.lua
-	SC.updateOverviewPage = UpdatePage
+	SC.updateOverviewPage  = UpdatePage
+	SC.updateProgressBar   = UpdateProgressBar
+	SC.updateOverviewIcons = LayoutCurrentPage
 
 end  -- SC:BuildOverviewPanel

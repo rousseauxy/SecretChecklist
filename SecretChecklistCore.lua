@@ -164,15 +164,27 @@ function SC:GetFilteredEntries() return GetFilteredEntries() end
 -- ==============================================
 
 local function SetTabActive(button, isActive)
-	if isActive then
-		button.LeftActive:Show(); button.RightActive:Show(); button.MiddleActive:Show()
-		button.Left:Hide(); button.Right:Hide(); button.Middle:Hide()
-		button.Text:SetFontObject("GameFontHighlightSmall")
+	-- When a flat theme (e.g. ElvUI) has placed its own backdrop (elvBg) over
+	-- the tab, skip the atlas show/hide so our theme hide isn't overridden.
+	if button.elvBg and button.elvBg:IsShown() then
+		-- Give active/inactive visual feedback through the backdrop
+		if button.elvBg.SetBackdropColor then
+			if isActive then
+				button.elvBg:SetBackdropColor(0.15, 0.15, 0.15, 1)
+			else
+				button.elvBg:SetBackdropColor(0.06, 0.06, 0.06, 1)
+			end
+		end
 	else
-		button.LeftActive:Hide(); button.RightActive:Hide(); button.MiddleActive:Hide()
-		button.Left:Show(); button.Right:Show(); button.Middle:Show()
-		button.Text:SetFontObject("GameFontNormalSmall")
+		if isActive then
+			button.LeftActive:Show(); button.RightActive:Show(); button.MiddleActive:Show()
+			button.Left:Hide(); button.Right:Hide(); button.Middle:Hide()
+		else
+			button.LeftActive:Hide(); button.RightActive:Hide(); button.MiddleActive:Hide()
+			button.Left:Show(); button.Right:Show(); button.Middle:Show()
+		end
 	end
+	button.Text:SetFontObject(isActive and "GameFontHighlightSmall" or "GameFontNormalSmall")
 end
 
 local SwitchTab -- forward declaration
@@ -242,7 +254,7 @@ SwitchTab = function(tabID)
 	local isGuides   = (tabID == "guides")
 
 	-- Show/hide overview-specific controls
-	frame.ProgressBar:SetShown(isOverview)
+	frame.ProgressBar:SetShown(isOverview or isGuides)
 	frame.PagingFrame:SetShown(isOverview)
 
 	-- FilterDropdown is shared: overview anchors top-right of Inset;
@@ -250,11 +262,7 @@ SwitchTab = function(tabID)
 	if frame.FilterDropdown then
 		frame.FilterDropdown:SetShown(isOverview or isGuides)
 		frame.FilterDropdown:ClearAllPoints()
-		if isGuides and SC.guidesListPane then
-			frame.FilterDropdown:SetPoint("TOPRIGHT", SC.guidesListPane, "TOPRIGHT", 0, 0)
-		else
-			frame.FilterDropdown:SetPoint("TOPRIGHT", frame.Inset, "TOPRIGHT", -10, -8)
-		end
+		frame.FilterDropdown:SetPoint("TOPRIGHT", frame.Inset, "TOPRIGHT", -10, -8)
 		UpdateFilterButtonText()
 		frame.FilterDropdown:Update()
 	end
@@ -266,8 +274,12 @@ SwitchTab = function(tabID)
 	if isOverview then
 		if SC.updateOverviewPage then SC.updateOverviewPage(frame.currentPage) end
 	else
+		-- Hide overview icon buttons when leaving overview tab
 		if frame.buttonPool then
 			for _, btn in pairs(frame.buttonPool) do btn:Hide() end
+		end
+		if isGuides then
+			if SC.updateProgressBar then SC.updateProgressBar() end
 		end
 	end
 
@@ -275,6 +287,36 @@ SwitchTab = function(tabID)
 	for _, tabBtn in pairs(SC.tabButtons_list) do
 		SetTabActive(tabBtn, tabBtn.tabID == tabID)
 	end
+end
+
+-- Navigate to the Guides tab and pre-select a specific entry (called from Overview icon click)
+function SC:OpenGuideForEntry(entry)
+	SC.guidesPreselect = entry
+	SwitchTab("guides")
+end
+
+-- Permanently unhides the About tab and persists the unlock across sessions.
+-- Safe to call multiple times; creates the button only once.
+function SC:UnlockAboutTab()
+	-- Already present? Nothing to do.
+	for _, btn in ipairs(SC.tabButtons_list) do
+		if btn.tabID == "about" then return end
+	end
+	-- Persist
+	if SecretChecklistDB then
+		SecretChecklistDB.aboutUnlocked = true
+	end
+	-- Create and anchor after the last existing tab
+	local btn = CreateTabButton("about", L["TAB_ABOUT"] or "About")
+	if SC.lastTabButton then
+		btn:SetPoint("TOPLEFT", SC.lastTabButton, "TOPRIGHT", 3, 0)
+	else
+		btn:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 11, 2)
+	end
+	tinsert(SC.tabButtons_list, btn)
+	SC.lastTabButton = btn
+	-- Re-skin so the new button inherits the active theme
+	SC:ApplyTheme(SC.currentThemeName or "Default")
 end
 
 -- ==============================================
@@ -334,7 +376,9 @@ local function Initialize()
 		bg:SetColorTexture(0.12, 0.10, 0.08, 0.98)
 		frame.Inset.bg = bg
 	end
-	
+	SC.themeTargets = SC.themeTargets or {}
+	SC.themeTargets.insetBg = frame.Inset.bg
+
 	-- Set title using PortraitFrameTemplate method
 	if frame.SetTitle then
 		frame:SetTitle(L["WINDOW_TITLE"] or "Secrets Checklist")
@@ -522,6 +566,7 @@ end
 		tinsert(SC.tabButtons_list, btn)
 		prevBtn = btn
 	end
+	SC.lastTabButton = prevBtn
 
 	-- Initialize tab display (sets currentTab, shows panels, updates page)
 	SwitchTab("overview")
@@ -529,19 +574,6 @@ end
 	-- Register frame for ESC key to close
 	tinsert(UISpecialFrames, "SecretChecklistFrame")
 
-	-- Clicking the portrait opens the hidden About panel.
-	local eggBtn = CreateFrame("Button", nil, frame)
-	eggBtn:SetSize(58, 58)
-	if frame.PortraitContainer then
-		eggBtn:SetPoint("CENTER", frame.PortraitContainer, "CENTER", 0, 0)
-	else
-		eggBtn:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, -4)
-	end
-	eggBtn:SetFrameLevel(frame:GetFrameLevel() + 10)
-	eggBtn:RegisterForClicks("LeftButtonUp")
-	eggBtn:SetScript("OnClick", function()
-		SwitchTab("about")
-	end)
 
 end
 
@@ -558,7 +590,7 @@ local function CreateMinimapButton()
 	button:SetMovable(true)
 	button:EnableMouse(true)
 	button:RegisterForDrag("LeftButton")
-	button:RegisterForClicks("LeftButtonUp")
+	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 	
 	-- Icon
 	local icon = button:CreateTexture(nil, "ARTWORK")
@@ -593,7 +625,9 @@ local function CreateMinimapButton()
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
 		GameTooltip:SetText(L["ADDON_NAME"] or "Secrets Checklist", 1, 1, 1)
 		GameTooltip:AddLine(L["TOOLTIP_CLICK_TOGGLE"] or "Click to toggle window", 0.8, 0.8, 0.8)
+		GameTooltip:AddLine(L["TOOLTIP_RIGHT_CLICK_OPTIONS"] or "Right-click to open options", 0.8, 0.8, 0.8)
 		GameTooltip:AddLine(L["TOOLTIP_DRAG_MOVE"] or "Drag to move", 0.5, 0.5, 0.5)
+		GameTooltip:AddLine(L["TOOLTIP_ALT_CLICK_ABOUT"] or "Alt-click for About", 0.5, 0.5, 0.5)
 		GameTooltip:Show()
 	end)
 	
@@ -601,9 +635,17 @@ local function CreateMinimapButton()
 		GameTooltip:Hide()
 	end)
 	
-	-- Click handler
-	button:SetScript("OnClick", function(self)
-		SC:ToggleSecretsFrame()
+-- Click handler (left = toggle window, right = options, alt+left = About)
+        button:SetScript("OnClick", function(self, mouseButton)
+                if mouseButton == "RightButton" then
+                        if SC.OpenOptionsPanel then SC:OpenOptionsPanel() end
+                elseif IsAltKeyDown() then
+                        SC:OpenSecretsFrame()
+                        SC:UnlockAboutTab()
+                        SwitchTab("about")
+		else
+			SC:ToggleSecretsFrame()
+		end
 	end)
 	
 	-- Drag handler
@@ -684,6 +726,39 @@ local function CreateOptionsPanel()
 		SetMinimapValue
 	)
 	Settings.CreateCheckbox(category, minimapSetting, L["SETTINGS_MINIMAP_BUTTON_DESC"] or "Show or hide the SecretChecklist minimap button.")
+
+	-- Theme selection dropdown
+	if Settings.CreateDropdown and Settings.CreateControlTextContainer then
+		local function GetTheme() return SecretChecklistDB.theme or "Default" end
+		local function SetTheme(value) SC:ApplyTheme(value) end
+		local themeSetting = Settings.RegisterProxySetting(
+			category,
+			"SECRETCHECKLIST_THEME",
+			Settings.VarType.String,
+			L["SETTINGS_THEME"] or "Theme",
+			"Default",
+			GetTheme,
+			SetTheme
+		)
+		local function GetThemeOptions()
+			local container = Settings.CreateControlTextContainer()
+			-- Add Default first, then any other available themes
+			for _, key in ipairs({"Default", "ElvUI"}) do
+				local theme = SC.themes and SC.themes[key]
+				if theme and theme.Available then
+					container:Add(key, theme.Name, theme.Description)
+				end
+			end
+			-- Add any runtime-registered themes not in the hardcoded list above
+			for key, theme in pairs(SC.themes or {}) do
+				if theme.Available and key ~= "Default" and key ~= "ElvUI" then
+					container:Add(key, theme.Name, theme.Description)
+				end
+			end
+			return container:GetData()
+		end
+		Settings.CreateDropdown(category, themeSetting, GetThemeOptions, L["SETTINGS_THEME_DESC"] or "Select a visual theme for SecretChecklist.")
+	end
 end
 
 function SC:OpenOptionsPanel()
@@ -721,6 +796,16 @@ do
 			r * math_sin(math_rad(angle)))
 		-- Restore saved visibility
 		SC:SetMinimapButtonHidden(SecretChecklistDB.hideMinimapButton == true)
+		-- Apply saved theme (deferred to PLAYER_LOGIN so SavedVariables are committed)
+		-- Auto-select ElvUI theme on first load if ElvUI is present and no theme has been saved yet
+		if not SecretChecklistDB.theme and ElvUI then
+			SecretChecklistDB.theme = "ElvUI"
+		end
+		SC:ApplyTheme(SecretChecklistDB.theme or "Default")
+		-- Restore About tab unlock (deferred here so SavedVariables are committed)
+		if SecretChecklistDB.aboutUnlocked then
+			SC:UnlockAboutTab()
+		end
 		self:UnregisterEvent("PLAYER_LOGIN")
 	end)
 end

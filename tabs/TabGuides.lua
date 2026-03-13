@@ -33,7 +33,7 @@ function SC:BuildGuidesPanel(frame, L)
 
 	-- ---- dimension constants ----
 	local GP_LEFT_W    = 240   -- width of the list pane
-	local GP_DIV_W     = 6     -- divider strip
+	local GP_DIV_W     = 2     -- divider strip
 	local GP_PAD       = 8     -- general padding
 	local GP_ROW_H     = 44    -- height of each list row
 	local GP_FILTER_H  = 28    -- height reserved at top of list pane for filter dropdown
@@ -137,7 +137,7 @@ function SC:BuildGuidesPanel(frame, L)
 
 	-- ScrollFrame: clips the list rows and handles vertical scrolling
 	scrollFrame = CreateFrame("ScrollFrame", nil, listPane)
-	scrollFrame:SetPoint("TOPLEFT",     listPane, "TOPLEFT",     0, -(GP_FILTER_H + GP_PAD))
+	scrollFrame:SetPoint("TOPLEFT",     listPane, "TOPLEFT",     0, -GP_PAD)
 	scrollFrame:SetPoint("BOTTOMRIGHT", listPane, "BOTTOMRIGHT", 0, 0)
 
 	-- Export top-right of listPane so SwitchTab can anchor FilterDropdown here
@@ -152,13 +152,20 @@ function SC:BuildGuidesPanel(frame, L)
 	-- Scrollbar: plain Slider (no UIPanelScrollBarTemplate = no SetVerticalScroll callback)
 	scrollBar = CreateFrame("Slider", nil, guidesPanel)
 	scrollBar:SetOrientation("VERTICAL")
-	scrollBar:SetWidth(16)
+	scrollBar:SetWidth(6)
 	scrollBar:SetPoint("TOPLEFT",    listPane, "TOPRIGHT",    4, -16)
 	scrollBar:SetPoint("BOTTOMLEFT", listPane, "BOTTOMRIGHT", 4,  16)
 	scrollBar:SetMinMaxValues(0, 0)
 	scrollBar:SetValueStep(GP_ROW_H)
 	scrollBar:SetObeyStepOnDrag(true)
-	scrollBar:SetThumbTexture("Interface\\Buttons\\UI-ScrollBar-Knob")
+	scrollBar:SetThumbTexture("Interface\\ChatFrame\\ChatFrameBackground")
+	local sbThumb = scrollBar:GetThumbTexture()
+	if sbThumb then
+		local dThumb = SC:ThemeColor("divider")
+		sbThumb:SetColorTexture(dThumb[1], dThumb[2], dThumb[3], dThumb[4])
+		sbThumb:SetWidth(6)
+		sbThumb:SetHeight(20)
+	end
 	scrollBar:SetValue(0)
 	scrollBar:SetScript("OnValueChanged", function(self, val)
 		scrollFrame:SetVerticalScroll(val)
@@ -167,9 +174,13 @@ function SC:BuildGuidesPanel(frame, L)
 	-- Vertical divider
 	local divider = guidesPanel:CreateTexture(nil, "BACKGROUND")
 	divider:SetWidth(GP_DIV_W)
-	divider:SetPoint("TOPLEFT",    listPane, "TOPRIGHT",    26, 0)  -- 16 (scrollbar) + 10
-	divider:SetPoint("BOTTOMLEFT", listPane, "BOTTOMRIGHT", 26, 0)
-	divider:SetColorTexture(0.3, 0.25, 0.2, 0.8)
+	divider:SetPoint("TOPLEFT",    listPane, "TOPRIGHT",    16, 0)  -- 6 (scrollbar) + 10
+	divider:SetPoint("BOTTOMLEFT", listPane, "BOTTOMRIGHT", 16, 0)
+	local dC = SC:ThemeColor("divider")
+	divider:SetColorTexture(dC[1], dC[2], dC[3], dC[4])
+	SC.themeTargets = SC.themeTargets or {}
+	SC.themeTargets.divider   = divider
+	SC.themeTargets.scrollBar = scrollBar
 
 	-- ==============================================
 	-- RIGHT DETAIL PANE
@@ -188,7 +199,7 @@ function SC:BuildGuidesPanel(frame, L)
 	-- Entry name (right of icon, vertically centered with icon)
 	local detailName = detailPane:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	detailName:SetPoint("LEFT",  detailIcon, "RIGHT",  10, 0)
-	detailName:SetPoint("RIGHT", detailPane, "RIGHT",  -98, 0)  -- leave room for Wowhead button
+	detailName:SetPoint("RIGHT", detailPane, "RIGHT",  -6, 0)
 	detailName:SetJustifyH("LEFT")
 	detailName:SetWordWrap(false)
 
@@ -223,7 +234,7 @@ function SC:BuildGuidesPanel(frame, L)
 	-- so clicking shows our copy popup instead of a menu.
 	local linkBtn = CreateFrame("DropdownButton", nil, detailPane, "WowStyle1FilterDropdownTemplate")
 	linkBtn:SetSize(90, 22)
-	linkBtn:SetPoint("TOPRIGHT", detailPane, "TOPRIGHT", 0, -GP_PAD)
+	linkBtn:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT", 0, GP_PAD)
 	linkBtn:SetText("Wowhead")
 	linkBtn.currentURL = ""
 	linkBtn:SetEnabled(false)  -- greyed until a URL is present
@@ -344,7 +355,7 @@ function SC:BuildGuidesPanel(frame, L)
 	detailModelZoomed:SetPoint("TOPLEFT",     detailDesc, "BOTTOMLEFT",    0, -10)
 	detailModelZoomed:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT",   0,   0)
 	detailModelZoomed:SetKeepModelOnHide(true)
-	detailModelZoomed:SetUnit("player")  -- pre-load player model at creation (mirrors AT's PLAYER_LOGIN)
+	detailModelZoomed:SetUnit("player")  -- pre-load player model at creation (mirrors AppearanceTooltip's PLAYER_LOGIN)
 	detailModelZoomed:Hide()
 	detailModelZoomed:SetScript("OnModelLoaded", function(self)
 		-- Only re-apply camera (same as AppearanceTooltip – TryOn is called synchronously, not here)
@@ -487,6 +498,7 @@ function SC:BuildGuidesPanel(frame, L)
 		if entry.kind == "achievement" or entry.kind == "quest" then
 			detailModel:Hide()
 			detailModelScene:Hide()
+			detailModelZoomed:Hide()
 			return
 		end
 
@@ -615,18 +627,23 @@ function SC:BuildGuidesPanel(frame, L)
 
 		local rowBg = row:CreateTexture(nil, "BACKGROUND")
 		rowBg:SetAllPoints()
-		rowBg:SetColorTexture(0, 0, 0, idx % 2 == 0 and 0.18 or 0.08)
+		local rbC = SC:ThemeColor(idx % 2 == 0 and "rowEven" or "rowOdd")
+		rowBg:SetColorTexture(rbC[1], rbC[2], rbC[3], rbC[4])
+		row.rowBg = rowBg
 
 		local selBg = row:CreateTexture(nil, "BACKGROUND")
 		selBg:SetAllPoints()
-		selBg:SetColorTexture(0.25, 0.20, 0.10, 0.6)
+		local scC = SC:ThemeColor("rowSel")
+		selBg:SetColorTexture(scC[1], scC[2], scC[3], scC[4])
 		selBg:Hide()
 		row.selBg = selBg
 
 		local hovTex = row:CreateTexture(nil, "HIGHLIGHT")
 		hovTex:SetAllPoints()
-		hovTex:SetColorTexture(1, 1, 1, 0.06)
+		local hcC = SC:ThemeColor("rowHov")
+		hovTex:SetColorTexture(hcC[1], hcC[2], hcC[3], hcC[4])
 		row:SetHighlightTexture(hovTex)
+		row.hovTex = hovTex
 
 		-- Icon (plain, no border)
 		local ico = row:CreateTexture(nil, "ARTWORK")
@@ -716,6 +733,24 @@ function SC:BuildGuidesPanel(frame, L)
 		end
 	end
 
+	-- Recolour existing rows when the theme changes (called by SC:ApplyTheme)
+	SC.onThemeChanged = function()
+		for idx, row in ipairs(guides_rowButtons) do
+			if row.rowBg then
+				local c = SC:ThemeColor(idx % 2 == 0 and "rowEven" or "rowOdd")
+				row.rowBg:SetColorTexture(c[1], c[2], c[3], c[4])
+			end
+			if row.selBg then
+				local c = SC:ThemeColor("rowSel")
+				row.selBg:SetColorTexture(c[1], c[2], c[3], c[4])
+			end
+			if row.hovTex then
+				local c = SC:ThemeColor("rowHov")
+				row.hovTex:SetColorTexture(c[1], c[2], c[3], c[4])
+			end
+		end
+	end
+
 	listPane:EnableMouseWheel(true)
 	listPane:SetScript("OnMouseWheel", function(self, delta)
 		local cur = scrollFrame:GetVerticalScroll()
@@ -727,9 +762,28 @@ function SC:BuildGuidesPanel(frame, L)
 
 	guidesPanel:SetScript("OnShow", function()
 		SC:RefreshCaches()
+		if SC.updateProgressBar then SC.updateProgressBar() end
+		-- Apply preselected entry (set by Overview icon click) before filtering
+		if SC.guidesPreselect then
+			guides_selected = SC.guidesPreselect
+			SC.guidesPreselect = nil
+		end
 		Guides_ApplyFilter()
 		Guides_RefreshList()
 		if guides_selected then
+			-- Scroll the list so the selected row is visible
+			for i, e in ipairs(guides_entries) do
+				if e == guides_selected then
+					local visH     = scrollFrame:GetHeight() or 0
+					local targetY  = (i - 1) * GP_ROW_H
+					local scrollTo = math_max(0, targetY - math_max(0, (visH - GP_ROW_H) / 2))
+					local maxScroll = math_max(0, #guides_entries * GP_ROW_H - visH)
+					scrollTo = math_min(scrollTo, maxScroll)
+					scrollFrame:SetVerticalScroll(scrollTo)
+					scrollBar:SetValue(scrollTo)
+					break
+				end
+			end
 			Guides_ShowDetail(guides_selected)
 		elseif #guides_entries > 0 then
 			local firstRow = guides_rowButtons[1]
