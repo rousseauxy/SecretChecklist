@@ -25,20 +25,32 @@ SC.tabButtons_list = {}
 -- SC.guidesListPane and SC.onFilterChange are set by BuildGuidesPanel
 
 -- Filter state per tab (local; exposed via accessors so tab panel files can read them)
-local defaultKinds = { mount=true, pet=true, toy=true, achievement=true, quest=true, transmog=true }
+local defaultKinds = { mount=true, pet=true, toy=true, achievement=true, quest=true, transmog=true, housing=true }
 local tabFilters = {
-	overview = { status = "all",     kinds = { mount=true, pet=true, toy=true, achievement=true, quest=true, transmog=true } },
-	guides   = { status = "missing", kinds = { mount=true, pet=true, toy=true, achievement=true, quest=true, transmog=true } },
+	overview = { showCollected=true,  showMissing=true,  kinds = { mount=true, pet=true, toy=true, achievement=true, quest=true, transmog=true, housing=true }, mindSeekerOnly = false, sortBy = "type" },
+	guides   = { showCollected=true,  showMissing=true,  kinds = { mount=true, pet=true, toy=true, achievement=true, quest=true, transmog=true, housing=true }, mindSeekerOnly = false, sortBy = "status" },
 }
 
 -- Read-only accessors: return filters for the currently active tab
-function SC:GetFilterStatus()
+function SC:GetShowCollected()
 	local f = tabFilters[SC.currentTab]
-	return f and f.status or "all"
+	return f == nil or f.showCollected ~= false
+end
+function SC:GetShowMissing()
+	local f = tabFilters[SC.currentTab]
+	return f == nil or f.showMissing ~= false
 end
 function SC:GetFilterKinds()
 	local f = tabFilters[SC.currentTab]
 	return f and f.kinds or defaultKinds
+end
+function SC:GetFilterMindSeekerOnly()
+	local f = tabFilters[SC.currentTab]
+	return f and f.mindSeekerOnly or false
+end
+function SC:GetSortBy()
+	local f = tabFilters[SC.currentTab]
+	return f and f.sortBy or "type"
 end
 
 -- ==============================================
@@ -48,36 +60,84 @@ end
 local function GetFilteredEntries()
 	local entries = SC.entries or {}
 	local f = tabFilters[SC.currentTab] or tabFilters.overview
-	local filterStatus = f.status
-	local filterKinds  = f.kinds
-	
+	local showCollected    = f.showCollected ~= false
+	local showMissing      = f.showMissing  ~= false
+	local filterKinds      = f.kinds
+	local mindSeekerOnly   = f.mindSeekerOnly
+	local sortBy           = f.sortBy or "type"
+
+	-- Kind sort order for "type" sort
+	local kindOrder = { mount=1, pet=2, toy=3, achievement=4, transmog=5, quest=6, housing=7 }
+
 	local filtered = {}
 	for _, entry in ipairs(entries) do
 		local shouldInclude = true
-		
-		-- First filter by kind/type
+
+		-- Filter by kind/type
 		local entryKind = entry.kind or "unknown"
 		if not filterKinds[entryKind] then
 			shouldInclude = false
 		end
-		
-		-- Then filter by collection status if not "all"
-		if shouldInclude and filterStatus ~= "all" then
+
+		-- Filter by Mind-Seeker
+		if shouldInclude and mindSeekerOnly and not entry.mindSeeker then
+			shouldInclude = false
+		end
+
+		-- Filter by collection status (only when the two checkboxes differ)
+		if shouldInclude and showCollected ~= showMissing then
 			local status = SC.GetEntryStatus and SC:GetEntryStatus(entry) or "unknown"
-			
-			if filterStatus == "collected" and status ~= "collected" then
+			local isCollected = (status == "collected")
+			if showCollected and not isCollected then
 				shouldInclude = false
-			elseif filterStatus == "missing" and not (status == "missing" or status == "unknown" or status == "manual") then
+			elseif showMissing and isCollected then
 				shouldInclude = false
 			end
 		end
-		
-		-- Entry passed all filters
+
 		if shouldInclude then
 			tinsert(filtered, entry)
 		end
 	end
-	
+
+	-- Sort
+	if sortBy == "name" then
+		table.sort(filtered, function(a, b)
+			local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
+			local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
+			return na:lower() < nb:lower()
+		end)
+	elseif sortBy == "status" then
+		local statusOrder = { missing=1, unknown=2, manual=3, collected=4 }
+		table.sort(filtered, function(a, b)
+			local sa = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(a) or "unknown"] or 2
+			local sb = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(b) or "unknown"] or 2
+			if sa ~= sb then return sa < sb end
+			local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
+			local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
+			return na:lower() < nb:lower()
+		end)
+	elseif sortBy == "status_col" then
+		local statusOrder = { collected=1, missing=2, unknown=3, manual=4 }
+		table.sort(filtered, function(a, b)
+			local sa = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(a) or "unknown"] or 3
+			local sb = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(b) or "unknown"] or 3
+			if sa ~= sb then return sa < sb end
+			local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
+			local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
+			return na:lower() < nb:lower()
+		end)
+	else -- "type" (default)
+		table.sort(filtered, function(a, b)
+			local ka = kindOrder[a.kind or "unknown"] or 99
+			local kb = kindOrder[b.kind or "unknown"] or 99
+			if ka ~= kb then return ka < kb end
+			local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
+			local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
+			return na:lower() < nb:lower()
+		end)
+	end
+
 	return filtered
 end
 
@@ -86,10 +146,13 @@ local function UpdateFilterButtonText()
 	local f = tabFilters[SC.currentTab]
 	if not f then return end
 	local count = 0
-	if f.status ~= "all" then count = count + 1 end
+	local showCollected = f.showCollected ~= false
+	local showMissing   = f.showMissing   ~= false
+	if showCollected ~= showMissing then count = count + 1 end
 	for _, enabled in pairs(f.kinds) do
 		if not enabled then count = count + 1 end
 	end
+	if f.mindSeekerOnly then count = count + 1 end
 	frame.FilterDropdown.Text:SetText(count > 0 and string_format(L["FILTER_WITH_COUNT"] or "Filter (%d)", count) or L["FILTER"] or "Filter")
 end
 
@@ -303,14 +366,25 @@ local function Initialize()
 	-- Set proper font size for page text
 	local fontPath, _, fontFlags = frame.PagingFrame.PageText:GetFont()
 	frame.PagingFrame.PageText:SetFont(fontPath, 12, fontFlags)
-	
+
+	-- Create filter dropdown in Lua (same path as wowhead button in TabGuides → guaranteed pill texture)
+	if not frame.FilterDropdown then
+		local fd = CreateFrame("DropdownButton", nil, frame, "WowStyle1FilterDropdownTemplate")
+		fd:SetSize(90, 22)
+		fd:SetPoint("TOPRIGHT", frame.Inset, "TOPRIGHT", -10, -8)
+		frame.FilterDropdown = fd
+	end
+
 	-- Setup filter dropdown
 	if frame.FilterDropdown then
 		-- Load saved preferences (per-tab)
 		if SecretChecklistDB.tabFilters then
 			for tab, f in pairs(SecretChecklistDB.tabFilters) do
 				if tabFilters[tab] then
-					if f.status then tabFilters[tab].status = f.status end
+					if f.showCollected ~= nil then tabFilters[tab].showCollected = f.showCollected end
+					if f.showMissing   ~= nil then tabFilters[tab].showMissing   = f.showMissing   end
+					if f.sortBy        ~= nil then tabFilters[tab].sortBy        = f.sortBy        end
+					if f.mindSeekerOnly ~= nil then tabFilters[tab].mindSeekerOnly = f.mindSeekerOnly end
 					if f.kinds then
 						for kind, enabled in pairs(f.kinds) do
 							tabFilters[tab].kinds[kind] = enabled
@@ -324,7 +398,13 @@ local function Initialize()
 		local function OnFilterChanged()
 			SecretChecklistDB.tabFilters = {}
 			for tab, f in pairs(tabFilters) do
-				SecretChecklistDB.tabFilters[tab] = { status = f.status, kinds = {} }
+				SecretChecklistDB.tabFilters[tab] = {
+					showCollected  = f.showCollected,
+					showMissing    = f.showMissing,
+					sortBy         = f.sortBy,
+					mindSeekerOnly = f.mindSeekerOnly,
+					kinds          = {},
+				}
 				for k, v in pairs(f.kinds) do
 					SecretChecklistDB.tabFilters[tab].kinds[k] = v
 				end
@@ -338,63 +418,69 @@ local function Initialize()
 		end
 		
 		frame.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
-			rootDescription:CreateTitle(L["FILTER_BY_STATUS"] or "Filter by Status")
-			
-			-- Status radio buttons
-			local statusOptions = {
-				{label = L["FILTER_ALL"] or "All", value = "all"},
-				{label = L["FILTER_COLLECTED"] or "Collected", value = "collected"},
-				{label = L["FILTER_MISSING"] or "Missing", value = "missing"},
+			-- Root level: quick toggles (HC-style)
+			rootDescription:CreateCheckbox(
+				L["FILTER_COLLECTED"] or "Collected",
+				function() local f = tabFilters[SC.currentTab]; return f == nil or f.showCollected ~= false end,
+				function() local f = tabFilters[SC.currentTab]; if f then f.showCollected = not (f.showCollected ~= false); OnFilterChanged() end end)
+			rootDescription:CreateCheckbox(
+				L["FILTER_NOT_COLLECTED"] or "Not Collected",
+				function() local f = tabFilters[SC.currentTab]; return f == nil or f.showMissing ~= false end,
+				function() local f = tabFilters[SC.currentTab]; if f then f.showMissing = not (f.showMissing ~= false); OnFilterChanged() end end)
+			rootDescription:CreateCheckbox(
+				L["FILTER_MIND_SEEKER_ONLY"] or "Mind-Seeker only",
+				function() local f = tabFilters[SC.currentTab]; return f and f.mindSeekerOnly == true end,
+				function() local f = tabFilters[SC.currentTab]; if f then f.mindSeekerOnly = not f.mindSeekerOnly; OnFilterChanged() end end)
+
+			-- Sort by submenu
+			local sortSubmenu = rootDescription:CreateButton(L["SORT_BY"] or "Sort by")
+			local sortOptions = {
+				{label = L["SORT_TYPE"]       or "Type",             value = "type"},
+				{label = L["SORT_NAME"]       or "Name",             value = "name"},
+				{label = L["SORT_STATUS_INC"] or "Incomplete first", value = "status"},
+				{label = L["SORT_STATUS_COL"] or "Collected first",  value = "status_col"},
 			}
-			for _, opt in ipairs(statusOptions) do
-				rootDescription:CreateRadio(opt.label,
-					function() local f = tabFilters[SC.currentTab]; return f and f.status == opt.value end,
-					function() local f = tabFilters[SC.currentTab]; if f then f.status = opt.value; OnFilterChanged() end end)
+			for _, opt in ipairs(sortOptions) do
+				sortSubmenu:CreateRadio(opt.label,
+					function() local f = tabFilters[SC.currentTab]; return f and f.sortBy == opt.value end,
+					function() local f = tabFilters[SC.currentTab]; if f then f.sortBy = opt.value; OnFilterChanged() end end)
 			end
-			
-			rootDescription:CreateDivider()
-			rootDescription:CreateTitle(L["FILTER_BY_TYPE"] or "Filter by Type")
-			
-			-- Type checkboxes
+
+			-- Type submenu
 			local typeOptions = {
-				{label = L["KIND_MOUNTS"] or "Mounts", kind = "mount"},
-				{label = L["KIND_PETS"] or "Pets", kind = "pet"},
-				{label = L["KIND_TOYS"] or "Toys", kind = "toy"},
+				{label = L["KIND_MOUNTS"]       or "Mounts",       kind = "mount"},
+				{label = L["KIND_PETS"]         or "Pets",         kind = "pet"},
+				{label = L["KIND_TOYS"]         or "Toys",         kind = "toy"},
 				{label = L["KIND_ACHIEVEMENTS"] or "Achievements", kind = "achievement"},
-				{label = L["KIND_QUESTS"] or "Quests", kind = "quest"},
-				{label = L["KIND_TRANSMOGS"] or "Transmog", kind = "transmog"},
+				{label = L["KIND_QUESTS"]       or "Quests",       kind = "quest"},
+				{label = L["KIND_TRANSMOGS"]    or "Transmog",     kind = "transmog"},
+				{label = L["KIND_HOUSINGS"]     or "Housing",      kind = "housing"},
 			}
-			
-			-- Select All / Deselect All buttons
-			rootDescription:CreateButton(L["FILTER_SELECT_ALL"] or "Select All", function()
+			local typeSubmenu = rootDescription:CreateButton(L["FILTER_BY_TYPE"] or "Type")
+			typeSubmenu:CreateButton(L["FILTER_SELECT_ALL"] or "Select All", function()
 				local f = tabFilters[SC.currentTab]; if not f then return end
-				for _, opt in ipairs(typeOptions) do
-					f.kinds[opt.kind] = true
-				end
+				for _, opt in ipairs(typeOptions) do f.kinds[opt.kind] = true end
 				OnFilterChanged()
 			end)
-			rootDescription:CreateButton(L["FILTER_DESELECT_ALL"] or "Deselect All", function()
+			typeSubmenu:CreateButton(L["FILTER_DESELECT_ALL"] or "Deselect All", function()
 				local f = tabFilters[SC.currentTab]; if not f then return end
-				for _, opt in ipairs(typeOptions) do
-					f.kinds[opt.kind] = false
-				end
+				for _, opt in ipairs(typeOptions) do f.kinds[opt.kind] = false end
 				OnFilterChanged()
 			end)
-		
-		rootDescription:CreateDivider()
-		
-		for _, opt in ipairs(typeOptions) do
-			rootDescription:CreateCheckbox(opt.label,
-				function() local f = tabFilters[SC.currentTab]; return f and f.kinds[opt.kind] == true end,
-				function() local f = tabFilters[SC.currentTab]; if f then f.kinds[opt.kind] = not f.kinds[opt.kind]; OnFilterChanged() end end)
-		end
-	end)
+			for _, opt in ipairs(typeOptions) do
+				typeSubmenu:CreateCheckbox(opt.label,
+					function() local f = tabFilters[SC.currentTab]; return f and f.kinds[opt.kind] == true end,
+					function() local f = tabFilters[SC.currentTab]; if f then f.kinds[opt.kind] = not f.kinds[opt.kind]; OnFilterChanged() end end)
+			end
+		end)
 
 	-- Reset button callbacks
 	frame.FilterDropdown:SetIsDefaultCallback(function()
 		local f = tabFilters[SC.currentTab]
 		if not f then return true end
-		if f.status ~= "all" then return false end
+		if f.showCollected == false or f.showMissing == false then return false end
+		if f.mindSeekerOnly then return false end
+		if (f.sortBy or "type") ~= "type" then return false end
 		for _, enabled in pairs(f.kinds) do
 			if not enabled then return false end
 		end
@@ -404,7 +490,10 @@ local function Initialize()
 	frame.FilterDropdown:SetDefaultCallback(function()
 		local f = tabFilters[SC.currentTab]
 		if not f then return end
-		f.status = "all"
+		f.showCollected  = true
+		f.showMissing    = true
+		f.mindSeekerOnly = false
+		f.sortBy         = "type"
 		for kind in pairs(f.kinds) do f.kinds[kind] = true end
 		OnFilterChanged()
 	end)
@@ -416,11 +505,11 @@ end
 	SC:BuildGuidesPanel(frame, L)
 	SC:BuildAboutPanel(frame, L)
 
-	-- Create tab buttons (Overview | Guides | About)
+	-- Create tab buttons (Overview | Guides)
+	-- The About panel is a hidden easter egg — see portrait click handler below.
 	local tabDefs = {
 		{ id = "overview", label = L["TAB_OVERVIEW"] or "Overview" },
 		{ id = "guides",   label = L["TAB_GUIDES"]   or "Guides"   },
-		{ id = "about",    label = L["TAB_ABOUT"]    or "About"    },
 	}
 	local prevBtn = nil
 	for i, def in ipairs(tabDefs) do
@@ -439,6 +528,20 @@ end
 
 	-- Register frame for ESC key to close
 	tinsert(UISpecialFrames, "SecretChecklistFrame")
+
+	-- Clicking the portrait opens the hidden About panel.
+	local eggBtn = CreateFrame("Button", nil, frame)
+	eggBtn:SetSize(58, 58)
+	if frame.PortraitContainer then
+		eggBtn:SetPoint("CENTER", frame.PortraitContainer, "CENTER", 0, 0)
+	else
+		eggBtn:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, -4)
+	end
+	eggBtn:SetFrameLevel(frame:GetFrameLevel() + 10)
+	eggBtn:RegisterForClicks("LeftButtonUp")
+	eggBtn:SetScript("OnClick", function()
+		SwitchTab("about")
+	end)
 
 end
 
@@ -478,9 +581,11 @@ local function CreateMinimapButton()
 	highlight:SetBlendMode("ADD")
 	
 	-- Position (default to top-left of minimap)
+	-- Radius 85 places the button just outside the decorative minimap ring.
+	local minimapRadius = (Minimap:GetWidth() / 2) + 5
 	local angle = SecretChecklistDB.minimapAngle or 225
-	local x = 80 * math_cos(math_rad(angle))
-	local y = 80 * math_sin(math_rad(angle))
+	local x = minimapRadius * math_cos(math_rad(angle))
+	local y = minimapRadius * math_sin(math_rad(angle))
 	button:SetPoint("CENTER", Minimap, "CENTER", x, y)
 	
 	-- Tooltip
@@ -512,9 +617,10 @@ local function CreateMinimapButton()
 			
 			local angle = math_deg(math_atan2(py - my, px - mx))
 			SecretChecklistDB.minimapAngle = angle
-			
-			local x = 80 * math_cos(math_rad(angle))
-			local y = 80 * math_sin(math_rad(angle))
+
+			local minimapRadius = (Minimap:GetWidth() / 2) + 5
+			local x = minimapRadius * math_cos(math_rad(angle))
+			local y = minimapRadius * math_sin(math_rad(angle))
 			self:ClearAllPoints()
 			self:SetPoint("CENTER", Minimap, "CENTER", x, y)
 		end)
@@ -598,5 +704,23 @@ end
 if frame then
 	Initialize()
 	CreateOptionsPanel()
-	SC:SetMinimapButtonHidden(SecretChecklistDB.hideMinimapButton == true)
+end
+
+-- Apply minimap button visibility and position on PLAYER_LOGIN, which guarantees
+-- SavedVariables are fully committed (reading at file-load time can race against DB population).
+do
+	local loginFrame = CreateFrame("Frame")
+	loginFrame:RegisterEvent("PLAYER_LOGIN")
+	loginFrame:SetScript("OnEvent", function(self)
+		-- Restore saved position
+		local angle = SecretChecklistDB.minimapAngle or 225
+		local r = (Minimap:GetWidth() / 2) + 5
+		minimapButton:ClearAllPoints()
+		minimapButton:SetPoint("CENTER", Minimap, "CENTER",
+			r * math_cos(math_rad(angle)),
+			r * math_sin(math_rad(angle)))
+		-- Restore saved visibility
+		SC:SetMinimapButtonHidden(SecretChecklistDB.hideMinimapButton == true)
+		self:UnregisterEvent("PLAYER_LOGIN")
+	end)
 end

@@ -50,21 +50,66 @@ function SC:BuildGuidesPanel(frame, L)
 	-- ==============================================
 
 	local function Guides_ApplyFilter()
-		local filterStatus = SC:GetFilterStatus()
-		local filterKinds  = SC:GetFilterKinds()
+		local showCollected     = SC:GetShowCollected()
+		local showMissing       = SC:GetShowMissing()
+		local filterKinds       = SC:GetFilterKinds()
+		local mindSeekerOnly    = SC:GetFilterMindSeekerOnly()
+		local sortBy            = SC:GetSortBy()
 		guides_entries = {}
 		for _, e in ipairs(SC.entries or {}) do
 			local kindOk   = filterKinds[e.kind] ~= false
+			local msOk     = not mindSeekerOnly or e.mindSeeker == true
 			local statusOk = true
-			if filterStatus == "collected" then
-				statusOk = (SC.GetEntryStatus and SC:GetEntryStatus(e) or "unknown") == "collected"
-			elseif filterStatus == "missing" then
+			if showCollected ~= showMissing then
 				local st = SC.GetEntryStatus and SC:GetEntryStatus(e) or "unknown"
-				statusOk = (st == "missing" or st == "unknown" or st == "manual")
+				local isCollected = (st == "collected")
+				if showCollected and not isCollected then
+					statusOk = false
+				elseif showMissing and isCollected then
+					statusOk = false
+				end
 			end
-			if kindOk and statusOk then
+			if kindOk and msOk and statusOk then
 				tinsert(guides_entries, e)
 			end
+		end
+		-- Sort
+		local kindOrder = { mount=1, pet=2, toy=3, achievement=4, transmog=5, quest=6, housing=7 }
+		if sortBy == "name" then
+			table.sort(guides_entries, function(a, b)
+				local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
+				local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
+				return na:lower() < nb:lower()
+			end)
+		elseif sortBy == "status" then
+			local statusOrder = { missing=1, unknown=2, manual=3, collected=4 }
+			table.sort(guides_entries, function(a, b)
+				local sa = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(a) or "unknown"] or 2
+				local sb = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(b) or "unknown"] or 2
+				if sa ~= sb then return sa < sb end
+				local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
+				local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
+				return na:lower() < nb:lower()
+			end)
+		elseif sortBy == "status_col" then
+			local statusOrder = { collected=1, missing=2, unknown=3, manual=4 }
+			table.sort(guides_entries, function(a, b)
+				local sa = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(a) or "unknown"] or 3
+				local sb = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(b) or "unknown"] or 3
+				if sa ~= sb then return sa < sb end
+				local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
+				local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
+				return na:lower() < nb:lower()
+			end)
+		else -- "type"
+			table.sort(guides_entries, function(a, b)
+				local ka = kindOrder[a.kind or "unknown"] or 99
+				local kb = kindOrder[b.kind or "unknown"] or 99
+				if ka ~= kb then return ka < kb end
+				local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
+				local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
+				return na:lower() < nb:lower()
+			end)
 		end
 		if scrollFrame then scrollFrame:SetVerticalScroll(0) end
 		if scrollBar   then scrollBar:SetValue(0) end
@@ -283,6 +328,31 @@ function SC:BuildGuidesPanel(frame, L)
 	modelBg:SetAllPoints()
 	modelBg:SetColorTexture(0, 0, 0, 0)
 
+	-- ModelScene for housing items only (asset is a numeric file ID, needs SetModelByFileID).
+	-- Mounts and pets use detailModel (DressUpModel) via SetDisplayInfo which is simpler and reliable.
+	local HOUSING_SCENE_ID = (Constants and Constants.HousingCatalogConsts
+		and Constants.HousingCatalogConsts.HOUSING_CATALOG_DECOR_MODELSCENEID_DEFAULT) or 861
+	local detailModelScene = CreateFrame("ModelScene", nil, detailPane, "PanningModelSceneMixinTemplate")
+	detailModelScene:SetPoint("TOPLEFT",     detailDesc, "BOTTOMLEFT",    0, -10)
+	detailModelScene:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT",   0,   0)
+	detailModelScene:Hide()
+	detailModelScene:TransitionToModelSceneID(HOUSING_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true)
+
+	-- Dedicated model for zoomed transmog slot view (mirrors AppearanceTooltip's .Zoomed model).
+	-- SetKeepModelOnHide keeps the player loaded between views so TryOn can be called synchronously.
+	local detailModelZoomed = CreateFrame("DressUpModel", nil, detailPane)
+	detailModelZoomed:SetPoint("TOPLEFT",     detailDesc, "BOTTOMLEFT",    0, -10)
+	detailModelZoomed:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT",   0,   0)
+	detailModelZoomed:SetKeepModelOnHide(true)
+	detailModelZoomed:SetUnit("player")  -- pre-load player model at creation (mirrors AT's PLAYER_LOGIN)
+	detailModelZoomed:Hide()
+	detailModelZoomed:SetScript("OnModelLoaded", function(self)
+		-- Only re-apply camera (same as AppearanceTooltip – TryOn is called synchronously, not here)
+		if self.cameraID and Model_ApplyUICamera then
+			Model_ApplyUICamera(self, self.cameraID)
+		end
+	end)
+
 	detailModel:EnableMouse(true)
 	detailModel:SetScript("OnMouseDown", function(self, button)
 		if button == "LeftButton" then
@@ -310,6 +380,12 @@ function SC:BuildGuidesPanel(frame, L)
 		self.camScale = math_max(0.3, math_min(5, (self.camScale or 1) - delta * 0.15))
 		self:SetCamDistanceScale(self.camScale)
 	end)
+	-- Reapply transmog slot camera after async model load (same pattern as AppearanceTooltip)
+	detailModel:SetScript("OnModelLoaded", function(self)
+		if self.cameraID and Model_ApplyUICamera then
+			Model_ApplyUICamera(self, self.cameraID)
+		end
+	end)
 
 	-- ==============================================
 	-- POPULATE DETAIL PANE
@@ -328,6 +404,8 @@ function SC:BuildGuidesPanel(frame, L)
 			linkBtn:SetEnabled(false)
 			copyDialog:Hide()
 			detailModel:Hide()
+			detailModelScene:Hide()
+			detailModelZoomed:Hide()
 			return
 		end
 
@@ -344,6 +422,7 @@ function SC:BuildGuidesPanel(frame, L)
 			achievement = { 1,   0.82, 0  },
 			quest       = { 1,   0.7, 0.3 },
 			transmog    = { 0.8, 0.6, 1   },
+			housing     = { 1,   0.85, 0.5 },
 		}
 		local kc      = kindColors[entry.kind] or { 0.8, 0.8, 0.8 }
 		local kindStr = entry.kind and (entry.kind:sub(1,1):upper() .. entry.kind:sub(2)) or ""
@@ -372,7 +451,7 @@ function SC:BuildGuidesPanel(frame, L)
 			detailStatus:SetText("")
 		end
 
-		local sourceText, descText = "", ""
+		local sourceText, descText = ""
 		if entry.kind == "mount" then
 			local mountID = entry.mountID
 			if not mountID and entry.itemID and C_MountJournal and C_MountJournal.GetMountFromItem then
@@ -392,6 +471,11 @@ function SC:BuildGuidesPanel(frame, L)
 		elseif entry.kind == "achievement" and entry.achievementID then
 			local _, _, _, _, _, _, _, desc = GetAchievementInfo(entry.achievementID)
 			descText = desc or ""
+		elseif entry.kind == "housing" and entry.itemID and C_HousingCatalog and C_HousingCatalog.GetCatalogEntryInfoByItem then
+			local info = C_HousingCatalog.GetCatalogEntryInfoByItem(entry.itemID, false)
+			if info then
+				sourceText = info.sourceText or ""
+			end
 		end
 		-- Entry-level overrides (for toys and any entry with hand-authored data)
 		if type(entry.source) == "string" and entry.source ~= "" then sourceText = entry.source end
@@ -402,15 +486,24 @@ function SC:BuildGuidesPanel(frame, L)
 		-- Hide model entirely for achievement / quest; show only if a model loads
 		if entry.kind == "achievement" or entry.kind == "quest" then
 			detailModel:Hide()
+			detailModelScene:Hide()
 			return
 		end
 
+		-- Reset both viewers; each block below shows exactly one
+		detailModelScene:ClearScene()
+		detailModelScene:Hide()
+		detailModelZoomed.cameraID = nil
+		detailModelZoomed:Hide()
 		detailModel:ClearModel()
 		detailModel:SetUnit("none")
+		detailModel:RefreshCamera()
+		detailModel.cameraID    = nil
 		detailModel.modelFacing = 0
 		detailModel.camScale    = 1
 		detailModel:SetFacing(0)
 		detailModel:SetCamDistanceScale(1)
+		detailModel:Hide()
 		local modelSet = false
 
 		if entry.kind == "mount" then
@@ -423,17 +516,19 @@ function SC:BuildGuidesPanel(frame, L)
 				if creatureDisplayID and creatureDisplayID > 0 then
 					detailModel:SetDisplayInfo(creatureDisplayID)
 					detailModel:SetCamera(1)
+					detailModel:SetFacing(math_rad(30))
+					if entry.camScale then
+						detailModel:SetCamDistanceScale(entry.camScale)
+					end
 					modelSet = true
 				end
 			end
 		elseif entry.kind == "pet" and C_PetJournal then
 			local creatureDisplayID
-			-- Prefer itemID-based lookup (returns displayID at index 12)
 			if entry.itemID and C_PetJournal.GetPetInfoByItemID then
 				local _, _, _, _, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoByItemID(entry.itemID)
 				creatureDisplayID = displayID
 			end
-			-- Fallback: speciesID-based lookup (Jenafur has no itemID; also covers cache misses)
 			if (not creatureDisplayID or creatureDisplayID == 0) and entry.speciesID and C_PetJournal.GetPetInfoBySpeciesID then
 				local _, _, _, _, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(entry.speciesID)
 				creatureDisplayID = displayID
@@ -447,18 +542,62 @@ function SC:BuildGuidesPanel(frame, L)
 				modelSet = true
 			end
 		elseif entry.kind == "transmog" and entry.itemID then
-			local expectedEntry = entry
-			local item = Item:CreateFromItemID(entry.itemID)
-			item:ContinueOnItemLoad(function()
-				if guides_selected ~= expectedEntry then return end
-				detailModel:SetUnit("player")
-				detailModel:TryOn("item:" .. entry.itemID)
-				detailModel:SetShown(true)
-			end)
-			modelSet = false
+			-- Determine inventory type so weapons can be shown without a player body
+			local invType = select(4, C_Item.GetItemInfoInstant(entry.itemID))
+			local appearanceID = C_TransmogCollection and C_TransmogCollection.GetItemInfo(entry.itemID)
+			local cameraID = appearanceID and C_TransmogCollection.GetAppearanceCameraID(appearanceID)
+			if cameraID == 0 then cameraID = nil end  -- 0 is truthy in Lua but means no camera
+			local heldSlots = {
+				INVTYPE_WEAPON=true, INVTYPE_2HWEAPON=true, INVTYPE_WEAPONMAINHAND=true,
+				INVTYPE_WEAPONOFFHAND=true, INVTYPE_RANGED=true, INVTYPE_RANGEDRIGHT=true,
+				INVTYPE_HOLDABLE=true, INVTYPE_SHIELD=true,
+			}
+			if heldSlots[invType] then
+				-- Weapon/held: display the item floating alone, no player body
+				detailModel.cameraID = cameraID
+				if cameraID and Model_ApplyUICamera then
+					Model_ApplyUICamera(detailModel, cameraID)
+					detailModel:SetAnimation(0, 0)
+				end
+				if appearanceID then
+					detailModel:SetItemAppearance(appearanceID)
+				else
+					detailModel:SetItem(entry.itemID)
+				end
+				modelSet = true
+			else
+				-- Worn armor: mirrors AppearanceTooltip's Zoomed model flow exactly.
+				-- SetKeepModelOnHide keeps the player loaded so TryOn works synchronously.
+				detailModelZoomed.cameraID = cameraID
+				detailModelZoomed:SetUnit("player")
+				detailModelZoomed:Dress()
+				if cameraID and Model_ApplyUICamera then
+					Model_ApplyUICamera(detailModelZoomed, cameraID)
+					detailModelZoomed:SetAnimation(0, 0)
+				end
+				detailModelZoomed:TryOn("item:" .. entry.itemID)
+				detailModelZoomed:Show()
+				-- modelSet stays false; detailModel hidden, detailModelZoomed shown above
+			end
+		elseif entry.kind == "housing" and entry.itemID then
+			if C_HousingCatalog and C_HousingCatalog.GetCatalogEntryInfoByItem then
+				local info = C_HousingCatalog.GetCatalogEntryInfoByItem(entry.itemID, false)
+				if info and info.asset and info.asset > 0 then
+					detailModelScene:ClearScene()
+					detailModelScene:SetViewInsets(0, 0, 0, 0)
+					detailModelScene:TransitionToModelSceneID(HOUSING_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true)
+					local actor = detailModelScene:GetActorByTag("decor") or detailModelScene:CreateActor("decor")
+					if actor then
+						actor:SetPreferModelCollisionBounds(true)
+						actor:SetModelByFileID(info.asset)
+					end
+					detailModelScene:Show()
+				end
+			end
 		end
 
 		detailModel:SetShown(modelSet)
+		-- detailModelScene visibility is set explicitly in each block above
 	end
 
 	-- ==============================================

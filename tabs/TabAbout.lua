@@ -18,12 +18,8 @@ function SC:BuildAboutPanel(frame, L)
 	SC.aboutPanel:Hide()
 	local aboutPanel = SC.aboutPanel  -- local alias
 
-	local aboutTitle = aboutPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	aboutTitle:SetPoint("CENTER", 0, 60)
-	aboutTitle:SetText(L["ADDON_NAME"] or "Secrets Checklist")
-
 	local aboutVersion = aboutPanel:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-	aboutVersion:SetPoint("TOP", aboutTitle, "BOTTOM", 0, -8)
+	aboutVersion:SetPoint("TOP", aboutPanel, "TOP", 0, -20)
 	aboutVersion:SetText(
 		"Version " .. (
 			C_AddOns and C_AddOns.GetAddOnMetadata
@@ -32,12 +28,8 @@ function SC:BuildAboutPanel(frame, L)
 		)
 	)
 
-	local aboutAuthor = aboutPanel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	aboutAuthor:SetPoint("TOP", aboutVersion, "BOTTOM", 0, -4)
-	aboutAuthor:SetText(L["ABOUT_BY"] or "By Calaglyn")
-
 	local aboutDesc = aboutPanel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	aboutDesc:SetPoint("TOP", aboutAuthor, "BOTTOM", 0, -20)
+	aboutDesc:SetPoint("TOP", aboutVersion, "BOTTOM", 0, -8)
 	aboutDesc:SetWidth(480)
 	aboutDesc:SetJustifyH("CENTER")
 	aboutDesc:SetTextColor(0.8, 0.8, 0.8)
@@ -45,5 +37,134 @@ function SC:BuildAboutPanel(frame, L)
 		L["ABOUT_DESC"] or
 		"Track secret collectibles in World of Warcraft.\nMounts, Pets, Toys, Achievements, Quests, and Transmog."
 	)
+
+	-- Dancing Terky model (between description and thanks section)
+	local terkyModel = CreateFrame("DressUpModel", nil, aboutPanel)
+	terkyModel:SetSize(180, 180)
+	terkyModel:SetPoint("TOP", aboutDesc, "BOTTOM", 0, -12)
+
+	local function StartDance(self)
+		self:SetAnimation(69)  -- dance
+	end
+
+	local function LoadTerkyModel()
+		if C_PetJournal and C_PetJournal.GetPetInfoByItemID then
+			local _, _, _, _, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoByItemID(22780)
+			if displayID and displayID > 0 then
+				terkyModel:SetDisplayInfo(displayID)
+				terkyModel:SetFacing(math.rad(0))
+				terkyModel:SetCamDistanceScale(1.5)
+				-- Defer SetAnimation by one frame so the model is fully loaded
+				terkyModel:SetScript("OnUpdate", function(self)
+					self:SetScript("OnUpdate", nil)
+					StartDance(self)
+				end)
+			end
+		end
+	end
+
+	-- Restart dance if it ever ends (safety net for one-shot animation sequences)
+	terkyModel:SetScript("OnAnimFinished", function(self) StartDance(self) end)
+
+	-- Reload & restart dance each time the panel is shown
+	aboutPanel:SetScript("OnShow", function() LoadTerkyModel() end)
+	LoadTerkyModel()
+
+	-- Thanks section
+	local thanksHeader = aboutPanel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	thanksHeader:SetPoint("TOP", terkyModel, "BOTTOM", 0, -12)
+	thanksHeader:SetJustifyH("CENTER")
+	thanksHeader:SetTextColor(1, 0.82, 0)
+	thanksHeader:SetText(L["ABOUT_THANKS_HEADER"] or "Special Thanks")
+
+	local thanksText = aboutPanel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	thanksText:SetPoint("TOP", thanksHeader, "BOTTOM", 0, -8)
+	thanksText:SetWidth(480)
+	thanksText:SetJustifyH("CENTER")
+	thanksText:SetTextColor(0.8, 0.8, 0.8)
+	thanksText:SetText(
+		L["ABOUT_THANKS_TEXT"] or
+		"A huge thank you to the Secret Finding Discord community\nfor all the incredible work they put into discovering\nthese secrets and documenting how to obtain them."
+	)
+
+	-- Clickable Discord link button
+	local discordURL = "https://discord.gg/wowsecrets"
+	local discordBtn = CreateFrame("Button", nil, aboutPanel)
+	discordBtn:SetSize(300, 26)
+	discordBtn:SetPoint("TOP", thanksText, "BOTTOM", 0, -10)
+
+	local discordText = discordBtn:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+	discordText:SetAllPoints()
+	discordText:SetJustifyH("CENTER")
+	discordText:SetTextColor(0.4, 0.78, 1)
+	discordText:SetText(L["ABOUT_DISCORD_LABEL"] or "Secret Finding Discord")
+
+	-- Custom copy popup (same pattern as the Wowhead button in TabGuides)
+	local copyDialog = CreateFrame("Frame", nil, UIParent)
+	copyDialog:SetSize(305, 52)
+	copyDialog:SetFrameStrata("FULLSCREEN_DIALOG")
+	copyDialog:SetFrameLevel(100)
+	copyDialog:SetClampedToScreen(true)
+	copyDialog:Hide()
+
+	local copyBg = copyDialog:CreateTexture(nil, "BACKGROUND")
+	copyBg:SetAllPoints()
+	copyBg:SetColorTexture(0.05, 0.05, 0.08, 0.95)
+
+	local copyBorderLine = copyDialog:CreateTexture(nil, "BORDER")
+	copyBorderLine:SetPoint("TOPLEFT",     copyDialog, "TOPLEFT",      1, -1)
+	copyBorderLine:SetPoint("BOTTOMRIGHT", copyDialog, "BOTTOMRIGHT", -1,  1)
+	copyBorderLine:SetColorTexture(0.35, 0.30, 0.18, 0.9)
+
+	local copyLabel = copyDialog:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	copyLabel:SetPoint("TOPLEFT", copyDialog, "TOPLEFT", 8, -5)
+	copyLabel:SetText("Ctrl+C to copy  ·  Esc to close")
+	copyLabel:SetTextColor(0.65, 0.65, 0.65)
+
+	local copyBox = CreateFrame("EditBox", nil, copyDialog)
+	copyBox:SetPoint("BOTTOMLEFT",  copyDialog, "BOTTOMLEFT",   8,  6)
+	copyBox:SetPoint("BOTTOMRIGHT", copyDialog, "BOTTOMRIGHT", -8,  6)
+	copyBox:SetHeight(24)
+	copyBox:SetAutoFocus(true)
+	copyBox:SetMaxLetters(512)
+	copyBox:SetFontObject("ChatFontNormal")
+	copyBox:SetJustifyH("LEFT")
+	copyBox:SetTextInsets(4, 4, 2, 2)
+	local copyBoxBg = copyBox:CreateTexture(nil, "BACKGROUND")
+	copyBoxBg:SetAllPoints()
+	copyBoxBg:SetColorTexture(0.1, 0.1, 0.15, 0.95)
+	copyBox:SetScript("OnEscapePressed",   function() copyDialog:Hide() end)
+	copyBox:SetScript("OnEnterPressed",    function() copyDialog:Hide() end)
+	copyBox:SetScript("OnEditFocusGained", function(self) self:HighlightText() end)
+	copyBox:SetScript("OnTextChanged", function(self, userInput)
+		if userInput then
+			self:SetText(discordURL)
+			self:HighlightText()
+		end
+	end)
+
+	discordBtn:SetScript("OnEnter", function(self)
+		discordText:SetTextColor(0.6, 0.92, 1)
+		GameTooltip:SetOwner(self, "ANCHOR_TOP")
+		GameTooltip:SetText(discordURL, 1, 1, 1)
+		GameTooltip:AddLine("Click to copy link", 0.8, 0.8, 0.8)
+		GameTooltip:Show()
+	end)
+	discordBtn:SetScript("OnLeave", function()
+		discordText:SetTextColor(0.4, 0.78, 1)
+		GameTooltip:Hide()
+	end)
+	discordBtn:SetScript("OnClick", function(self)
+		copyDialog:ClearAllPoints()
+		local bx, by = self:GetCenter()
+		local scale  = self:GetEffectiveScale() / UIParent:GetEffectiveScale()
+		copyDialog:SetPoint("TOP", UIParent, "BOTTOMLEFT",
+			bx * scale,
+			(by - self:GetHeight() * 0.5) * scale - 4)
+		copyBox:SetText(discordURL)
+		copyDialog:Show()
+		copyBox:SetFocus()
+		copyBox:HighlightText()
+	end)
 
 end  -- SC:BuildAboutPanel

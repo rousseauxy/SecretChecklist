@@ -204,6 +204,18 @@ function SC:BuildOverviewPanel(frame, L)
 				success = TryTooltip(function() GameTooltip:SetHyperlink("achievement:" .. entry.achievementID) end)
 			elseif entry.kind == "transmog" and entry.itemID then
 				success = TryTooltip(function() GameTooltip:SetItemByID(entry.itemID) end)
+			elseif entry.kind == "housing" and entry.itemID then
+				success = TryTooltip(function() GameTooltip:SetItemByID(entry.itemID) end)
+				if success and C_HousingCatalog and C_HousingCatalog.GetCatalogEntryInfoByItem then
+					local info = C_HousingCatalog.GetCatalogEntryInfoByItem(entry.itemID, true)
+					if info then
+						local owned = (info.quantity or 0) + (info.numPlaced or 0) + (info.remainingRedeemable or 0) > 0
+						GameTooltip:AddLine(
+							owned and (L["TOOLTIP_COLLECTED"] or "Collected") or (L["TOOLTIP_NOT_COLLECTED"] or "Not collected"),
+							owned and 0 or 1, owned and 1 or 0, 0
+						)
+					end
+				end
 			elseif entry.kind == "quest" and entry.questID then
 				local entryName = SC.GetEntryName and SC:GetEntryName(entry) or (entry.name or L["UNKNOWN"] or "(unknown)")
 				GameTooltip:SetText(entryName, 1, 1, 1)
@@ -314,14 +326,15 @@ function SC:BuildOverviewPanel(frame, L)
 		local totalAll, collectedAll = 0, 0
 		local totalMS,  collectedMS  = 0, 0
 		for _, entry in ipairs(SC.entries or {}) do
-			if entry.kind ~= "manual" and not entry.linkedSecret then
+			if entry.kind ~= "manual" then
 				totalAll = totalAll + 1
 				local have = SC.CheckEntry and SC:CheckEntry(entry)
 				if have == true then collectedAll = collectedAll + 1 end
-				if not entry.notMindSeeker then
-					totalMS = totalMS + 1
-					if have == true then collectedMS = collectedMS + 1 end
-				end
+			end
+			if entry.mindSeeker then
+				totalMS = totalMS + 1
+				local have = SC.CheckEntry and SC:CheckEntry(entry)
+				if have == true then collectedMS = collectedMS + 1 end
 			end
 		end
 		frame.ProgressBar.TotalText:SetText(

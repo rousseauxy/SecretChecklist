@@ -87,7 +87,7 @@ function SC:GetEntryName(entry)
 		end
 	end
 	
-	if (entry.kind == "toy" or entry.kind == "transmog") and type(entry.itemID) == "number" then
+	if (entry.kind == "toy" or entry.kind == "transmog" or entry.kind == "housing") and type(entry.itemID) == "number" then
 		if C_Item and C_Item.GetItemInfo then
 			local name = C_Item.GetItemInfo(entry.itemID)
 			if name and name ~= "" then
@@ -256,6 +256,21 @@ function SC:CheckEntry(entry)
 			return isCollected == true, "transmog"
 		end
 		return nil, "Transmog data not loaded yet. Open Collections → Appearances once."
+	end
+
+	if entry.kind == "housing" then
+		if not C_HousingCatalog or not C_HousingCatalog.GetCatalogEntryInfoByItem then
+			return nil, "HousingCatalog API unavailable."
+		end
+		if type(entry.itemID) ~= "number" then
+			return nil, "Housing entry missing itemID."
+		end
+		local info = C_HousingCatalog.GetCatalogEntryInfoByItem(entry.itemID, true)
+		if not info then
+			return nil, "Housing catalog data not loaded yet."
+		end
+		local owned = (info.quantity or 0) + (info.numPlaced or 0) + (info.remainingRedeemable or 0) > 0
+		return owned, "housing"
 	end
 
 	if entry.kind == "manual" then
