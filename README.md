@@ -116,6 +116,7 @@ Your filter preferences and minimap button position are automatically saved to S
 
 ## Version History
 
+- **1.6.0**: Added ElvUI theme support with automatic detection and visual styling; enhanced scrollbar and divider polish; added About tab with addon credits, license info, and easter egg
 - **1.5.1**: Click overview icons to navigate to the Guides tab entry; Ctrl+Click to insert item/achievement link into chat; Wowhead button moved to bottom of detail pane; progress counts shown on both Overview and Guides tabs
 - **1.5.0**: Added Guides tab with wowhead guide links and interactive 3D model viewer (mounts, pets, transmog on player, housing items); fixed minimap button persistence; updated filter pill visual; new entries (Bound Shadehound, Felreaver Deathcycle, Keys to Incognitro, Mimiron's Jumpjets, Nazjatar Blood Serpent, Otto, Pattie's Cap, Thrayir Eyes of the Siren, Xy Trustee's Gearglider, Courage, Glimr's Cracked Egg, Sun Darter Hatchling, Terky, Tobias' Leash, Hungering Claw, Cartel Transmorpher, Leaders of Scholomance, Mind-Seeker, Wan'be's Buried Goods, Shu'halo Perspective Painting)
 - **1.2.1**: Added You Conduit! achievement (Midnight) and Gortham battle pet
