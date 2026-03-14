@@ -46,6 +46,11 @@ function SC:BuildOverviewPanel(frame, L)
 	-- BUTTON CREATION
 	-- ==============================================
 
+	-- Safe tooltip helper: defined once here, shared by all buttons in the pool
+	local function TryTooltip(fn)
+		return pcall(fn) == true
+	end
+
 	local function CreateSecretButton(parent, index)
 		local button = CreateFrame("Button", nil, parent)
 		button:SetSize(BUTTON_WIDTH, BUTTON_HEIGHT)
@@ -115,11 +120,6 @@ function SC:BuildOverviewPanel(frame, L)
 		highlight:SetSize(46, 46)
 		highlight:SetPoint("CENTER", iconTexture, "CENTER", 0, 0)
 		button:SetHighlightTexture(highlight)
-
-		-- Helper for safe tooltip calls
-		local function TryTooltip(fn)
-			return pcall(fn) == true
-		end
 
 		-- Tooltip handler
 		button:SetScript("OnEnter", function(self)

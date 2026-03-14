@@ -6,7 +6,8 @@
 -- SecretChecklistFrame.lua after the filter dropdown is configured.
 --
 -- Shared state access:
---   SC:GetFilterStatus()  -- returns the active status filter string
+--   SC:GetShowCollected()  -- returns whether collected items are shown
+--   SC:GetShowMissing()    -- returns whether missing items are shown
 --   SC:GetFilterKinds()   -- returns the active kind-filter table
 --   SC.onFilterChange     -- set here; called by OnFilterChanged in Frame.lua
 --   SC.guidesSearchBox    -- set here; used by SwitchTab to anchor FilterDropdown
@@ -462,7 +463,7 @@ function SC:BuildGuidesPanel(frame, L)
 			detailStatus:SetText("")
 		end
 
-		local sourceText, descText = ""
+		local sourceText, descText = "", ""
 		if entry.kind == "mount" then
 			local mountID = entry.mountID
 			if not mountID and entry.itemID and C_MountJournal and C_MountJournal.GetMountFromItem then

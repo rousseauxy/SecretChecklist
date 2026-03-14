@@ -1,6 +1,6 @@
 ﻿-- Localize frequently-used globals for performance
 local type, pairs, ipairs = type, pairs, ipairs
-local math_min, math_max = math.min, math.max
+local math_max = math.max
 local math_cos, math_sin, math_atan2, math_deg, math_rad = math.cos, math.sin, math.atan2, math.deg, math.rad
 local tinsert = table.insert
 local string_format = string.format

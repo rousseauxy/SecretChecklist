@@ -48,7 +48,7 @@ function SC:GetEntryIcon(entry)
 				return icon
 			end
 		end
-end
+	end
 	
 	if type(entry.achievementID) == "number" then
 		local _, _, _, _, _, _, _, _, _, icon = GetAchievementInfo(entry.achievementID)
@@ -251,7 +251,7 @@ function SC:CheckEntry(entry)
 			end
 		end
 		-- Fallback: use GetItemInfo
-		local categoryID, visualID, canEnchant, icon, isCollected = C_TransmogCollection.GetItemInfo(entry.itemID)
+		local _, _, _, _, isCollected = C_TransmogCollection.GetItemInfo(entry.itemID)
 		if isCollected ~= nil then
 			return isCollected == true, "transmog"
 		end
