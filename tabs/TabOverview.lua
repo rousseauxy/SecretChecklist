@@ -446,6 +446,13 @@ function SC:BuildOverviewPanel(frame, L)
 
 	-- Expose UpdatePage for SwitchTab and OnFilterChanged in Frame.lua
 	SC.updateOverviewPage  = UpdatePage
+	-- Lightweight refresh used by background collection events (no RefreshCaches to avoid
+	-- re-triggering MOUNT_JOURNAL_SEARCH_UPDATED via SetDefaultFilters and causing a loop).
+	SC.refreshOverviewDisplay = function(page)
+		frame.currentPage = page or frame.currentPage or 1
+		LayoutCurrentPage()
+		UpdateProgressBar()
+	end
 	SC.updateProgressBar   = UpdateProgressBar
 	SC.updateOverviewIcons = LayoutCurrentPage
 

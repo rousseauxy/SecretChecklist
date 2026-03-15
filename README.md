@@ -121,6 +121,7 @@ Your filter preferences and minimap button position are automatically saved to S
 
 ## Version History
 
+- **1.6.3**: Fixed overview icon clicks not working; fixed guides scroll position resetting on tab switch; added toast alert when a secret is newly collected
 - **1.6.2**: Fixed secret icons showing incorrect collected/missing state on first open; fixed Terky model on the About tab not rendering until switching tabs
 - **1.6.1**: Added Secrets of Azeroth event entries: Tricked-Out-Thinking Cap, Torch of Pyrreth, Idol of Ohn'ahra (toys) and Whodunnit! (achievement); updated screenshots
 - **1.6.0**: Added ElvUI theme support with automatic detection and visual styling; enhanced scrollbar and divider polish; added About tab with addon credits, license info, and easter egg

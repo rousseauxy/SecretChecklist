@@ -213,6 +213,8 @@ SC:RegisterTheme("ElvUI", {
 				thumb:SetHeight(20)
 			end
 		end
+		-- Re-skin any pooled alert frame instances
+		if SC.RefreshAlertTheme then SC:RefreshAlertTheme() end
 	end,
 	OnReset = function()
 		local frame = _G.SecretChecklistFrame
@@ -293,5 +295,7 @@ SC:RegisterTheme("ElvUI", {
 				thumb:SetHeight(20)
 			end
 		end
+		-- Restore default alert frame skin
+		if SC.RefreshAlertTheme then SC:RefreshAlertTheme() end
 	end,
 })

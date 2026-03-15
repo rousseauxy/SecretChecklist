@@ -44,6 +44,7 @@ function SC:BuildGuidesPanel(frame, L)
 	local guides_entries    = {}   -- filtered entry list
 	local guides_rowButtons = {}   -- row button frames in scrollChild
 	local guides_selected   = nil  -- currently selected entry
+	local guides_scrollPos  = 0    -- persists scroll position across tab switches (WoW resets GetVerticalScroll on hide)
 	local scrollFrame, scrollBar   -- scroll widgets assigned in Left Pane section below
 
 	-- ==============================================
@@ -112,16 +113,23 @@ function SC:BuildGuidesPanel(frame, L)
 				return na:lower() < nb:lower()
 			end)
 		end
-		if scrollFrame then scrollFrame:SetVerticalScroll(0) end
-		if scrollBar   then scrollBar:SetValue(0) end
 	end
 
 	-- forward declarations for mutual recursion
 	local Guides_RefreshList
 	local Guides_ShowDetail
 
-	-- Expose combined refresh so OnFilterChanged in Frame.lua can call it
+	-- Called by OnFilterChanged (user changed a filter) -- resets scroll to top.
 	SC.onFilterChange = function()
+		guides_scrollPos = 0
+		if scrollFrame then scrollFrame:SetVerticalScroll(0) end
+		if scrollBar   then scrollBar:SetValue(0) end
+		Guides_ApplyFilter()
+		Guides_RefreshList()
+	end
+
+	-- Called by background collection events -- preserves scroll position.
+	SC.onCollectionRefresh = function()
 		Guides_ApplyFilter()
 		Guides_RefreshList()
 	end
@@ -169,6 +177,7 @@ function SC:BuildGuidesPanel(frame, L)
 	end
 	scrollBar:SetValue(0)
 	scrollBar:SetScript("OnValueChanged", function(self, val)
+		guides_scrollPos = val
 		scrollFrame:SetVerticalScroll(val)
 	end)
 
@@ -666,6 +675,7 @@ function SC:BuildGuidesPanel(frame, L)
 		row.dot = dot
 
 		row:SetScript("OnClick", function(self)
+			guides_selected = self.entry
 			Guides_ShowDetail(self.entry)
 			for _, r in pairs(guides_rowButtons) do
 				r.selBg:SetShown(r.entry == self.entry)
@@ -684,8 +694,11 @@ function SC:BuildGuidesPanel(frame, L)
 		local visibleH  = scrollFrame:GetHeight()
 		if not visibleH or visibleH < GP_ROW_H then visibleH = contentH end
 		local maxScroll = math_max(0, contentH - visibleH)
-		local curScroll = math_min(scrollFrame:GetVerticalScroll(), maxScroll)
+		-- Use guides_scrollPos (not scrollFrame:GetVerticalScroll) because WoW resets the
+		-- frame's internal scroll value to 0 when the panel is hidden (tab switch).
+		local curScroll = math_min(guides_scrollPos, maxScroll)
 
+		guides_scrollPos = curScroll
 		scrollFrame:SetVerticalScroll(curScroll)
 		scrollBar:SetMinMaxValues(0, maxScroll)
 		scrollBar:SetValue(curScroll)
@@ -754,9 +767,10 @@ function SC:BuildGuidesPanel(frame, L)
 
 	listPane:EnableMouseWheel(true)
 	listPane:SetScript("OnMouseWheel", function(self, delta)
-		local cur = scrollFrame:GetVerticalScroll()
+		local cur = guides_scrollPos
 		local max = scrollFrame:GetVerticalScrollRange()
 		local new = math_max(0, math_min(max, cur - delta * GP_ROW_H))
+		guides_scrollPos = new
 		scrollFrame:SetVerticalScroll(new)
 		scrollBar:SetValue(new)
 	end)
@@ -780,6 +794,7 @@ function SC:BuildGuidesPanel(frame, L)
 					local scrollTo = math_max(0, targetY - math_max(0, (visH - GP_ROW_H) / 2))
 					local maxScroll = math_max(0, #guides_entries * GP_ROW_H - visH)
 					scrollTo = math_min(scrollTo, maxScroll)
+					guides_scrollPos = scrollTo
 					scrollFrame:SetVerticalScroll(scrollTo)
 					scrollBar:SetValue(scrollTo)
 					break

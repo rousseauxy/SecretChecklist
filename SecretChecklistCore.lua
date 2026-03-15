@@ -790,8 +790,11 @@ do
 		_refreshPending = true
 		C_Timer.After(0.1, function()
 			_refreshPending = false
-			if frame:IsShown() and SC.currentTab == "overview" and SC.updateOverviewPage then
-				SC.updateOverviewPage(frame.currentPage or 1)
+			if frame:IsShown() and SC.currentTab == "overview" and SC.refreshOverviewDisplay then
+				SC.refreshOverviewDisplay(frame.currentPage or 1)
+			end
+			if frame:IsShown() and SC.currentTab == "guides" and SC.onCollectionRefresh then
+				SC.onCollectionRefresh()
 			end
 			if SC.aboutPanel and SC.aboutPanel:IsShown() then
 				local onShow = SC.aboutPanel:GetScript("OnShow")
@@ -804,8 +807,11 @@ do
 	collectionFrame:RegisterEvent("MOUNT_JOURNAL_SEARCH_UPDATED")
 	collectionFrame:RegisterEvent("PET_JOURNAL_LIST_UPDATE")
 	collectionFrame:RegisterEvent("TOYS_UPDATED")
+	collectionFrame:RegisterEvent("ACHIEVEMENT_EARNED")
+	collectionFrame:RegisterEvent("QUEST_TURNED_IN")
 	collectionFrame:SetScript("OnEvent", function()
 		ScheduleCollectionRefresh()
+		if SC.CheckForNewCollections then SC:CheckForNewCollections() end
 	end)
 end
 
@@ -834,6 +840,14 @@ do
 		if SecretChecklistDB.aboutUnlocked then
 			SC:UnlockAboutTab()
 		end
+		-- Initialise the secret-collected alert toast system
+		if SC.InitAlertSystem then SC:InitAlertSystem() end
+		-- Build the initial collection snapshot after a short delay so all
+		-- journals (mounts, pets, toys) have had time to finish loading.
+		-- Only transitions from missing→collected AFTER this point will fire.
+		C_Timer.After(5, function()
+			if SC.BuildAlertSnapshot then SC:BuildAlertSnapshot() end
+		end)
 		self:UnregisterEvent("PLAYER_LOGIN")
 	end)
 end

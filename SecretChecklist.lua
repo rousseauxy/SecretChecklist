@@ -296,6 +296,14 @@ SlashCmdList.SECRETCHECKLIST = function(msg)
 		if SC.ToggleMinimapButton then
 			SC:ToggleMinimapButton()
 		end
+	elseif msg == "alert" then
+		-- Fire a test toast with the first entry in the list (dev/debug helper)
+		local testEntry = SC.entries and SC.entries[1]
+		if testEntry and SC.FireSecretAlert then
+			SC:FireSecretAlert(testEntry)
+		else
+			print("|cffffcc00SecretChecklist:|r Alert system not ready yet.")
+		end
 	else
 		-- Default: open UI
 		if SC.OpenCollectionsSecretsTab then
