@@ -47,28 +47,25 @@ function SC:BuildAboutPanel(frame, L)
 		self:SetAnimation(69)  -- dance
 	end
 
+	-- Terky's display ID is a static game asset (verified: 15398). Hardcoded to avoid
+	-- any dependency on the pet journal being loaded.
+	local TERKY_DISPLAY_ID = 15398
+
 	local function LoadTerkyModel()
-		if C_PetJournal and C_PetJournal.GetPetInfoByItemID then
-			local _, _, _, _, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoByItemID(22780)
-			if displayID and displayID > 0 then
-				terkyModel:SetDisplayInfo(displayID)
-				terkyModel:SetFacing(math.rad(0))
-				terkyModel:SetCamDistanceScale(1.5)
-				-- Defer SetAnimation by one frame so the model is fully loaded
-				terkyModel:SetScript("OnUpdate", function(self)
-					self:SetScript("OnUpdate", nil)
-					StartDance(self)
-				end)
-			end
-		end
+		terkyModel:SetDisplayInfo(TERKY_DISPLAY_ID)
+		terkyModel:SetFacing(math.rad(0))
+		terkyModel:SetCamDistanceScale(1.5)
+		-- Give the renderer one frame to load the model geometry before starting the animation.
+		C_Timer.After(0.2, function()
+			if terkyModel:IsShown() then StartDance(terkyModel) end
+		end)
 	end
 
 	-- Restart dance if it ever ends (safety net for one-shot animation sequences)
 	terkyModel:SetScript("OnAnimFinished", function(self) StartDance(self) end)
 
-	-- Reload & restart dance each time the panel is shown
+	-- Load model each time the panel is shown.
 	aboutPanel:SetScript("OnShow", function() LoadTerkyModel() end)
-	LoadTerkyModel()
 
 	-- Thanks section
 	local thanksHeader = aboutPanel:CreateFontString(nil, "OVERLAY", "GameFontNormal")

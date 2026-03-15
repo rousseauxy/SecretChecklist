@@ -781,6 +781,34 @@ if frame then
 	CreateOptionsPanel()
 end
 
+-- Refresh overview buttons and About model when collection data finishes loading.
+-- Fixes first-open stale display caused by lazy-loaded mount/pet/toy journals.
+do
+	local _refreshPending = false
+	local function ScheduleCollectionRefresh()
+		if _refreshPending then return end
+		_refreshPending = true
+		C_Timer.After(0.1, function()
+			_refreshPending = false
+			if frame:IsShown() and SC.currentTab == "overview" and SC.updateOverviewPage then
+				SC.updateOverviewPage(frame.currentPage or 1)
+			end
+			if SC.aboutPanel and SC.aboutPanel:IsShown() then
+				local onShow = SC.aboutPanel:GetScript("OnShow")
+				if onShow then onShow(SC.aboutPanel) end
+			end
+		end)
+	end
+
+	local collectionFrame = CreateFrame("Frame")
+	collectionFrame:RegisterEvent("MOUNT_JOURNAL_SEARCH_UPDATED")
+	collectionFrame:RegisterEvent("PET_JOURNAL_LIST_UPDATE")
+	collectionFrame:RegisterEvent("TOYS_UPDATED")
+	collectionFrame:SetScript("OnEvent", function()
+		ScheduleCollectionRefresh()
+	end)
+end
+
 -- Apply minimap button visibility and position on PLAYER_LOGIN, which guarantees
 -- SavedVariables are fully committed (reading at file-load time can race against DB population).
 do
