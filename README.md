@@ -2,8 +2,9 @@
 
 A World of Warcraft addon that helps you track and check your progress on secret collectibles including mounts, pets, toys, achievements, transmog, quests, housing items, and other hidden content.
 
-<img width="914" height="720" alt="secretschecklist" src="https://github.com/user-attachments/assets/d0d06a62-8bbb-4bd8-abd0-d9652839c642" />
-<img width="952" height="718" alt="secretschecklist_filters" src="https://github.com/user-attachments/assets/363432c4-9b31-453a-bc35-37c9f91e7b0d" />
+<img width="1173" height="762" alt="cKXD4krAlE" src="https://github.com/user-attachments/assets/b4e4940b-c1d0-471d-9665-241c9bd2bdd5" />
+<img width="1164" height="753" alt="gL11bkA9ow" src="https://github.com/user-attachments/assets/945a9665-e563-492b-aae6-76336934e65b" />
+<img width="1042" height="783" alt="0PxHX4fTLx" src="https://github.com/user-attachments/assets/38035af6-5b34-47b6-966e-0f7895b3b885" />
 
 ## Features
 
@@ -18,7 +19,7 @@ A World of Warcraft addon that helps you track and check your progress on secret
 - **3D Model Viewer**: Previews mounts, pets, transmog worn on your character, housing items, and weapons in a live model scene
 - **Click-to-Navigate**: Click any icon in the Overview to jump directly to its Guides entry; Ctrl+Click inserts an item or achievement link into your active chat box
 - **Custom Lists**: Easily edit the list to track the secrets you want
-- **Pre-Configured**: Comes with 39 secrets ready to track
+- **Pre-Configured**: Comes with 43 secrets ready to track
 
 ## Installation
 
@@ -52,7 +53,7 @@ Both `/secrets` and `/secretchecklist` work as aliases:
 
 ## Tracked Secrets
 
-The addon comes pre-configured with **39 secret collectibles**:
+The addon comes pre-configured with **43 secret collectibles**:
 
 ### Mounts (18)
 - Blanchy's Reins
@@ -88,14 +89,18 @@ The addon comes pre-configured with **39 secret collectibles**:
 - Uuna
 - Wicker Pup
 
-### Toys (3)
+### Toys (6)
 - Black Dragon's Challenge Dummy
 - Cartel Transmorpher
 - Enlightened Hearthstone
+- Idol of Ohn'ahra
+- Torch of Pyrreth
+- Tricked-Out-Thinking Cap
 
-### Achievements (3)
+### Achievements (4)
 - Leaders of Scholomance (Necromantic Knowledge)
 - Mind-Seeker
+- Whodunnit?
 - You Conduit!
 
 ### Transmog (1)
@@ -116,6 +121,7 @@ Your filter preferences and minimap button position are automatically saved to S
 
 ## Version History
 
+- **1.6.1**: Added Secrets of Azeroth event entries: Tricked-Out-Thinking Cap, Torch of Pyrreth, Idol of Ohn'ahra (toys) and Whodunnit! (achievement); updated screenshots
 - **1.6.0**: Added ElvUI theme support with automatic detection and visual styling; enhanced scrollbar and divider polish; added About tab with addon credits, license info, and easter egg
 - **1.5.1**: Click overview icons to navigate to the Guides tab entry; Ctrl+Click to insert item/achievement link into chat; Wowhead button moved to bottom of detail pane; progress counts shown on both Overview and Guides tabs
 - **1.5.0**: Added Guides tab with wowhead guide links and interactive 3D model viewer (mounts, pets, transmog on player, housing items); fixed minimap button persistence; updated filter pill visual; new entries (Bound Shadehound, Felreaver Deathcycle, Keys to Incognitro, Mimiron's Jumpjets, Nazjatar Blood Serpent, Otto, Pattie's Cap, Thrayir Eyes of the Siren, Xy Trustee's Gearglider, Courage, Glimr's Cracked Egg, Sun Darter Hatchling, Terky, Tobias' Leash, Hungering Claw, Cartel Transmorpher, Leaders of Scholomance, Mind-Seeker, Wan'be's Buried Goods, Shu'halo Perspective Painting)

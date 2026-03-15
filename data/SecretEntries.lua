@@ -53,6 +53,9 @@ SC.entries = {
 	{ name = "Black Dragon's Challenge Dummy",               kind = "toy",   mindSeeker = true, itemID = 201933,                   wowheadURL = "https://www.wowhead.com/item=201933/black-dragons-challenge-dummy#comments" },
 	{ name = "Enlightened Hearthstone",                      kind = "toy",   mindSeeker = true, itemID = 190196,  source = "Ponderer's Portal", desc = "Teleports you to your heartstone location", wowheadURL = "https://www.wowhead.com/news/enlightened-hearthstone-hidden-hearthstone-toy-found-in-zereth-mortis-337545" },
 	{ name = "Cartel Transmorpher",                          kind = "toy",   mindSeeker = true, itemID = 249713, linkedSecret = true,  wowheadURL = "https://www.wowhead.com/news/xy-trustees-gearglider-mount-and-cartel-transmorpher-toy-discovered-by-wow-379066" },
+	{ name = "Tricked-Out-Thinking Cap" ,                 	 kind = "toy",    itemID = 206696,  wowheadURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
+	{ name = "Torch of Pyrreth" ,                             kind = "toy",   itemID = 208092,  wowheadURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
+	{ name = "Idol of Ohn'ahra" ,                             kind = "toy",   itemID = 207730,  wowheadURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
 
 	-- ------------------------------------------------
 	-- ACHIEVEMENTS
@@ -60,7 +63,7 @@ SC.entries = {
 	{ name = "Leaders of Scholomance (Necromantic Knowledge)", kind = "achievement", mindSeeker = true, achievementID = 18558,     wowheadURL = "https://www.wowhead.com/news/how-to-enter-old-scholomance-farm-once-removed-transmog-items-333981" },
 	{ name = "Mind-Seeker",                                  kind = "achievement", mindSeeker = true, achievementID = 62189,       wowheadURL = "https://www.wowhead.com/news/join-the-secret-cabal-of-mind-seekers-new-secret-discovery-in-progress-380212" },
 	{ name = "You Conduit!",                                 kind = "achievement", mindSeeker = true, achievementID = 61585,       wowheadURL = "https://www.wowhead.com/achievement=61585/you-conduit#comments:id=6300813" },
-
+  { name = "Whodunnit?", 																 kind = "achievement", achievementID = 18646,       wowheadURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
 	-- ------------------------------------------------
 	-- TRANSMOG
 	-- ------------------------------------------------
