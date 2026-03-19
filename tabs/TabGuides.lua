@@ -19,7 +19,6 @@ if not SC then return end
 
 local math_min, math_max = math.min, math.max
 local math_rad = math.rad
-local tinsert  = table.insert
 
 function SC:BuildGuidesPanel(frame, L)
 
@@ -46,7 +45,6 @@ function SC:BuildGuidesPanel(frame, L)
 	local guides_selected   = nil  -- currently selected entry
 	local guides_scrollPos  = 0    -- persists scroll position across tab switches (WoW resets GetVerticalScroll on hide)
 	local scrollFrame, scrollBar   -- scroll widgets assigned in Left Pane section below
-	local stepsOpen         = false  -- whether the step accordion is currently expanded
 	local currentNumSteps   = 0      -- step count for the currently displayed entry
 
 	-- ==============================================
@@ -54,67 +52,7 @@ function SC:BuildGuidesPanel(frame, L)
 	-- ==============================================
 
 	local function Guides_ApplyFilter()
-		local showCollected     = SC:GetShowCollected()
-		local showMissing       = SC:GetShowMissing()
-		local filterKinds       = SC:GetFilterKinds()
-		local mindSeekerOnly    = SC:GetFilterMindSeekerOnly()
-		local sortBy            = SC:GetSortBy()
-		guides_entries = {}
-		for _, e in ipairs(SC.entries or {}) do
-			local kindOk   = filterKinds[e.kind] ~= false
-			local msOk     = not mindSeekerOnly or e.mindSeeker == true
-			local statusOk = true
-			if showCollected ~= showMissing then
-				local st = SC.GetEntryStatus and SC:GetEntryStatus(e) or "unknown"
-				local isCollected = (st == "collected")
-				if showCollected and not isCollected then
-					statusOk = false
-				elseif showMissing and isCollected then
-					statusOk = false
-				end
-			end
-			if kindOk and msOk and statusOk then
-				tinsert(guides_entries, e)
-			end
-		end
-		-- Sort
-		local kindOrder = { mount=1, pet=2, toy=3, achievement=4, transmog=5, quest=6, housing=7, mystery=8 }
-		if sortBy == "name" then
-			table.sort(guides_entries, function(a, b)
-				local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
-				local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
-				return na:lower() < nb:lower()
-			end)
-		elseif sortBy == "status" then
-			local statusOrder = { missing=1, unknown=2, manual=3, collected=4 }
-			table.sort(guides_entries, function(a, b)
-				local sa = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(a) or "unknown"] or 2
-				local sb = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(b) or "unknown"] or 2
-				if sa ~= sb then return sa < sb end
-				local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
-				local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
-				return na:lower() < nb:lower()
-			end)
-		elseif sortBy == "status_col" then
-			local statusOrder = { collected=1, missing=2, unknown=3, manual=4 }
-			table.sort(guides_entries, function(a, b)
-				local sa = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(a) or "unknown"] or 3
-				local sb = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(b) or "unknown"] or 3
-				if sa ~= sb then return sa < sb end
-				local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
-				local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
-				return na:lower() < nb:lower()
-			end)
-		else -- "type"
-			table.sort(guides_entries, function(a, b)
-				local ka = kindOrder[a.kind or "unknown"] or 99
-				local kb = kindOrder[b.kind or "unknown"] or 99
-				if ka ~= kb then return ka < kb end
-				local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
-				local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
-				return na:lower() < nb:lower()
-			end)
-		end
+		guides_entries = SC:GetFilteredEntries()
 	end
 
 	-- forward declarations for mutual recursion
@@ -198,28 +136,130 @@ function SC:BuildGuidesPanel(frame, L)
 	-- RIGHT DETAIL PANE
 	-- ==============================================
 
-	local DP_MODEL_H   = 160                     -- fixed height of the 3-D viewer strip
 	local DP_SCROLL_W  = 8                       -- width of the text-section scrollbar
 	local DP_LINK_AREA = GP_PAD + 22 + GP_PAD   -- vertical room for linkBtn (padding + height + padding)
+	local DP_TAB_H     = 26                      -- height of the Info / Model sub-tab bar
+	local DP_TAB_TOP   = 8                       -- gap above the tab bar
 
 	local detailPane = CreateFrame("Frame", nil, guidesPanel)
 	detailPane:SetPoint("TOPLEFT",     divider,    "TOPRIGHT",      GP_PAD, 0)
 	detailPane:SetPoint("BOTTOMRIGHT", guidesPanel, "BOTTOMRIGHT", -15, GP_PAD)
 
-	-- ---- Scrollable text section ----
-	-- Occupies detailPane from top down to just above the fixed 3-D model strip.
-	local detailScroll = CreateFrame("ScrollFrame", nil, detailPane)
-	detailScroll:SetPoint("TOPLEFT",     detailPane, "TOPLEFT",     0, -DP_MODEL_H)
-	detailScroll:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT",
-		-(DP_SCROLL_W + 4),                       -- leave room for the text scrollbar on the right
-		DP_LINK_AREA)                              -- leave room for linkBtn below (model is now at top)
+	-- ---- Info / Model sub-tab bar ----
+	local detailTabBar = CreateFrame("Frame", nil, detailPane)
+	detailTabBar:SetPoint("TOPLEFT",  detailPane, "TOPLEFT",  0, -DP_TAB_TOP)
+	detailTabBar:SetPoint("TOPRIGHT", detailPane, "TOPRIGHT", 0, -DP_TAB_TOP)
+	detailTabBar:SetHeight(DP_TAB_H)
+
+	local function MakeDetailTab(label)
+		local btn = CreateFrame("Button", nil, detailTabBar)
+		local bg = btn:CreateTexture(nil, "BACKGROUND")
+		bg:SetAllPoints()
+		bg:SetColorTexture(0.10, 0.10, 0.14, 0.70)
+		btn.bg = bg
+		local hl = btn:CreateTexture(nil, "HIGHLIGHT")
+		hl:SetAllPoints()
+		hl:SetColorTexture(1, 1, 1, 0.06)
+		btn:SetHighlightTexture(hl)
+		local lbl = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		lbl:SetAllPoints()
+		lbl:SetJustifyH("CENTER")
+		lbl:SetText(label)
+		btn.lbl = lbl
+		return btn
+	end
+
+	local infoTab  = MakeDetailTab("Info")
+	local modelTab = MakeDetailTab("Model")
+	-- Split tab bar in half: "BOTTOM" anchor = horizontal center of parent
+	infoTab:SetPoint( "TOPLEFT",     detailTabBar, "TOPLEFT",     0, 0)
+	infoTab:SetPoint( "BOTTOMRIGHT", detailTabBar, "BOTTOM",      0, 0)
+	modelTab:SetPoint("TOPLEFT",     detailTabBar, "TOP",         0, 0)
+	modelTab:SetPoint("BOTTOMRIGHT", detailTabBar, "BOTTOMRIGHT", 0, 0)
+
+	-- Vertical divider between tabs and horizontal line below bar
+	local tabMidLine = detailTabBar:CreateTexture(nil, "BORDER")
+	tabMidLine:SetWidth(1)
+	tabMidLine:SetPoint("TOPLEFT",    infoTab, "TOPRIGHT",    0,  0)
+	tabMidLine:SetPoint("BOTTOMLEFT", infoTab, "BOTTOMRIGHT", 0,  0)
+	tabMidLine:SetColorTexture(0.3, 0.25, 0.15, 0.6)
+	local tabBarLine = detailTabBar:CreateTexture(nil, "BORDER")
+	tabBarLine:SetHeight(1)
+	tabBarLine:SetPoint("BOTTOMLEFT",  detailTabBar, "BOTTOMLEFT",  0, 0)
+	tabBarLine:SetPoint("BOTTOMRIGHT", detailTabBar, "BOTTOMRIGHT", 0, 0)
+	tabBarLine:SetColorTexture(0.3, 0.25, 0.15, 0.5)
+
+	-- Sub-panes: both sit below the tab bar, above the Wowhead link button
+	local infoPane = CreateFrame("Frame", nil, detailPane)
+	infoPane:SetPoint("TOPLEFT",     detailTabBar, "BOTTOMLEFT",  0,  -2)
+	infoPane:SetPoint("BOTTOMRIGHT", detailPane,   "BOTTOMRIGHT", 0,   DP_LINK_AREA)
+	local modelPane = CreateFrame("Frame", nil, detailPane)
+	modelPane:SetPoint("TOPLEFT",     detailTabBar, "BOTTOMLEFT",  0,  -2)
+	modelPane:SetPoint("BOTTOMRIGHT", detailPane,   "BOTTOMRIGHT", 0,   DP_LINK_AREA)
+	modelPane:Hide()
+
+	-- Tab switching logic
+	local activeDetailTab = "info"
+	local SwitchDetailTab  -- forward declaration so SetModelTabEnabled can reference it
+	local function SetModelTabEnabled(enabled)
+		modelTab.hasModel = enabled
+		if enabled then
+			-- Show the tab bar and anchor panes below it
+			detailTabBar:Show()
+			infoPane:ClearAllPoints()
+			infoPane:SetPoint("TOPLEFT",     detailTabBar, "BOTTOMLEFT",  0, -2)
+			infoPane:SetPoint("BOTTOMRIGHT", detailPane,   "BOTTOMRIGHT", 0,  DP_LINK_AREA)
+			modelPane:ClearAllPoints()
+			modelPane:SetPoint("TOPLEFT",     detailTabBar, "BOTTOMLEFT",  0, -2)
+			modelPane:SetPoint("BOTTOMRIGHT", detailPane,   "BOTTOMRIGHT", 0,  DP_LINK_AREA)
+		else
+			-- No model: hide the tab bar but preserve the same top margin as when it is shown
+			detailTabBar:Hide()
+			local noTabTop = -(DP_TAB_TOP + DP_TAB_H + 2)
+			infoPane:ClearAllPoints()
+			infoPane:SetPoint("TOPLEFT",     detailPane, "TOPLEFT",     0, noTabTop)
+			infoPane:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT", 0, DP_LINK_AREA)
+			modelPane:ClearAllPoints()
+			modelPane:SetPoint("TOPLEFT",     detailPane, "TOPLEFT",     0, noTabTop)
+			modelPane:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT", 0, DP_LINK_AREA)
+			if activeDetailTab == "model" then
+				SwitchDetailTab("info")
+			end
+		end
+	end
+	SwitchDetailTab = function(which)
+		activeDetailTab = which
+		infoPane:SetShown( which == "info")
+		modelPane:SetShown(which == "model")
+		-- Active tab: brighter bg + gold text; inactive: darker + grey (dimmer if disabled)
+		infoTab.bg:SetColorTexture(  which == "info"  and 0.20 or 0.10,  which == "info"  and 0.20 or 0.10,  which == "info"  and 0.28 or 0.14, 0.95)
+		modelTab.bg:SetColorTexture( which == "model" and 0.20 or 0.10,  which == "model" and 0.20 or 0.10,  which == "model" and 0.28 or 0.14, 0.95)
+		if which == "info" then
+			infoTab.lbl:SetTextColor( 1, 0.82, 0)
+			local g = modelTab.hasModel and 0.6 or 0.35
+			modelTab.lbl:SetTextColor(g, g, g)
+		else
+			infoTab.lbl:SetTextColor( 0.6, 0.6, 0.6)
+			modelTab.lbl:SetTextColor(1, 0.82, 0)
+		end
+	end
+	SwitchDetailTab("info")
+	infoTab:SetScript( "OnClick", function() SwitchDetailTab("info") end)
+	modelTab:SetScript("OnClick", function()
+		if modelTab.hasModel then SwitchDetailTab("model") end
+	end)
+
+	-- ---- Scrollable text section (fills infoPane entirely) ----
+	local detailScroll = CreateFrame("ScrollFrame", nil, infoPane)
+	detailScroll:SetPoint("TOPLEFT",     infoPane, "TOPLEFT",     0, 0)
+	detailScroll:SetPoint("BOTTOMRIGHT", infoPane, "BOTTOMRIGHT", -(DP_SCROLL_W + 4), 0)
 
 	local detailContent = CreateFrame("Frame")
 	detailContent:SetWidth(300)   -- corrected to match scroll width each time an entry is shown
 	detailContent:SetHeight(500)  -- overwritten by Guides_UpdateDetailScroll
 	detailScroll:SetScrollChild(detailContent)
 
-	local detailScrollBar = CreateFrame("Slider", nil, detailPane)
+	local detailScrollBar = CreateFrame("Slider", nil, infoPane)
 	detailScrollBar:SetOrientation("VERTICAL")
 	detailScrollBar:SetWidth(DP_SCROLL_W)
 	detailScrollBar:SetPoint("TOPLEFT",    detailScroll, "TOPRIGHT",    4, 0)
@@ -243,14 +283,6 @@ function SC:BuildGuidesPanel(frame, L)
 		local newVal  = math_max(0, math_min(maxV, detailScrollBar:GetValue() - delta * 30))
 		detailScrollBar:SetValue(newVal)
 	end)
-
-	-- Repositions the scrollable text area to start at the top when no model is shown,
-	-- or below the model strip when one is visible.
-	local function Guides_SetModelStripShown(shown)
-		detailScroll:ClearAllPoints()
-		detailScroll:SetPoint("TOPLEFT",     detailPane, "TOPLEFT",     0, shown and -DP_MODEL_H or 0)
-		detailScroll:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT", -(DP_SCROLL_W + 4), DP_LINK_AREA)
-	end
 
 	-- All text/step widgets are children of detailContent so they scroll with detailScroll.
 
@@ -394,94 +426,168 @@ function SC:BuildGuidesPanel(frame, L)
 	local STEP_ROW_H  = 18
 	local MAX_STEPS   = 14
 
-	local accordionBtn = CreateFrame("Button", nil, detailContent)
-	accordionBtn:SetHeight(22)
-	accordionBtn:SetPoint("TOPLEFT",  detailDesc,    "BOTTOMLEFT", 0, -10)
-	accordionBtn:SetPoint("TOPRIGHT", detailContent, "TOPRIGHT",  -6,   0)
-	accordionBtn:Hide()
-	local accBg = accordionBtn:CreateTexture(nil, "BACKGROUND")
-	accBg:SetAllPoints()
-	accBg:SetColorTexture(0.12, 0.12, 0.18, 0.7)
-	local accHL = accordionBtn:CreateTexture(nil, "HIGHLIGHT")
-	accHL:SetAllPoints()
-	accHL:SetColorTexture(1, 1, 1, 0.06)
-	accordionBtn:SetHighlightTexture(accHL)
-	local accLabel = accordionBtn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-	accLabel:SetPoint("LEFT",  accordionBtn, "LEFT",  6, 0)
-	accLabel:SetPoint("RIGHT", accordionBtn, "RIGHT", -6, 0)
-	accLabel:SetJustifyH("LEFT")
-	accLabel:SetTextColor(0.8, 0.8, 0.8)
-	accordionBtn.label = accLabel
+	-- Forward-declare so step-row OnClick closures can reference these before they are defined below.
+	local Guides_RelayoutSteps, Guides_UpdateDetailScroll
+	local STEP_NOTE_INDENT = 14   -- note panels are indented; step headers stay flush left
+	local STEP_NOTE_PAD    = 5    -- vertical padding inside note panel
+	local stepsCollapsed   = true -- steps start collapsed; toggled by clicking the header
 
 	local stepRows = {}
 	for i = 1, MAX_STEPS do
+		-- ---- Header row ----
 		local row = CreateFrame("Button", nil, detailContent)
 		row:SetHeight(STEP_ROW_H)
-		row:SetPoint("LEFT",  detailContent, "LEFT",  0, 0)
-		row:SetPoint("RIGHT", detailContent, "RIGHT", 0, 0)
+		local rowHL = row:CreateTexture(nil, "HIGHLIGHT")
+		rowHL:SetAllPoints()
+		rowHL:SetColorTexture(1, 1, 1, 0.04)
+		row:SetHighlightTexture(rowHL)
+
+		local rowBg = row:CreateTexture(nil, "BACKGROUND")
+		rowBg:SetAllPoints()
+		rowBg:SetColorTexture(0.10, 0.10, 0.16, 0.55)
+
+		local arrowLbl = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		arrowLbl:SetPoint("LEFT", row, "LEFT", 4, 0)
+		arrowLbl:SetTextColor(0.4, 0.78, 1)
+		arrowLbl:SetText("+")
+		row.arrowLbl = arrowLbl
 
 		local ico = row:CreateTexture(nil, "ARTWORK")
-		ico:SetSize(14, 14)
-		ico:SetPoint("LEFT", 2, 0)
+		ico:SetSize(10, 10)
+		ico:SetPoint("LEFT", row, "LEFT", 20, 0)
 		row.ico = ico
 
-		local lbl = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+		local lbl = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		lbl:SetPoint("LEFT",  ico, "RIGHT", 5, 0)
-		lbl:SetPoint("RIGHT", row, "RIGHT", 0, 0)
+		lbl:SetPoint("RIGHT", row, "RIGHT", -4, 0)
 		lbl:SetJustifyH("LEFT")
 		row.lbl = lbl
 
-		row:SetScript("OnEnter", function(self)
-			local hasNote = self.note and self.note ~= ""
-			local hasWP   = self.waypoint ~= nil
-			if not hasNote and not hasWP then return end
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-			GameTooltip:SetText(self.lbl:GetText() or "", 1, 1, 1)
-			if hasNote then
-				GameTooltip:AddLine(self.note, 0.8, 0.8, 0.8, true)
-			end
-			if hasWP then
-				GameTooltip:AddLine("Click to set waypoint", 0.4, 0.8, 1)
-			end
-			GameTooltip:Show()
-		end)
-		row:SetScript("OnLeave", function() GameTooltip:Hide() end)
+		-- ---- Note panel (shown below the header row when the step is expanded) ----
+		local np = CreateFrame("Frame", nil, detailContent)
+		np:Hide()
+		local npBg = np:CreateTexture(nil, "BACKGROUND")
+		npBg:SetAllPoints()
+		npBg:SetColorTexture(0.07, 0.07, 0.11, 0.65)
 
-		row:SetScript("OnClick", function(self)
+		local noteLbl = np:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		noteLbl:SetPoint("TOPLEFT",  np, "TOPLEFT",  5, -STEP_NOTE_PAD)
+		noteLbl:SetPoint("TOPRIGHT", np, "TOPRIGHT", -5, -STEP_NOTE_PAD)
+		noteLbl:SetJustifyH("LEFT")
+		noteLbl:SetTextColor(0.80, 0.80, 0.80)
+		noteLbl:SetWordWrap(true)
+		np.noteLbl = noteLbl
+
+		-- Item hyperlink button (shown only when step.itemID is set and item is cached)
+		local itemBtn = CreateFrame("Button", nil, np)
+		itemBtn:SetHeight(16)
+		local itemLbl = itemBtn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		itemLbl:SetAllPoints()
+		itemLbl:SetJustifyH("LEFT")
+		itemBtn.lbl = itemLbl
+		itemBtn:SetScript("OnEnter", function(self)
+			if self.itemLink then
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetHyperlink(self.itemLink)
+				GameTooltip:Show()
+			end
+		end)
+		itemBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+		itemBtn:Hide()
+		np.itemBtn = itemBtn
+
+		-- Waypoint button
+		local wpBtn = CreateFrame("Button", nil, np)
+		wpBtn:SetHeight(16)
+		local wpHL = wpBtn:CreateTexture(nil, "HIGHLIGHT")
+		wpHL:SetAllPoints()
+		wpHL:SetColorTexture(0.4, 0.78, 1, 0.08)
+		wpBtn:SetHighlightTexture(wpHL)
+		local wpIco = wpBtn:CreateTexture(nil, "ARTWORK")
+		wpIco:SetSize(14, 14)
+		wpIco:SetPoint("LEFT", wpBtn, "LEFT", 0, 0)
+		wpIco:SetAtlas("Waypoint-MapPin-Tracked")
+		local wpLbl = wpBtn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		wpLbl:SetPoint("LEFT",   wpIco, "RIGHT",  3, 0)
+		wpLbl:SetPoint("RIGHT",  wpBtn, "RIGHT",  0, 0)
+		wpLbl:SetPoint("TOP",    wpBtn, "TOP",    0, 0)
+		wpLbl:SetPoint("BOTTOM", wpBtn, "BOTTOM", 0, 0)
+		wpLbl:SetJustifyH("LEFT")
+		wpLbl:SetTextColor(0.4, 0.78, 1)
+		wpLbl:SetText("Set Waypoint")
+		wpBtn:SetScript("OnClick", function(self)
 			local wp = self.waypoint
 			if not wp then return end
-			local label = self.lbl:GetText() or ""
-			-- TomTom API (preferred)
+			local label = row.lbl:GetText() or ""
 			if TomTom and TomTom.AddWaypoint then
 				TomTom:AddWaypoint(wp.mapID, wp.x, wp.y, { title = label })
 			else
-				-- Blizzard /way fallback (works in retail with the built-in addon)
 				C_Map.SetUserWaypoint(UiMapPoint.CreateFromCoordinates(wp.mapID, wp.x, wp.y))
 				C_SuperTrack.SetSuperTrackedUserWaypoint(true)
 			end
+		end)
+		wpBtn:Hide()
+		np.wpBtn = wpBtn
+
+		row.notePanel = np
+		row.isOpen    = false
+		row:SetScript("OnClick", function(self)
+			if not self.hasNote then return end
+			self.isOpen = not self.isOpen
+			self.notePanel:SetShown(self.isOpen)
+			self.arrowLbl:SetText(self.isOpen and "-" or "+")
+			Guides_UpdateDetailScroll(currentNumSteps, detailSource:GetText() ~= "", detailDesc:GetText() ~= "", false)
 		end)
 
 		row:Hide()
 		stepRows[i] = row
 	end
+	-- (Row TOPLEFT anchors are set dynamically by Guides_RelayoutSteps.)
 
-	-- Anchor each row beneath the previous one (or beneath accordionBtn for row 1).
-	-- Done once here; visibility is toggled per entry in Guides_ShowDetail.
-	for i = 1, MAX_STEPS do
-		local anchor = (i == 1) and accordionBtn or stepRows[i - 1]
-		stepRows[i]:SetPoint("TOP", anchor, "BOTTOM", 0, -2)
-	end
+	-- Steps header: "Progress  X / Y  steps" — clickable to expand/collapse all steps
+	local stepsHeader = CreateFrame("Button", nil, detailContent)
+	stepsHeader:SetHeight(20)
+	stepsHeader:Hide()
+	local stepsHdrBg = stepsHeader:CreateTexture(nil, "BACKGROUND")
+	stepsHdrBg:SetAllPoints()
+	stepsHdrBg:SetColorTexture(0.08, 0.08, 0.14, 0.90)
+	local stepsHdrHL = stepsHeader:CreateTexture(nil, "HIGHLIGHT")
+	stepsHdrHL:SetAllPoints()
+	stepsHdrHL:SetColorTexture(1, 1, 1, 0.05)
+	stepsHeader:SetHighlightTexture(stepsHdrHL)
+	local stepsHdrLbl = stepsHeader:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	stepsHdrLbl:SetPoint("LEFT",  stepsHeader, "LEFT",  6, 0)
+	stepsHdrLbl:SetPoint("RIGHT", stepsHeader, "RIGHT", -6, 0)
+	stepsHdrLbl:SetJustifyH("LEFT")
+	stepsHdrLbl:SetTextColor(0.7, 0.7, 0.7)
+	stepsHeader.lbl = stepsHdrLbl
+	stepsHeader:SetScript("OnClick", function()
+		stepsCollapsed = not stepsCollapsed
+		if stepsCollapsed then
+			-- Collapse: hide all rows and their open note panels
+			for i = 1, currentNumSteps do
+				stepRows[i]:Hide()
+				stepRows[i].notePanel:Hide()
+			end
+		else
+			-- Expand: show all rows (note panels stay closed until individually clicked)
+			for i = 1, currentNumSteps do
+				stepRows[i]:Show()
+			end
+		end
+		local label = stepsHeader.lbl:GetText() or ""
+		stepsHeader.lbl:SetText((stepsCollapsed and "+" or "-") .. label:sub(2))
+		Guides_UpdateDetailScroll(currentNumSteps, detailSource:GetText() ~= "", detailDesc:GetText() ~= "", false)
+	end)
 
 	-- ==============================================
-	-- 3-D MODEL VIEWER  (fixed strip at the bottom of detailPane)
-	-- Sits between the linkBtn and the scrollable text section above.
+	-- 3-D MODEL VIEWER  (fills modelPane — the Model sub-tab)
 	-- DressUpModel / ModelScene frames cannot be clipped by a ScrollFrame,
 	-- so they are intentionally kept outside detailScroll.
 	-- ==============================================
 
-	local detailModel = CreateFrame("DressUpModel", nil, detailPane)
-	detailModel:SetPoint("TOPLEFT",     detailPane, "TOPLEFT",  0,  0)
-	detailModel:SetPoint("BOTTOMRIGHT", detailPane, "TOPRIGHT", 0, -DP_MODEL_H)
+	local detailModel = CreateFrame("DressUpModel", nil, modelPane)
+	detailModel:SetAllPoints(modelPane)
 	detailModel:SetFacing(0)
 
 	local modelBg = detailModel:CreateTexture(nil, "BACKGROUND")
@@ -492,17 +598,15 @@ function SC:BuildGuidesPanel(frame, L)
 	-- Mounts and pets use detailModel (DressUpModel) via SetDisplayInfo which is simpler and reliable.
 	local HOUSING_SCENE_ID = (Constants and Constants.HousingCatalogConsts
 		and Constants.HousingCatalogConsts.HOUSING_CATALOG_DECOR_MODELSCENEID_DEFAULT) or 861
-	local detailModelScene = CreateFrame("ModelScene", nil, detailPane, "PanningModelSceneMixinTemplate")
-	detailModelScene:SetPoint("TOPLEFT",     detailPane, "TOPLEFT",  0,  0)
-	detailModelScene:SetPoint("BOTTOMRIGHT", detailPane, "TOPRIGHT", 0, -DP_MODEL_H)
+	local detailModelScene = CreateFrame("ModelScene", nil, modelPane, "PanningModelSceneMixinTemplate")
+	detailModelScene:SetAllPoints(modelPane)
 	detailModelScene:Hide()
 	detailModelScene:TransitionToModelSceneID(HOUSING_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true)
 
 	-- Dedicated model for zoomed transmog slot view (mirrors AppearanceTooltip's .Zoomed model).
 	-- SetKeepModelOnHide keeps the player loaded between views so TryOn can be called synchronously.
-	local detailModelZoomed = CreateFrame("DressUpModel", nil, detailPane)
-	detailModelZoomed:SetPoint("TOPLEFT",     detailPane, "TOPLEFT",  0,  0)
-	detailModelZoomed:SetPoint("BOTTOMRIGHT", detailPane, "TOPRIGHT", 0, -DP_MODEL_H)
+	local detailModelZoomed = CreateFrame("DressUpModel", nil, modelPane)
+	detailModelZoomed:SetAllPoints(modelPane)
 	detailModelZoomed:SetKeepModelOnHide(true)
 	detailModelZoomed:SetUnit("player")  -- pre-load player model at creation (mirrors AppearanceTooltip's PLAYER_LOGIN)
 	detailModelZoomed:Hide()
@@ -551,9 +655,60 @@ function SC:BuildGuidesPanel(frame, L)
 	-- POPULATE DETAIL PANE
 	-- ==============================================
 
-	-- Recomputes detailContent height and updates the text scrollbar.
-	-- Called every time a new entry is shown in Guides_ShowDetail.
-	local function Guides_UpdateDetailScroll(numSteps, hasSource, hasDesc)
+	-- Reflows the TOPLEFT anchor chain for all visible step headers and open note panels.
+	-- Returns the total pixel height consumed (for Guides_UpdateDetailScroll).
+	Guides_RelayoutSteps = function()
+		if currentNumSteps == 0 then return 0 end
+		-- Anchor the header below detailDesc
+		stepsHeader:ClearAllPoints()
+		stepsHeader:SetPoint("TOPLEFT", detailDesc,    "BOTTOMLEFT", 0, -12)
+		stepsHeader:SetPoint("RIGHT",   detailContent, "RIGHT",      0,    0)
+		local totalH = 12 + 20 + 4   -- pre-gap + header height + gap after header
+		if stepsCollapsed then
+			-- Hide all rows; only the header is shown
+			for i = 1, currentNumSteps do
+				stepRows[i]:Hide()
+				stepRows[i].notePanel:Hide()
+			end
+			return totalH
+		end
+		local prevFrame = stepsHeader
+		local contentW  = detailContent:GetWidth() or 280
+		for i = 1, currentNumSteps do
+			local row = stepRows[i]
+			local np  = row.notePanel
+			-- Anchor header below previous frame, always flush with detailContent left
+			row:ClearAllPoints()
+			row:SetPoint("TOP",   prevFrame,     "BOTTOM",  0,  -2)
+			row:SetPoint("LEFT",  detailContent, "LEFT",    0,   0)
+			row:SetPoint("RIGHT", detailContent, "RIGHT",   0,   0)
+			totalH    = totalH + STEP_ROW_H + 2
+			prevFrame = row
+			-- If this step's note panel is open, anchor and size it
+			if np:IsShown() then
+				-- Give noteLbl an explicit width so GetStringHeight is accurate
+				np.noteLbl:SetWidth(math_max(contentW - STEP_NOTE_INDENT - 4 - 10, 50))
+				local textH  = np.noteLbl:GetStringHeight()
+				local panelH = STEP_NOTE_PAD
+				             + (textH > 0 and textH or 46)
+				             + STEP_NOTE_PAD
+				if np.itemBtn:IsShown() then panelH = panelH + 4 + 16 end
+				if np.wpBtn:IsShown()   then panelH = panelH + 4 + 16 end
+				panelH = panelH + STEP_NOTE_PAD  -- bottom breathing room
+				np:SetHeight(panelH)
+				np:ClearAllPoints()
+				np:SetPoint("TOPLEFT", row,           "BOTTOMLEFT", STEP_NOTE_INDENT, 0)
+				np:SetPoint("RIGHT",   detailContent, "RIGHT",      -4,               0)
+				totalH    = totalH + panelH
+				prevFrame = np
+			end
+		end
+		return totalH
+	end
+
+	-- Recomputes detailContent height and updates the scrollbar.
+	-- Pass resetScroll=false to preserve the current scroll position (e.g. when expanding a step note).
+	Guides_UpdateDetailScroll = function(numSteps, hasSource, hasDesc, resetScroll)
 		detailContent:SetWidth(detailScroll:GetWidth())
 		local h = GP_PAD + 48 + 8    -- top padding + icon row + gap below icon
 		h = h + 14 + 4               -- kind badge
@@ -561,10 +716,7 @@ function SC:BuildGuidesPanel(frame, L)
 		if hasSource then h = h + 40 + 6 end   -- source  (~2 wrapped lines)
 		if hasDesc   then h = h + 60 + 6 end   -- desc    (~4 wrapped lines)
 		if numSteps > 0 then
-			h = h + 10 + 22 + 4                      -- pre-gap + accordion header + post-gap
-			if stepsOpen then
-				h = h + numSteps * (STEP_ROW_H + 2)  -- step rows (only when expanded)
-			end
+			h = h + Guides_RelayoutSteps()   -- pre-gap + header + step rows + open note panels
 		end
 		h = h + 20   -- breathing room
 		local scrollH = math_max(1, detailScroll:GetHeight() or 1)
@@ -573,18 +725,11 @@ function SC:BuildGuidesPanel(frame, L)
 		local maxScroll = math_max(0, h - scrollH)
 		detailScrollBar:SetMinMaxValues(0, maxScroll)
 		detailScrollBar:SetShown(maxScroll > 0)
-		detailScrollBar:SetValue(0)
-		detailScroll:SetVerticalScroll(0)
-	end
-
-	accordionBtn:SetScript("OnClick", function()
-		stepsOpen = not stepsOpen
-		for i = 1, currentNumSteps do
-			stepRows[i]:SetShown(stepsOpen)
+		if resetScroll ~= false then
+			detailScrollBar:SetValue(0)
+			detailScroll:SetVerticalScroll(0)
 		end
-		accordionBtn.label:SetText((stepsOpen and "- " or "+ ") .. "Progress Steps  (" .. currentNumSteps .. ")")
-		Guides_UpdateDetailScroll(currentNumSteps, detailSource:GetText() ~= "", detailDesc:GetText() ~= "")
-	end)
+	end
 
 	Guides_ShowDetail = function(entry)
 		guides_selected = entry
@@ -598,17 +743,25 @@ function SC:BuildGuidesPanel(frame, L)
 			linkBtn.currentURL = ""
 			linkBtn:SetEnabled(false)
 			copyDialog:Hide()
-			accordionBtn:Hide()
-			for i = 1, MAX_STEPS do stepRows[i]:Hide() end
+			for i = 1, MAX_STEPS do
+				stepRows[i]:Hide()
+				stepRows[i].notePanel:Hide()
+				stepRows[i].isOpen = false
+			end
+			stepsHeader:Hide()
 			detailModel:Hide()
 			detailModelScene:Hide()
 			detailModelZoomed:Hide()
 			detailScrollBar:SetValue(0)
 			detailScrollBar:SetShown(false)
 			detailScroll:SetVerticalScroll(0)
+			SetModelTabEnabled(false)
 			return
 		end
 
+		-- Always start on Info tab when switching entries; reset model tab state
+		SwitchDetailTab("info")
+		SetModelTabEnabled(false)
 		linkBtn.currentURL = entry.wowheadURL or ""
 		linkBtn:SetEnabled(linkBtn.currentURL ~= "")
 
@@ -684,9 +837,13 @@ function SC:BuildGuidesPanel(frame, L)
 		-- Entry-level overrides (for toys and any entry with hand-authored data)
 		if type(entry.source) == "string" and entry.source ~= "" then sourceText = entry.source end
 		if type(entry.desc)   == "string" and entry.desc   ~= "" then descText   = entry.desc   end
+		-- "Part of" cross-reference shown at top of the source field
+		if type(entry.partOf) == "string" and entry.partOf ~= "" then
+			local prefix = "Part of: " .. entry.partOf
+			sourceText = sourceText ~= "" and (prefix .. "\n" .. sourceText) or prefix
+		end
 		detailSource:SetText(sourceText)
 		detailDesc:SetText(descText)
-
 		-- ---- Progress Steps ----
 		-- Resolve stepsRef: if this entry delegates its steps to another entry, find that entry.
 		local stepsEntry = entry
@@ -697,39 +854,89 @@ function SC:BuildGuidesPanel(frame, L)
 		end
 		local steps = stepsEntry.steps
 		local numSteps = steps and #steps or 0
-		stepsOpen = false  -- always collapse accordion when switching to a new entry
 		currentNumSteps = numSteps
-		accordionBtn:SetShown(numSteps > 0)
-		if numSteps > 0 then
-			accordionBtn.label:SetText("+ Progress Steps  (" .. numSteps .. ")")
-		end
+		local doneCount = 0
 		for i = 1, MAX_STEPS do
 			local step = steps and steps[i]
 			local row  = stepRows[i]
+			local np   = row.notePanel
 			if step then
 				local st = SC.GetStepStatus and SC:GetStepStatus(step) or "missing"
-				-- Icon: green check (done), yellow dot (ready), grey box (missing)
+				-- Status dot colour + label text colour
 				if st == "done" then
-					row.ico:SetColorTexture(0, 1, 0)      -- green  (matches left-panel collected dot)
+					doneCount = doneCount + 1
+					row.ico:SetColorTexture(0, 1, 0)
 					row.lbl:SetTextColor(0.53, 0.53, 0.53)
 					row.lbl:SetText(step.label)
 				elseif st == "ready" then
-					row.ico:SetColorTexture(1, 0.82, 0)   -- gold   (have items, not yet delivered)
+					row.ico:SetColorTexture(1, 0.82, 0)
 					row.lbl:SetTextColor(1, 0.82, 0)
 					row.lbl:SetText(step.label)
 				else
-					row.ico:SetColorTexture(1, 0, 0)      -- red    (matches left-panel missing dot)
+					row.ico:SetColorTexture(1, 0, 0)
 					row.lbl:SetTextColor(0.8, 0.8, 0.8)
 					row.lbl:SetText(step.label)
 				end
-				row.note     = step.note or ""
-				row.waypoint = step.waypoint or nil
-				row:Hide()  -- hidden until accordion is expanded
+				-- Populate note panel
+				np.noteLbl:SetText(step.note or "")
+				-- Item hyperlink (only when item is cached; GetItemInfo returns nil otherwise)
+				local itemBtn = np.itemBtn
+				if step.itemID then
+					local _, itemLink = GetItemInfo(step.itemID)
+					if itemLink then
+						local display = itemLink
+						if step.count and step.count > 1 then
+							display = itemLink .. "  ×" .. step.count
+						end
+						itemBtn.lbl:SetText(display)
+						itemBtn.itemLink = itemLink
+						itemBtn:SetPoint("TOPLEFT", np.noteLbl, "BOTTOMLEFT", 0, -4)
+						itemBtn:SetPoint("RIGHT",   np,         "RIGHT",     -6,  0)
+						itemBtn:Show()
+					else
+						itemBtn.itemLink = nil
+						itemBtn:Hide()
+					end
+				else
+					itemBtn.itemLink = nil
+					itemBtn:Hide()
+				end
+				-- Waypoint button
+				local wpBtn = np.wpBtn
+				if step.waypoint then
+					wpBtn.waypoint = step.waypoint
+					local wpAnchor = itemBtn:IsShown() and itemBtn or np.noteLbl
+					wpBtn:SetPoint("TOPLEFT", wpAnchor, "BOTTOMLEFT", 0, -4)
+					wpBtn:SetPoint("RIGHT",   np,       "RIGHT",     -6,  0)
+					wpBtn:Show()
+				else
+					wpBtn.waypoint = nil
+					wpBtn:Hide()
+				end
+				-- Show expand arrow only when there is something to reveal in the note panel
+				local hasNote = (step.note and step.note ~= "")
+				             or itemBtn:IsShown()
+				             or wpBtn:IsShown()
+				row.hasNote = hasNote
+				row.arrowLbl:SetShown(hasNote)
+				-- Always reset collapse state when loading a new entry
+				row.isOpen = false
+				row.arrowLbl:SetText("+")
+				np:Hide()
+				row:Hide()   -- hidden until the steps header is expanded
 			else
+				row.hasNote = false
+				row.isOpen  = false
+				np:Hide()
 				row:Hide()
-				row.note     = ""
-				row.waypoint = nil
 			end
+		end
+		if numSteps > 0 then
+			stepsCollapsed = true   -- always start collapsed when loading a new entry
+			stepsHeader.lbl:SetText("+  Progress  " .. doneCount .. " / " .. numSteps .. "  steps")
+			stepsHeader:Show()
+		else
+			stepsHeader:Hide()
 		end
 		Guides_UpdateDetailScroll(numSteps, sourceText ~= "", descText ~= "")
 		-- ---- End Progress Steps ----
@@ -740,7 +947,7 @@ function SC:BuildGuidesPanel(frame, L)
 			detailModel:Hide()
 			detailModelScene:Hide()
 			detailModelZoomed:Hide()
-			Guides_SetModelStripShown(false)
+			SetModelTabEnabled(false)
 			return
 		end
 
@@ -852,7 +1059,7 @@ function SC:BuildGuidesPanel(frame, L)
 
 		detailModel:SetShown(modelSet)
 		-- detailModelScene and detailModelZoomed visibility set explicitly in blocks above
-		Guides_SetModelStripShown(modelSet or detailModelZoomed:IsShown() or detailModelScene:IsShown())
+		SetModelTabEnabled(modelSet or detailModelZoomed:IsShown() or detailModelScene:IsShown())
 	end
 
 	-- ==============================================

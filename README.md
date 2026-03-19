@@ -128,6 +128,7 @@ Your filter preferences and minimap button position are automatically saved to S
 
 ## Version History
 
+- **1.7.1**: Improved Guides tab UI polish — map-pin icon on waypoint button; consistent top margin when Info/Model tab bar is hidden; increased step/note font size to 12pt for readability without ElvUI; increased gap between description and progress steps header; removed duplicate filter logic; fixed quest name lookup using correct WoW API
 - **1.7.0**: Added Mystery category for community-investigated secrets; added interactive Progress Steps with click-to-waypoint in Guides tab; added step-by-step walkthroughs for Blanchy's Reins, Kosumoth (Fathom Dweller + Hungering Claw), Keys to Incognitro, and 12 Orb Mystery; added Starry-Eyed Goggles (toy) and Azeroth's Greatest Detective (achievement); fixed Hungering Claw pet speciesID; filter Deselect All now shows all entries instead of hiding them; type filter menu stays open while toggling; unknown/uninvestigated secrets now shown in grey (same as missing); model viewer hidden for entry types without a 3D model
 - **1.6.3**: Fixed overview icon clicks not working; fixed guides scroll position resetting on tab switch; added toast alert when a secret is newly collected
 - **1.6.2**: Fixed secret icons showing incorrect collected/missing state on first open; fixed Terky model on the About tab not rendering until switching tabs

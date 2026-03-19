@@ -1,5 +1,3 @@
-local addonName = ...
-
 -- Localize frequently-used globals for performance
 local type, pairs, ipairs = type, pairs, ipairs
 
@@ -104,10 +102,10 @@ function SC:GetEntryName(entry)
 	end
 	
 	if entry.kind == "quest" and type(entry.questID) == "number" then
-		if C_QuestLog and C_QuestLog.GetQuestInfo then
-			local questInfo = C_QuestLog.GetQuestInfo(entry.questID)
-			if questInfo and questInfo.title and questInfo.title ~= "" then
-				return questInfo.title
+		if C_QuestLog and C_QuestLog.GetTitleForQuestID then
+			local title = C_QuestLog.GetTitleForQuestID(entry.questID)
+			if title and title ~= "" then
+				return title
 			end
 		end
 	end
@@ -293,6 +291,10 @@ function SC:GetStepStatus(step)
 		if C_QuestLog.IsQuestFlaggedCompleted(step.questID) then
 			return "done"
 		end
+	end
+	if step.achievementID then
+		local _, _, _, completed = GetAchievementInfo(step.achievementID)
+		if completed then return "done" end
 	end
 	if step.itemID then
 		local have = GetItemCount(step.itemID, true)  -- true = include bank

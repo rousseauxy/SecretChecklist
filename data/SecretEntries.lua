@@ -49,14 +49,14 @@ SC.entries = {
 	    { label = "Orb 2 – Pray",           questID = 84677, note = "BFA Vale of Eternal Blossoms @ 83.69, 27.58 – Ny'alotha Obelisk; summon Perky Pug with Dogg/Yipp-Saron Costume, activate N'Zoth eye buff, then /pray targeting the Obelisk",                                           waypoint = { mapID = 1530, x = 0.8369, y = 0.2758 } },
 	    { label = "Orb 3 – Hate",           questID = 84780, note = "Karazhan Catacombs @ 51.19, 78.27 – fish Astral Key from Astral Soup bowl, get Starry-Eyed Goggles from Astral Chest, then enter 9 console codes to collect all 9 Pieces of Hate (questID TBD – tracked via Orb 4 proxy)", waypoint = { mapID = 46,   x = 0.5119, y = 0.7827 } },
 	    { label = "Orb 4 – Doom",           questID = 84780, note = "Western Plaguelands @ 52.06, 83.19 – Uther's Tomb; summon a Doomguard via Scroll of Fel Binding or Warlock Ritual of Doom, click Hidden Graffiti on the floor while the Doomguard is alive",                           waypoint = { mapID = 22,   x = 0.5206, y = 0.8319 } },
-	    { label = "Orb 5 – Muffin",         questID = 84781, note = "Timeless Isle @ 43.07, 41.29 – Cave of Lost Spirits; enter via Zarhym, defeat Jeremy Feasel using only secret battle pets; then trade 9× Pieces of Hate + Golden Muffin at Pointless Treasure Salesman in Booty Bay", waypoint = { mapID = 554,  x = 0.4307, y = 0.4129 } },
-	    { label = "Orb 6 – Altars",         questID = 84811, note = "N. Stranglethorn (uninstanced Zul'gurub) @ 77.08, 46.31 – use Torch of Pyrreth at 5 Altars of Acquisition, appease each NPC with matching mount/pet/toy; use Starry-Eyed Goggles to find and loot Chest of Acquisitions", waypoint = { mapID = 50,   x = 0.7708, y = 0.4631 } },
-	    { label = "Orb 7 – Watchers",       questID = 84823, note = "Azsuna, Isle of Watchers @ 44.18, 72.41 – collect 4 colored owl buffs from Owl of the Watchers statues with Fledgling Warden Owl summoned; clear Vault of the Wardens through Cordana, solve sentry statue puzzle, loot Warden's Mirror", waypoint = { mapID = 630,  x = 0.4418, y = 0.7241 } },
-	    { label = "Orb 8 – Rats",           questID = 84837, note = "Karazhan Catacombs @ 59.87, 42.62 – deposit Warden's Mirror + Ancient Shaman Blood into the Enigma Machine, count Rats, position statues on pressure plates 3 times",                                                  waypoint = { mapID = 46,   x = 0.5987, y = 0.4262 } },
-	    { label = "Orb 9 – Cipher",                           note = "Azj-Kahet, Pillar-nest Vosh @ 55.03, 19.09 – use Starry-Eyed Goggles + Relic of Crystal Connections to teleport to hidden console, enter code 84847078 → loot Felcycle keys (awards Ratts' Revenge FoS)",              waypoint = { mapID = 2255, x = 0.5503, y = 0.1909 } },
+	    { label = "Orb 5 – Golden Muffin",         questID = 84781, note = "Timeless Isle @ 43.07, 41.29 – Cave of Lost Spirits; enter via Zarhym, defeat Jeremy Feasel using only secret battle pets; then trade 9× Pieces of Hate + Golden Muffin at Pointless Treasure Salesman in Booty Bay", waypoint = { mapID = 554,  x = 0.4307, y = 0.4129 } },
+	    { label = "Orb 6 – Altars of Acquisition",         questID = 84811, note = "N. Stranglethorn (uninstanced Zul'gurub) @ 77.08, 46.31 – use Torch of Pyrreth at 5 Altars of Acquisition, appease each NPC with matching mount/pet/toy; use Starry-Eyed Goggles to find and loot Chest of Acquisitions", waypoint = { mapID = 50,   x = 0.7708, y = 0.4631 } },
+	    { label = "Orb 7 – Owl of the Watchers",       questID = 84823, note = "Azsuna, Isle of Watchers @ 44.18, 72.41 – collect 4 colored owl buffs from Owl of the Watchers statues with Fledgling Warden Owl summoned; clear Vault of the Wardens through Cordana, solve sentry statue puzzle, loot Warden's Mirror", waypoint = { mapID = 630,  x = 0.4418, y = 0.7241 } },
+	    { label = "Orb 8 – Enigma Machine",           questID = 84837, note = "Karazhan Catacombs @ 59.87, 42.62 – deposit Warden's Mirror + Ancient Shaman Blood into the Enigma Machine, count Rats, position statues on pressure plates 3 times",                                                  waypoint = { mapID = 46,   x = 0.5987, y = 0.4262 } },
+	    { label = "Orb 9 – Cryptic Plaque", achievementID = 40967,    note = "Azj-Kahet, Pillar-nest Vosh @ 55.03, 19.09 – use Starry-Eyed Goggles + Relic of Crystal Connections to teleport to hidden console, enter code 84847078 → loot Felcycle keys (awards Ratts' Revenge FoS)",              waypoint = { mapID = 2255, x = 0.5503, y = 0.1909 } },
 	    { label = "Orb 10 – Oddsight Focus", itemID = 260533, count = 1, note = "Waking Shores @ 19.4, 36.3 – loot Bubblefilled Flounder while dead → feed Hek the Hungry Hornswog → place egg at Valdrakken duck nest @ 39.8, 78.7 → find To'no (Forbidden Reach) for 2nd dialogue; requires Mind-Seeker", waypoint = { mapID = 2022, x = 0.1940, y = 0.3630 } },
-	    { label = "Orb 11 – ???",                             note = "??? – still being investigated by the Secret Finding Discord" },
-	    { label = "Orb 12 – ???",                             note = "??? – still being investigated by the Secret Finding Discord" },
+	    { label = "Orb 11 – Radiant Singer", achievementID = 61516, note = "Unlock the Radiant Singer achievement (61516) – exact method not yet discovered" },
+	    { label = "Orb 12 – Footlocker",                      note = "Hidden Footlocker near the 12th unlit pillar – visible only with Gift of Oddsight + Starry-Eyed Goggles buffs active; requires Spare Key (item 262559) which has not yet been found" },
 	  },
 	},
 	{ name = "Long-Forgotten Hippogryph",                    kind = "mount", mindSeeker = true, itemID = 138258, wowheadURL = "https://www.wowhead.com/guide/reins-of-the-long-forgotten-hippogryph-mount" },
@@ -85,19 +85,19 @@ SC.entries = {
 	{ name = "Wicker Pup (Spooky Bundle of Sticks)",         kind = "pet",   mindSeeker = true, speciesID = 2411, itemID = 163497,  wowheadURL = "https://www.wowhead.com/item=163497/spooky-bundle-of-sticks#comments" },
 	{ name = "Sun Darter Hatchling",                         kind = "pet",   speciesID = 382, itemID = 142223, wowheadURL = "https://www.wowhead.com/guide/sun-darter-hatchling-secret-pet" },
 	{ name = "Terky",                                        kind = "pet",   speciesID = 1073, itemID = 22780, wowheadURL = "https://www.wowhead.com/object=244447/white-murloc-egg" },
-	{ name = "Hungering Claw (Kosumoth)",                    kind = "pet",   speciesID = 1926, itemID = 140261, linkedSecret = true,  stepsRef = "Fathom Dweller (Kosumoth)",  wowheadURL = "https://www.wowhead.com/guide/kosumoth-the-hungering-secret-mount-pet" },
+	{ name = "Hungering Claw (Kosumoth)",                    kind = "pet",   speciesID = 1926, itemID = 140261, linkedSecret = true,  partOf = "Fathom Dweller (Kosumoth)",  stepsRef = "Fathom Dweller (Kosumoth)",  wowheadURL = "https://www.wowhead.com/guide/kosumoth-the-hungering-secret-mount-pet" },
 	{ name = "Gortham",                                      kind = "pet",   speciesID = 4967, itemID = 262774,  wowheadURL = "https://www.wowhead.com/npc=256567/gortham" },
 
 	-- ------------------------------------------------
 	-- TOYS
 	-- ------------------------------------------------
 	{ name = "Black Dragon's Challenge Dummy",               kind = "toy",   mindSeeker = true, itemID = 201933, wowheadURL = "https://www.wowhead.com/item=201933/black-dragons-challenge-dummy#comments" },
-	{ name = "Enlightened Hearthstone",                      kind = "toy",   mindSeeker = true, itemID = 190196, wowheadURL = "https://www.wowhead.com/news/enlightened-hearthstone-hidden-hearthstone-toy-found-in-zereth-mortis-337545" },
-	{ name = "Cartel Transmorpher",                          kind = "toy",   mindSeeker = true, itemID = 249713,  wowheadURL = "https://www.wowhead.com/news/xy-trustees-gearglider-mount-and-cartel-transmorpher-toy-discovered-by-wow-379066" },
+	{ name = "Enlightened Hearthstone",                      kind = "toy",   mindSeeker = true, itemID = 190196, source = "Discovery: Ponderer's Portal", wowheadURL = "https://www.wowhead.com/news/enlightened-hearthstone-hidden-hearthstone-toy-found-in-zereth-mortis-337545" },
+	{ name = "Cartel Transmorpher",                          kind = "toy",   mindSeeker = true, itemID = 249713, source = "Quest: Someone Like Me\nFaction: Manaforge Vanals",  wowheadURL = "https://www.wowhead.com/news/xy-trustees-gearglider-mount-and-cartel-transmorpher-toy-discovered-by-wow-379066" },
 	{ name = "Tricked-Out-Thinking Cap" ,                 	 kind = "toy",    itemID = 206696,  wowheadURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
 	{ name = "Torch of Pyrreth" ,                             kind = "toy",   itemID = 208092,  wowheadURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
 	{ name = "Idol of Ohn'ahra" ,                             kind = "toy",   itemID = 207730,  wowheadURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
-	{ name = "Starry-Eyed Goggles",                          kind = "toy",   itemID = 228966, wowheadURL = "https://www.wowhead.com/item=228966/starry-eyed-goggles" },
+	{ name = "Starry-Eyed Goggles",                          kind = "toy",   itemID = 228966, partOf = "Keys to Incognitro, the Indecipherable Felcycle", wowheadURL = "https://www.wowhead.com/item=228966/starry-eyed-goggles" },
 
 	-- ------------------------------------------------
 	-- ACHIEVEMENTS
@@ -106,7 +106,9 @@ SC.entries = {
 	{ name = "Mind-Seeker",                                  kind = "achievement", mindSeeker = true, achievementID = 62189, wowheadURL = "https://www.wowhead.com/news/join-the-secret-cabal-of-mind-seekers-new-secret-discovery-in-progress-380212" },
 	{ name = "You Conduit!",                                 kind = "achievement", mindSeeker = true, achievementID = 61585, wowheadURL = "https://www.wowhead.com/achievement=61585/you-conduit#comments:id=6300813" },
   { name = "Whodunnit?",                                  kind = "achievement", achievementID = 18646, wowheadURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
-	{ name = "Azeroth's Greatest Detective",                 kind = "achievement", achievementID = 40870,  wowheadURL = "https://www.wowhead.com/achievement=40870/azeroths-greatest-detective" },
+	{ name = "Azeroth's Greatest Detective",                 kind = "achievement", achievementID = 40870, partOf = "Keys to Incognitro, the Indecipherable Felcycle", wowheadURL = "https://www.wowhead.com/achievement=40870/azeroths-greatest-detective" },
+	{ name = "Ratts' Revenge",                               kind = "achievement", achievementID = 40967, linkedSecret = true, partOf = "Keys to Incognitro, the Indecipherable Felcycle", wowheadURL = "https://www.wowhead.com/achievement=40967/ratts-revenge" },
+	{ name = "Radiant Singer",                               kind = "achievement", achievementID = 61516, linkedSecret = true, partOf = "12 Orb Mystery",              wowheadURL = "https://www.wowhead.com/achievement=61516/radiant-singer" },
 	-- ------------------------------------------------
 	
 	-- ------------------------------------------------
@@ -132,10 +134,10 @@ SC.entries = {
 	    { label = "Orb 6 – Altars",         questID = 84811, note = "N. Stranglethorn, uninstanced Zul'gurub @ 77.08, 46.31", waypoint = { mapID = 50,   x = 0.7708, y = 0.4631 } },
 	    { label = "Orb 7 – Watchers",       questID = 84823, note = "Azsuna, Isle of Watchers @ 44.18, 72.41",                waypoint = { mapID = 630,  x = 0.4418, y = 0.7241 } },
 	    { label = "Orb 8 – Rats",           questID = 84837, note = "Karazhan Catacombs @ 59.87, 42.62",                      waypoint = { mapID = 46,   x = 0.5987, y = 0.4262 } },
-	    { label = "Orb 9 – Cipher",                           note = "Azj-Kahet, Pillar-nest Vosh @ 55.03, 19.09",              waypoint = { mapID = 2255, x = 0.5503, y = 0.1909 } },
+	    { label = "Orb 9 – Cipher", achievementID = 40967,    note = "Azj-Kahet, Pillar-nest Vosh @ 55.03, 19.09",              waypoint = { mapID = 2255, x = 0.5503, y = 0.1909 } },
 	    { label = "Orb 10 – Oddsight Focus", itemID = 260533, count = 1, note = "Waking Shores @ 19.4, 36.3 (start: Bubblefilled Flounder, looted while dead)", waypoint = { mapID = 2022, x = 0.1940, y = 0.3630 } },
-	    { label = "Orb 11 – ???",                             note = "??? – still being investigated" },
-	    { label = "Orb 12 – ???",                             note = "??? – still being investigated" },
+	    { label = "Orb 11 – Radiant Singer", achievementID = 61516, note = "Unlock the Radiant Singer achievement (61516) – exact method not yet discovered" },
+	    { label = "Orb 12 – Footlocker",                      note = "Hidden Footlocker near the 12th unlit pillar – visible only with Gift of Oddsight + Starry-Eyed Goggles buffs active; requires Spare Key (item 262559) which has not yet been found" },
 	  },
 	},
 
