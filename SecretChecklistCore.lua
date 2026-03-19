@@ -25,10 +25,10 @@ SC.tabButtons_list = {}
 -- SC.guidesListPane and SC.onFilterChange are set by BuildGuidesPanel
 
 -- Filter state per tab (local; exposed via accessors so tab panel files can read them)
-local defaultKinds = { mount=true, pet=true, toy=true, achievement=true, quest=true, transmog=true, housing=true }
+local defaultKinds = { mount=true, pet=true, toy=true, achievement=true, quest=true, transmog=true, housing=true, mystery=true }
 local tabFilters = {
-	overview = { showCollected=true,  showMissing=true,  kinds = { mount=true, pet=true, toy=true, achievement=true, quest=true, transmog=true, housing=true }, mindSeekerOnly = false, sortBy = "type" },
-	guides   = { showCollected=true,  showMissing=true,  kinds = { mount=true, pet=true, toy=true, achievement=true, quest=true, transmog=true, housing=true }, mindSeekerOnly = false, sortBy = "status" },
+	overview = { showCollected=true,  showMissing=true,  kinds = { mount=true, pet=true, toy=true, achievement=true, quest=true, transmog=true, housing=true, mystery=true }, mindSeekerOnly = false, sortBy = "type" },
+	guides   = { showCollected=true,  showMissing=true,  kinds = { mount=true, pet=true, toy=true, achievement=true, quest=true, transmog=true, housing=true, mystery=true }, mindSeekerOnly = false, sortBy = "status" },
 }
 
 -- Read-only accessors: return filters for the currently active tab
@@ -67,15 +67,17 @@ local function GetFilteredEntries()
 	local sortBy           = f.sortBy or "type"
 
 	-- Kind sort order for "type" sort
-	local kindOrder = { mount=1, pet=2, toy=3, achievement=4, transmog=5, quest=6, housing=7 }
+	local kindOrder = { mount=1, pet=2, toy=3, achievement=4, transmog=5, quest=6, housing=7, mystery=8 }
 
 	local filtered = {}
 	for _, entry in ipairs(entries) do
 		local shouldInclude = true
 
-		-- Filter by kind/type
+		-- Filter by kind/type (if all kinds are disabled, treat as "show all")
 		local entryKind = entry.kind or "unknown"
-		if not filterKinds[entryKind] then
+		local anyKindEnabled = false
+		for _, v in pairs(filterKinds) do if v then anyKindEnabled = true; break end end
+		if anyKindEnabled and not filterKinds[entryKind] then
 			shouldInclude = false
 		end
 
@@ -499,18 +501,32 @@ local function Initialize()
 				{label = L["KIND_QUESTS"]       or "Quests",       kind = "quest"},
 				{label = L["KIND_TRANSMOGS"]    or "Transmog",     kind = "transmog"},
 				{label = L["KIND_HOUSINGS"]     or "Housing",      kind = "housing"},
+				{label = L["KIND_MYSTERIES"]    or "Mystery",      kind = "mystery"},
 			}
 			local typeSubmenu = rootDescription:CreateButton(L["FILTER_BY_TYPE"] or "Type")
-			typeSubmenu:CreateButton(L["FILTER_SELECT_ALL"] or "Select All", function()
-				local f = tabFilters[SC.currentTab]; if not f then return end
-				for _, opt in ipairs(typeOptions) do f.kinds[opt.kind] = true end
-				OnFilterChanged()
-			end)
-			typeSubmenu:CreateButton(L["FILTER_DESELECT_ALL"] or "Deselect All", function()
-				local f = tabFilters[SC.currentTab]; if not f then return end
-				for _, opt in ipairs(typeOptions) do f.kinds[opt.kind] = false end
-				OnFilterChanged()
-			end)
+			typeSubmenu:CreateCheckbox(L["FILTER_SELECT_ALL"] or "Select All",
+				function()
+					local f = tabFilters[SC.currentTab]; if not f then return false end
+					for _, opt in ipairs(typeOptions) do if not f.kinds[opt.kind] then return false end end
+					return true
+				end,
+				function()
+					local f = tabFilters[SC.currentTab]; if not f then return end
+					for _, opt in ipairs(typeOptions) do f.kinds[opt.kind] = true end
+					OnFilterChanged()
+				end)
+			typeSubmenu:CreateCheckbox(L["FILTER_DESELECT_ALL"] or "Deselect All",
+				function()
+					local f = tabFilters[SC.currentTab]; if not f then return false end
+					for _, opt in ipairs(typeOptions) do if f.kinds[opt.kind] then return false end end
+					return true
+				end,
+				function()
+					local f = tabFilters[SC.currentTab]; if not f then return end
+					for _, opt in ipairs(typeOptions) do f.kinds[opt.kind] = false end
+					OnFilterChanged()
+				end)
+			typeSubmenu:CreateDivider()
 			for _, opt in ipairs(typeOptions) do
 				typeSubmenu:CreateCheckbox(opt.label,
 					function() local f = tabFilters[SC.currentTab]; return f and f.kinds[opt.kind] == true end,
@@ -726,6 +742,23 @@ local function CreateOptionsPanel()
 		SetMinimapValue
 	)
 	Settings.CreateCheckbox(category, minimapSetting, L["SETTINGS_MINIMAP_BUTTON_DESC"] or "Show or hide the SecretChecklist minimap button.")
+
+	local function GetAlertsValue()
+		return SecretChecklistDB.alertsEnabled ~= false  -- default true
+	end
+	local function SetAlertsValue(value)
+		SecretChecklistDB.alertsEnabled = value
+	end
+	local alertsSetting = Settings.RegisterProxySetting(
+		category,
+		"SECRETCHECKLIST_ALERTS",
+		Settings.VarType.Boolean,
+		L["SETTINGS_ALERTS"] or "Show Collection Alerts",
+		Settings.Default.True,
+		GetAlertsValue,
+		SetAlertsValue
+	)
+	Settings.CreateCheckbox(category, alertsSetting, L["SETTINGS_ALERTS_DESC"] or "Show a toast notification when a tracked secret is newly collected.")
 
 	-- Theme selection dropdown
 	if Settings.CreateDropdown and Settings.CreateControlTextContainer then

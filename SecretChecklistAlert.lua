@@ -168,6 +168,7 @@ end
 
 function SC:FireSecretAlert(entry)
 	if not alertSubSystem then return end
+	if SecretChecklistDB and SecretChecklistDB.alertsEnabled == false then return end
 	local icon = SC.GetEntryIcon and SC:GetEntryIcon(entry) or "Interface\\Icons\\INV_Misc_QuestionMark"
 	alertSubSystem:AddAlert(entry, icon)
 end

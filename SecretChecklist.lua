@@ -273,11 +273,32 @@ function SC:CheckEntry(entry)
 		return owned, "housing"
 	end
 
+	if entry.kind == "mystery" then
+		return nil, "Reward unknown – in active investigation"
+	end
+
 	if entry.kind == "manual" then
 		return nil, entry.note or "Manual check"
 	end
 
 	return nil, "Unknown kind"
+end
+
+-- Returns the status of a single progress step:
+--   "done"    – quest flagged completed
+--   "ready"   – quest not done, but item(s) are in bags/bank
+--   "missing" – quest not done and item(s) not found
+function SC:GetStepStatus(step)
+	if step.questID and C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
+		if C_QuestLog.IsQuestFlaggedCompleted(step.questID) then
+			return "done"
+		end
+	end
+	if step.itemID then
+		local have = GetItemCount(step.itemID, true)  -- true = include bank
+		if have >= (step.count or 1) then return "ready" end
+	end
+	return "missing"
 end
 
 SLASH_SECRETCHECKLIST1 = "/secrets"

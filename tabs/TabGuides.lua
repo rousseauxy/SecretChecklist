@@ -46,6 +46,8 @@ function SC:BuildGuidesPanel(frame, L)
 	local guides_selected   = nil  -- currently selected entry
 	local guides_scrollPos  = 0    -- persists scroll position across tab switches (WoW resets GetVerticalScroll on hide)
 	local scrollFrame, scrollBar   -- scroll widgets assigned in Left Pane section below
+	local stepsOpen         = false  -- whether the step accordion is currently expanded
+	local currentNumSteps   = 0      -- step count for the currently displayed entry
 
 	-- ==============================================
 	-- FILTERING  (reads shared filter state via SC accessors)
@@ -76,7 +78,7 @@ function SC:BuildGuidesPanel(frame, L)
 			end
 		end
 		-- Sort
-		local kindOrder = { mount=1, pet=2, toy=3, achievement=4, transmog=5, quest=6, housing=7 }
+		local kindOrder = { mount=1, pet=2, toy=3, achievement=4, transmog=5, quest=6, housing=7, mystery=8 }
 		if sortBy == "name" then
 			table.sort(guides_entries, function(a, b)
 				local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
@@ -196,44 +198,96 @@ function SC:BuildGuidesPanel(frame, L)
 	-- RIGHT DETAIL PANE
 	-- ==============================================
 
+	local DP_MODEL_H   = 160                     -- fixed height of the 3-D viewer strip
+	local DP_SCROLL_W  = 8                       -- width of the text-section scrollbar
+	local DP_LINK_AREA = GP_PAD + 22 + GP_PAD   -- vertical room for linkBtn (padding + height + padding)
+
 	local detailPane = CreateFrame("Frame", nil, guidesPanel)
 	detailPane:SetPoint("TOPLEFT",     divider,    "TOPRIGHT",      GP_PAD, 0)
 	detailPane:SetPoint("BOTTOMRIGHT", guidesPanel, "BOTTOMRIGHT", -15, GP_PAD)
 
+	-- ---- Scrollable text section ----
+	-- Occupies detailPane from top down to just above the fixed 3-D model strip.
+	local detailScroll = CreateFrame("ScrollFrame", nil, detailPane)
+	detailScroll:SetPoint("TOPLEFT",     detailPane, "TOPLEFT",     0, -DP_MODEL_H)
+	detailScroll:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT",
+		-(DP_SCROLL_W + 4),                       -- leave room for the text scrollbar on the right
+		DP_LINK_AREA)                              -- leave room for linkBtn below (model is now at top)
+
+	local detailContent = CreateFrame("Frame")
+	detailContent:SetWidth(300)   -- corrected to match scroll width each time an entry is shown
+	detailContent:SetHeight(500)  -- overwritten by Guides_UpdateDetailScroll
+	detailScroll:SetScrollChild(detailContent)
+
+	local detailScrollBar = CreateFrame("Slider", nil, detailPane)
+	detailScrollBar:SetOrientation("VERTICAL")
+	detailScrollBar:SetWidth(DP_SCROLL_W)
+	detailScrollBar:SetPoint("TOPLEFT",    detailScroll, "TOPRIGHT",    4, 0)
+	detailScrollBar:SetPoint("BOTTOMLEFT", detailScroll, "BOTTOMRIGHT", 4, 0)
+	detailScrollBar:SetMinMaxValues(0, 0)
+	detailScrollBar:SetThumbTexture("Interface\\ChatFrame\\ChatFrameBackground")
+	local dsbThumb = detailScrollBar:GetThumbTexture()
+	if dsbThumb then
+		local dT = SC:ThemeColor("divider")
+		dsbThumb:SetColorTexture(dT[1], dT[2], dT[3], dT[4])
+		dsbThumb:SetWidth(DP_SCROLL_W)
+		dsbThumb:SetHeight(20)
+	end
+	detailScrollBar:SetValue(0)
+	detailScrollBar:SetShown(false)
+	detailScrollBar:SetScript("OnValueChanged", function(_, val)
+		detailScroll:SetVerticalScroll(val)
+	end)
+	detailScroll:SetScript("OnMouseWheel", function(_, delta)
+		local _, maxV = detailScrollBar:GetMinMaxValues()
+		local newVal  = math_max(0, math_min(maxV, detailScrollBar:GetValue() - delta * 30))
+		detailScrollBar:SetValue(newVal)
+	end)
+
+	-- Repositions the scrollable text area to start at the top when no model is shown,
+	-- or below the model strip when one is visible.
+	local function Guides_SetModelStripShown(shown)
+		detailScroll:ClearAllPoints()
+		detailScroll:SetPoint("TOPLEFT",     detailPane, "TOPLEFT",     0, shown and -DP_MODEL_H or 0)
+		detailScroll:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT", -(DP_SCROLL_W + 4), DP_LINK_AREA)
+	end
+
+	-- All text/step widgets are children of detailContent so they scroll with detailScroll.
+
 	-- Icon (plain, no collection border)
-	local detailIcon = detailPane:CreateTexture(nil, "ARTWORK")
+	local detailIcon = detailContent:CreateTexture(nil, "ARTWORK")
 	detailIcon:SetSize(48, 48)
-	detailIcon:SetPoint("TOPLEFT", detailPane, "TOPLEFT", 0, -GP_PAD)
+	detailIcon:SetPoint("TOPLEFT", detailContent, "TOPLEFT", 0, -GP_PAD)
 	detailIcon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 
 	-- Entry name (right of icon, vertically centered with icon)
-	local detailName = detailPane:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	detailName:SetPoint("LEFT",  detailIcon, "RIGHT",  10, 0)
-	detailName:SetPoint("RIGHT", detailPane, "RIGHT",  -6, 0)
+	local detailName = detailContent:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	detailName:SetPoint("LEFT",  detailIcon,    "RIGHT",  10, 0)
+	detailName:SetPoint("RIGHT", detailContent, "RIGHT",  -6, 0)
 	detailName:SetJustifyH("LEFT")
 	detailName:SetWordWrap(false)
 
 	-- Kind badge (below icon)
-	local detailKind = detailPane:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	local detailKind = detailContent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	detailKind:SetPoint("TOPLEFT", detailIcon, "BOTTOMLEFT", 0, -8)
 
 	-- Collected / missing status
-	local detailStatus = detailPane:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	local detailStatus = detailContent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	detailStatus:SetPoint("TOPLEFT", detailKind, "BOTTOMLEFT", 0, -4)
 	detailStatus:SetJustifyH("LEFT")
 
 	-- Source (gold, word-wrapped)
-	local detailSource = detailPane:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	detailSource:SetPoint("TOPLEFT",  detailStatus, "BOTTOMLEFT", 0,  -6)
-	detailSource:SetPoint("TOPRIGHT", detailPane,   "TOPRIGHT",  -6,   0)
+	local detailSource = detailContent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	detailSource:SetPoint("TOPLEFT",  detailStatus,  "BOTTOMLEFT", 0,  -6)
+	detailSource:SetPoint("TOPRIGHT", detailContent, "TOPRIGHT",  -6,   0)
 	detailSource:SetJustifyH("LEFT")
 	detailSource:SetTextColor(1, 0.82, 0)
 	detailSource:SetWordWrap(true)
 
 	-- Description (grey, word-wrapped)
-	local detailDesc = detailPane:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	detailDesc:SetPoint("TOPLEFT",  detailSource, "BOTTOMLEFT", 0,  -6)
-	detailDesc:SetPoint("TOPRIGHT", detailPane,   "TOPRIGHT",  -6,   0)
+	local detailDesc = detailContent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	detailDesc:SetPoint("TOPLEFT",  detailSource,  "BOTTOMLEFT", 0,  -6)
+	detailDesc:SetPoint("TOPRIGHT", detailContent, "TOPRIGHT",  -6,   0)
 	detailDesc:SetJustifyH("LEFT")
 	detailDesc:SetTextColor(0.8, 0.8, 0.8)
 	detailDesc:SetWordWrap(true)
@@ -334,15 +388,100 @@ function SC:BuildGuidesPanel(frame, L)
 	end)
 
 	-- ==============================================
-	-- 3-D MODEL VIEWER
-	-- Hidden for achievement / quest / missing model.
-	-- Supports drag-to-rotate and scroll-to-zoom.
+	-- PROGRESS STEPS  (shown only for entries with a steps table)
+	-- ==============================================
+
+	local STEP_ROW_H  = 18
+	local MAX_STEPS   = 14
+
+	local accordionBtn = CreateFrame("Button", nil, detailContent)
+	accordionBtn:SetHeight(22)
+	accordionBtn:SetPoint("TOPLEFT",  detailDesc,    "BOTTOMLEFT", 0, -10)
+	accordionBtn:SetPoint("TOPRIGHT", detailContent, "TOPRIGHT",  -6,   0)
+	accordionBtn:Hide()
+	local accBg = accordionBtn:CreateTexture(nil, "BACKGROUND")
+	accBg:SetAllPoints()
+	accBg:SetColorTexture(0.12, 0.12, 0.18, 0.7)
+	local accHL = accordionBtn:CreateTexture(nil, "HIGHLIGHT")
+	accHL:SetAllPoints()
+	accHL:SetColorTexture(1, 1, 1, 0.06)
+	accordionBtn:SetHighlightTexture(accHL)
+	local accLabel = accordionBtn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	accLabel:SetPoint("LEFT",  accordionBtn, "LEFT",  6, 0)
+	accLabel:SetPoint("RIGHT", accordionBtn, "RIGHT", -6, 0)
+	accLabel:SetJustifyH("LEFT")
+	accLabel:SetTextColor(0.8, 0.8, 0.8)
+	accordionBtn.label = accLabel
+
+	local stepRows = {}
+	for i = 1, MAX_STEPS do
+		local row = CreateFrame("Button", nil, detailContent)
+		row:SetHeight(STEP_ROW_H)
+		row:SetPoint("LEFT",  detailContent, "LEFT",  0, 0)
+		row:SetPoint("RIGHT", detailContent, "RIGHT", 0, 0)
+
+		local ico = row:CreateTexture(nil, "ARTWORK")
+		ico:SetSize(14, 14)
+		ico:SetPoint("LEFT", 2, 0)
+		row.ico = ico
+
+		local lbl = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+		lbl:SetPoint("LEFT",  ico, "RIGHT", 5, 0)
+		lbl:SetPoint("RIGHT", row, "RIGHT", 0, 0)
+		lbl:SetJustifyH("LEFT")
+		row.lbl = lbl
+
+		row:SetScript("OnEnter", function(self)
+			local hasNote = self.note and self.note ~= ""
+			local hasWP   = self.waypoint ~= nil
+			if not hasNote and not hasWP then return end
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:SetText(self.lbl:GetText() or "", 1, 1, 1)
+			if hasNote then
+				GameTooltip:AddLine(self.note, 0.8, 0.8, 0.8, true)
+			end
+			if hasWP then
+				GameTooltip:AddLine("Click to set waypoint", 0.4, 0.8, 1)
+			end
+			GameTooltip:Show()
+		end)
+		row:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+		row:SetScript("OnClick", function(self)
+			local wp = self.waypoint
+			if not wp then return end
+			local label = self.lbl:GetText() or ""
+			-- TomTom API (preferred)
+			if TomTom and TomTom.AddWaypoint then
+				TomTom:AddWaypoint(wp.mapID, wp.x, wp.y, { title = label })
+			else
+				-- Blizzard /way fallback (works in retail with the built-in addon)
+				C_Map.SetUserWaypoint(UiMapPoint.CreateFromCoordinates(wp.mapID, wp.x, wp.y))
+				C_SuperTrack.SetSuperTrackedUserWaypoint(true)
+			end
+		end)
+
+		row:Hide()
+		stepRows[i] = row
+	end
+
+	-- Anchor each row beneath the previous one (or beneath accordionBtn for row 1).
+	-- Done once here; visibility is toggled per entry in Guides_ShowDetail.
+	for i = 1, MAX_STEPS do
+		local anchor = (i == 1) and accordionBtn or stepRows[i - 1]
+		stepRows[i]:SetPoint("TOP", anchor, "BOTTOM", 0, -2)
+	end
+
+	-- ==============================================
+	-- 3-D MODEL VIEWER  (fixed strip at the bottom of detailPane)
+	-- Sits between the linkBtn and the scrollable text section above.
+	-- DressUpModel / ModelScene frames cannot be clipped by a ScrollFrame,
+	-- so they are intentionally kept outside detailScroll.
 	-- ==============================================
 
 	local detailModel = CreateFrame("DressUpModel", nil, detailPane)
-	detailModel:SetPoint("TOPLEFT",     detailDesc, "BOTTOMLEFT",    0, -10)
-	detailModel:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT",   0,   0)
-	detailModel:SetUnit("none")
+	detailModel:SetPoint("TOPLEFT",     detailPane, "TOPLEFT",  0,  0)
+	detailModel:SetPoint("BOTTOMRIGHT", detailPane, "TOPRIGHT", 0, -DP_MODEL_H)
 	detailModel:SetFacing(0)
 
 	local modelBg = detailModel:CreateTexture(nil, "BACKGROUND")
@@ -354,16 +493,16 @@ function SC:BuildGuidesPanel(frame, L)
 	local HOUSING_SCENE_ID = (Constants and Constants.HousingCatalogConsts
 		and Constants.HousingCatalogConsts.HOUSING_CATALOG_DECOR_MODELSCENEID_DEFAULT) or 861
 	local detailModelScene = CreateFrame("ModelScene", nil, detailPane, "PanningModelSceneMixinTemplate")
-	detailModelScene:SetPoint("TOPLEFT",     detailDesc, "BOTTOMLEFT",    0, -10)
-	detailModelScene:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT",   0,   0)
+	detailModelScene:SetPoint("TOPLEFT",     detailPane, "TOPLEFT",  0,  0)
+	detailModelScene:SetPoint("BOTTOMRIGHT", detailPane, "TOPRIGHT", 0, -DP_MODEL_H)
 	detailModelScene:Hide()
 	detailModelScene:TransitionToModelSceneID(HOUSING_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true)
 
 	-- Dedicated model for zoomed transmog slot view (mirrors AppearanceTooltip's .Zoomed model).
 	-- SetKeepModelOnHide keeps the player loaded between views so TryOn can be called synchronously.
 	local detailModelZoomed = CreateFrame("DressUpModel", nil, detailPane)
-	detailModelZoomed:SetPoint("TOPLEFT",     detailDesc, "BOTTOMLEFT",    0, -10)
-	detailModelZoomed:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT",   0,   0)
+	detailModelZoomed:SetPoint("TOPLEFT",     detailPane, "TOPLEFT",  0,  0)
+	detailModelZoomed:SetPoint("BOTTOMRIGHT", detailPane, "TOPRIGHT", 0, -DP_MODEL_H)
 	detailModelZoomed:SetKeepModelOnHide(true)
 	detailModelZoomed:SetUnit("player")  -- pre-load player model at creation (mirrors AppearanceTooltip's PLAYER_LOGIN)
 	detailModelZoomed:Hide()
@@ -412,6 +551,44 @@ function SC:BuildGuidesPanel(frame, L)
 	-- POPULATE DETAIL PANE
 	-- ==============================================
 
+	-- Recomputes detailContent height and updates the text scrollbar.
+	-- Called every time a new entry is shown in Guides_ShowDetail.
+	local function Guides_UpdateDetailScroll(numSteps, hasSource, hasDesc)
+		detailContent:SetWidth(detailScroll:GetWidth())
+		local h = GP_PAD + 48 + 8    -- top padding + icon row + gap below icon
+		h = h + 14 + 4               -- kind badge
+		h = h + 16 + 6               -- status line
+		if hasSource then h = h + 40 + 6 end   -- source  (~2 wrapped lines)
+		if hasDesc   then h = h + 60 + 6 end   -- desc    (~4 wrapped lines)
+		if numSteps > 0 then
+			h = h + 10 + 22 + 4                      -- pre-gap + accordion header + post-gap
+			if stepsOpen then
+				h = h + numSteps * (STEP_ROW_H + 2)  -- step rows (only when expanded)
+			end
+		end
+		h = h + 20   -- breathing room
+		local scrollH = math_max(1, detailScroll:GetHeight() or 1)
+		h = math_max(h, scrollH)
+		detailContent:SetHeight(h)
+		local maxScroll = math_max(0, h - scrollH)
+		detailScrollBar:SetMinMaxValues(0, maxScroll)
+		detailScrollBar:SetShown(maxScroll > 0)
+		detailScrollBar:SetValue(0)
+		detailScroll:SetVerticalScroll(0)
+	end
+
+	accordionBtn:SetScript("OnClick", function()
+		stepsOpen = not stepsOpen
+		for i = 1, currentNumSteps do
+			stepRows[i]:SetShown(stepsOpen)
+		end
+		accordionBtn.label:SetText(
+			(stepsOpen and "▼" or "▶") ..
+			"  Progress Steps  (" .. currentNumSteps .. ")"
+		)
+		Guides_UpdateDetailScroll(currentNumSteps, detailSource:GetText() ~= "", detailDesc:GetText() ~= "")
+	end)
+
 	Guides_ShowDetail = function(entry)
 		guides_selected = entry
 		if not entry then
@@ -424,9 +601,14 @@ function SC:BuildGuidesPanel(frame, L)
 			linkBtn.currentURL = ""
 			linkBtn:SetEnabled(false)
 			copyDialog:Hide()
+			accordionBtn:Hide()
+			for i = 1, MAX_STEPS do stepRows[i]:Hide() end
 			detailModel:Hide()
 			detailModelScene:Hide()
 			detailModelZoomed:Hide()
+			detailScrollBar:SetValue(0)
+			detailScrollBar:SetShown(false)
+			detailScroll:SetVerticalScroll(0)
 			return
 		end
 
@@ -444,6 +626,7 @@ function SC:BuildGuidesPanel(frame, L)
 			quest       = { 1,   0.7, 0.3 },
 			transmog    = { 0.8, 0.6, 1   },
 			housing     = { 1,   0.85, 0.5 },
+			mystery     = { 0.7, 0.5,  1   },
 		}
 		local kc      = kindColors[entry.kind] or { 0.8, 0.8, 0.8 }
 		local kindStr = entry.kind and (entry.kind:sub(1,1):upper() .. entry.kind:sub(2)) or ""
@@ -492,6 +675,16 @@ function SC:BuildGuidesPanel(frame, L)
 		elseif entry.kind == "achievement" and entry.achievementID then
 			local _, _, _, _, _, _, _, desc = GetAchievementInfo(entry.achievementID)
 			descText = desc or ""
+		elseif entry.kind == "toy" and entry.itemID then
+			if C_ToyBox and C_ToyBox.GetToyInfo then
+				-- C_ToyBox.GetToyInfo returns: itemID, name, icon, isFavorite, hasFanfare, quality
+				-- We just call it to confirm the toy is known; description comes from the use spell.
+				C_ToyBox.GetToyInfo(entry.itemID)
+			end
+			local _, spellID = GetItemSpell(entry.itemID)
+			if spellID and C_Spell and C_Spell.GetSpellDescription then
+				descText = C_Spell.GetSpellDescription(spellID) or ""
+			end
 		elseif entry.kind == "housing" and entry.itemID and C_HousingCatalog and C_HousingCatalog.GetCatalogEntryInfoByItem then
 			local info = C_HousingCatalog.GetCatalogEntryInfoByItem(entry.itemID, false)
 			if info then
@@ -504,11 +697,60 @@ function SC:BuildGuidesPanel(frame, L)
 		detailSource:SetText(sourceText)
 		detailDesc:SetText(descText)
 
-		-- Hide model entirely for achievement / quest; show only if a model loads
-		if entry.kind == "achievement" or entry.kind == "quest" then
+		-- ---- Progress Steps ----
+		-- Resolve stepsRef: if this entry delegates its steps to another entry, find that entry.
+		local stepsEntry = entry
+		if entry.stepsRef then
+			for _, e in ipairs(SC.entries or {}) do
+				if e.name == entry.stepsRef then stepsEntry = e; break end
+			end
+		end
+		local steps = stepsEntry.steps
+		local numSteps = steps and #steps or 0
+		stepsOpen = false  -- always collapse accordion when switching to a new entry
+		currentNumSteps = numSteps
+		accordionBtn:SetShown(numSteps > 0)
+		if numSteps > 0 then
+			accordionBtn.label:SetText("▶  Progress Steps  (" .. numSteps .. ")")
+		end
+		for i = 1, MAX_STEPS do
+			local step = steps and steps[i]
+			local row  = stepRows[i]
+			if step then
+				local st = SC.GetStepStatus and SC:GetStepStatus(step) or "missing"
+				-- Icon: green check (done), yellow dot (ready), grey box (missing)
+				if st == "done" then
+					row.ico:SetColorTexture(0, 1, 0)      -- green  (matches left-panel collected dot)
+					row.lbl:SetTextColor(0.53, 0.53, 0.53)
+					row.lbl:SetText(step.label)
+				elseif st == "ready" then
+					row.ico:SetColorTexture(1, 0.82, 0)   -- gold   (have items, not yet delivered)
+					row.lbl:SetTextColor(1, 0.82, 0)
+					row.lbl:SetText(step.label)
+				else
+					row.ico:SetColorTexture(1, 0, 0)      -- red    (matches left-panel missing dot)
+					row.lbl:SetTextColor(0.8, 0.8, 0.8)
+					row.lbl:SetText(step.label)
+				end
+				row.note     = step.note or ""
+				row.waypoint = step.waypoint or nil
+				row:Hide()  -- hidden until accordion is expanded
+			else
+				row:Hide()
+				row.note     = ""
+				row.waypoint = nil
+			end
+		end
+		Guides_UpdateDetailScroll(numSteps, sourceText ~= "", descText ~= "")
+		-- ---- End Progress Steps ----
+
+		-- Hide model strip for kinds that never have a 3-D model
+		if entry.kind == "achievement" or entry.kind == "quest"
+		or entry.kind == "toy"         or entry.kind == "mystery" then
 			detailModel:Hide()
 			detailModelScene:Hide()
 			detailModelZoomed:Hide()
+			Guides_SetModelStripShown(false)
 			return
 		end
 
@@ -619,7 +861,8 @@ function SC:BuildGuidesPanel(frame, L)
 		end
 
 		detailModel:SetShown(modelSet)
-		-- detailModelScene visibility is set explicitly in each block above
+		-- detailModelScene and detailModelZoomed visibility set explicitly in blocks above
+		Guides_SetModelStripShown(modelSet or detailModelZoomed:IsShown() or detailModelScene:IsShown())
 	end
 
 	-- ==============================================

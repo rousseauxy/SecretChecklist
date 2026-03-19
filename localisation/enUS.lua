@@ -39,6 +39,7 @@ L["KIND_TRANSMOG"] = "Transmog"
 L["KIND_QUEST"] = "Quest"
 L["KIND_MANUAL"] = "Manual"
 L["KIND_HOUSING"] = "Housing"
+L["KIND_MYSTERY"] = "Mystery"
 
 -- Entry Types (plural - for filter menu)
 L["KIND_TOYS"] = "Toys"
@@ -48,6 +49,7 @@ L["KIND_ACHIEVEMENTS"] = "Achievements"
 L["KIND_TRANSMOGS"] = "Transmog"
 L["KIND_QUESTS"] = "Quests"
 L["KIND_HOUSINGS"] = "Housing (Decor)"
+L["KIND_MYSTERIES"] = "Mysteries"
 
 -- Tooltips
 L["TOOLTIP_CLICK_TOGGLE"] = "Click to toggle window"
