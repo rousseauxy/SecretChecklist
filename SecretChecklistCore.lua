@@ -69,14 +69,16 @@ local function GetFilteredEntries()
 	-- Kind sort order for "type" sort
 	local kindOrder = { mount=1, pet=2, toy=3, achievement=4, transmog=5, quest=6, housing=7, mystery=8 }
 
+	-- Pre-compute whether any kind filter is active (invariant across entries)
+	local anyKindEnabled = false
+	for _, v in pairs(filterKinds) do if v then anyKindEnabled = true; break end end
+
 	local filtered = {}
 	for _, entry in ipairs(entries) do
 		local shouldInclude = true
 
 		-- Filter by kind/type (if all kinds are disabled, treat as "show all")
 		local entryKind = entry.kind or "unknown"
-		local anyKindEnabled = false
-		for _, v in pairs(filterKinds) do if v then anyKindEnabled = true; break end end
 		if anyKindEnabled and not filterKinds[entryKind] then
 			shouldInclude = false
 		end

@@ -582,10 +582,7 @@ function SC:BuildGuidesPanel(frame, L)
 		for i = 1, currentNumSteps do
 			stepRows[i]:SetShown(stepsOpen)
 		end
-		accordionBtn.label:SetText(
-			(stepsOpen and "▼" or "▶") ..
-			"  Progress Steps  (" .. currentNumSteps .. ")"
-		)
+		accordionBtn.label:SetText((stepsOpen and "- " or "+ ") .. "Progress Steps  (" .. currentNumSteps .. ")")
 		Guides_UpdateDetailScroll(currentNumSteps, detailSource:GetText() ~= "", detailDesc:GetText() ~= "")
 	end)
 
@@ -674,11 +671,6 @@ function SC:BuildGuidesPanel(frame, L)
 			local _, _, _, _, _, _, _, desc = GetAchievementInfo(entry.achievementID)
 			descText = desc or ""
 		elseif entry.kind == "toy" and entry.itemID then
-			if C_ToyBox and C_ToyBox.GetToyInfo then
-				-- C_ToyBox.GetToyInfo returns: itemID, name, icon, isFavorite, hasFanfare, quality
-				-- We just call it to confirm the toy is known; description comes from the use spell.
-				C_ToyBox.GetToyInfo(entry.itemID)
-			end
 			local _, spellID = GetItemSpell(entry.itemID)
 			if spellID and C_Spell and C_Spell.GetSpellDescription then
 				descText = C_Spell.GetSpellDescription(spellID) or ""
@@ -709,7 +701,7 @@ function SC:BuildGuidesPanel(frame, L)
 		currentNumSteps = numSteps
 		accordionBtn:SetShown(numSteps > 0)
 		if numSteps > 0 then
-			accordionBtn.label:SetText("▶  Progress Steps  (" .. numSteps .. ")")
+			accordionBtn.label:SetText("+ Progress Steps  (" .. numSteps .. ")")
 		end
 		for i = 1, MAX_STEPS do
 			local step = steps and steps[i]

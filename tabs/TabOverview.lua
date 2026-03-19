@@ -385,7 +385,7 @@ function SC:BuildOverviewPanel(frame, L)
 				local have = SC.CheckEntry and SC:CheckEntry(entry)
 				if have == true then collectedAll = collectedAll + 1 end
 			end
-			if entry.mindSeeker then
+			if entry.mindSeeker and not entry.linkedSecret then
 				totalMS = totalMS + 1
 				local have = SC.CheckEntry and SC:CheckEntry(entry)
 				if have == true then collectedMS = collectedMS + 1 end

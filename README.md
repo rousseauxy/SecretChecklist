@@ -11,15 +11,17 @@ A World of Warcraft addon that helps you track and check your progress on secret
 - **Minimap Button**: Quick access with a draggable minimap button
 - **Collections Journal Tab**: Beautiful UI integrated into WoW's Collections interface
 - **Automated Checking**: Automatically checks your collection status for pre-defined secret collectibles
-- **Advanced Filtering**: Filter by status (All/Collected/Missing) and type (Mounts, Pets, Toys, Achievements, Quests, Transmog, Housing)
-- **Bulk Filter Controls**: Select All / Deselect All buttons for quick filter management
+- **Advanced Filtering**: Filter by status (All/Collected/Missing) and type (Mounts, Pets, Toys, Achievements, Quests, Transmog, Housing, Mysteries)
+- **Bulk Filter Controls**: Select All / Deselect All buttons for quick filter management; menu stays open while selecting
 - **Visual Feedback**: Icons are colored when collected, greyed out when missing
 - **Progress Bar**: Track your completion percentage across all filters
 - **Guides Tab**: Detailed view of each secret with description, wowhead guide link, and an interactive 3D model viewer
+- **Progress Steps**: Step-by-step walkthrough per secret with click-to-waypoint support (via TomTom or built-in arrow)
 - **3D Model Viewer**: Previews mounts, pets, transmog worn on your character, housing items, and weapons in a live model scene
 - **Click-to-Navigate**: Click any icon in the Overview to jump directly to its Guides entry; Ctrl+Click inserts an item or achievement link into your active chat box
+- **Mystery Category**: Track community secrets still being investigated (e.g. active discoveries from the Secret Finding Discord)
 - **Custom Lists**: Easily edit the list to track the secrets you want
-- **Pre-Configured**: Comes with 43 secrets ready to track
+- **Pre-Configured**: Comes with 46 secrets ready to track
 
 ## Installation
 
@@ -53,7 +55,7 @@ Both `/secrets` and `/secretchecklist` work as aliases:
 
 ## Tracked Secrets
 
-The addon comes pre-configured with **43 secret collectibles**:
+The addon comes pre-configured with **46 secret collectibles**:
 
 ### Mounts (18)
 - Blanchy's Reins
@@ -89,15 +91,17 @@ The addon comes pre-configured with **43 secret collectibles**:
 - Uuna
 - Wicker Pup
 
-### Toys (6)
+### Toys (7)
 - Black Dragon's Challenge Dummy
 - Cartel Transmorpher
 - Enlightened Hearthstone
 - Idol of Ohn'ahra
+- Starry-Eyed Goggles
 - Torch of Pyrreth
 - Tricked-Out-Thinking Cap
 
-### Achievements (4)
+### Achievements (5)
+- Azeroth's Greatest Detective
 - Leaders of Scholomance (Necromantic Knowledge)
 - Mind-Seeker
 - Whodunnit?
@@ -112,6 +116,9 @@ The addon comes pre-configured with **43 secret collectibles**:
 ### Housing (1)
 - Shu'halo Perspective Painting
 
+### Mysteries (1)
+- 12 Orb Mystery
+
 ### Saving Your Preferences
 
 Your filter preferences and minimap button position are automatically saved to SavedVariables when you log out or exit WoW:
@@ -121,6 +128,7 @@ Your filter preferences and minimap button position are automatically saved to S
 
 ## Version History
 
+- **1.7.0**: Added Mystery category for community-investigated secrets; added interactive Progress Steps with click-to-waypoint in Guides tab; added step-by-step walkthroughs for Blanchy's Reins, Kosumoth (Fathom Dweller + Hungering Claw), Keys to Incognitro, and 12 Orb Mystery; added Starry-Eyed Goggles (toy) and Azeroth's Greatest Detective (achievement); fixed Hungering Claw pet speciesID; filter Deselect All now shows all entries instead of hiding them; type filter menu stays open while toggling; unknown/uninvestigated secrets now shown in grey (same as missing); model viewer hidden for entry types without a 3D model
 - **1.6.3**: Fixed overview icon clicks not working; fixed guides scroll position resetting on tab switch; added toast alert when a secret is newly collected
 - **1.6.2**: Fixed secret icons showing incorrect collected/missing state on first open; fixed Terky model on the About tab not rendering until switching tabs
 - **1.6.1**: Added Secrets of Azeroth event entries: Tricked-Out-Thinking Cap, Torch of Pyrreth, Idol of Ohn'ahra (toys) and Whodunnit! (achievement); updated screenshots

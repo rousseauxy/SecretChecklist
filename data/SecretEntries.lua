@@ -70,7 +70,7 @@ SC.entries = {
 	{ name = "The Hivemind",                                 kind = "mount", mindSeeker = true, itemID = 156798, wowheadURL = "https://www.wowhead.com/guide/the-hivemind" },
 	{ name = "Thrayir, Eyes of the Siren",                   kind = "mount", mindSeeker = true, itemID = 232639, wowheadURL = "https://www.wowhead.com/news/how-to-obtain-thrayir-eyes-of-the-siren-in-patch-11-0-7-stormcrow-mount-354470" },
 	{ name = "Xy Trustee's Gearglider",                      kind = "mount", mindSeeker = true, itemID = 186639, wowheadURL = "https://www.wowhead.com/news/xy-trustees-gearglider-mount-and-cartel-transmorpher-toy-discovered-by-wow-379066" },
-	{ name = "Pattie's Cap",                                 kind = "mount", itemID = 208152, linkedSecret = true, wowheadURL = "https://www.wowhead.com/item=208152/patties-cap#guides" },
+	{ name = "Pattie's Cap",                                 kind = "mount", itemID = 208152, wowheadURL = "https://www.wowhead.com/item=208152/patties-cap#guides" },
 
 	-- ------------------------------------------------
 	-- PETS
@@ -86,14 +86,14 @@ SC.entries = {
 	{ name = "Sun Darter Hatchling",                         kind = "pet",   speciesID = 382, itemID = 142223, wowheadURL = "https://www.wowhead.com/guide/sun-darter-hatchling-secret-pet" },
 	{ name = "Terky",                                        kind = "pet",   speciesID = 1073, itemID = 22780, wowheadURL = "https://www.wowhead.com/object=244447/white-murloc-egg" },
 	{ name = "Hungering Claw (Kosumoth)",                    kind = "pet",   speciesID = 1926, itemID = 140261, linkedSecret = true,  stepsRef = "Fathom Dweller (Kosumoth)",  wowheadURL = "https://www.wowhead.com/guide/kosumoth-the-hungering-secret-mount-pet" },
-	{ name = "Gortham",                                      kind = "pet",   speciesID = 4967, itemID = 262774, linkedSecret = true,  wowheadURL = "https://www.wowhead.com/npc=256567/gortham" },
+	{ name = "Gortham",                                      kind = "pet",   speciesID = 4967, itemID = 262774,  wowheadURL = "https://www.wowhead.com/npc=256567/gortham" },
 
 	-- ------------------------------------------------
 	-- TOYS
 	-- ------------------------------------------------
 	{ name = "Black Dragon's Challenge Dummy",               kind = "toy",   mindSeeker = true, itemID = 201933, wowheadURL = "https://www.wowhead.com/item=201933/black-dragons-challenge-dummy#comments" },
 	{ name = "Enlightened Hearthstone",                      kind = "toy",   mindSeeker = true, itemID = 190196, wowheadURL = "https://www.wowhead.com/news/enlightened-hearthstone-hidden-hearthstone-toy-found-in-zereth-mortis-337545" },
-	{ name = "Cartel Transmorpher",                          kind = "toy",   mindSeeker = true, itemID = 249713, linkedSecret = true,  wowheadURL = "https://www.wowhead.com/news/xy-trustees-gearglider-mount-and-cartel-transmorpher-toy-discovered-by-wow-379066" },
+	{ name = "Cartel Transmorpher",                          kind = "toy",   mindSeeker = true, itemID = 249713,  wowheadURL = "https://www.wowhead.com/news/xy-trustees-gearglider-mount-and-cartel-transmorpher-toy-discovered-by-wow-379066" },
 	{ name = "Tricked-Out-Thinking Cap" ,                 	 kind = "toy",    itemID = 206696,  wowheadURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
 	{ name = "Torch of Pyrreth" ,                             kind = "toy",   itemID = 208092,  wowheadURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
 	{ name = "Idol of Ohn'ahra" ,                             kind = "toy",   itemID = 207730,  wowheadURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
@@ -105,7 +105,9 @@ SC.entries = {
 	{ name = "Leaders of Scholomance (Necromantic Knowledge)", kind = "achievement", mindSeeker = true, achievementID = 18558, wowheadURL = "https://www.wowhead.com/news/how-to-enter-old-scholomance-farm-once-removed-transmog-items-333981" },
 	{ name = "Mind-Seeker",                                  kind = "achievement", mindSeeker = true, achievementID = 62189, wowheadURL = "https://www.wowhead.com/news/join-the-secret-cabal-of-mind-seekers-new-secret-discovery-in-progress-380212" },
 	{ name = "You Conduit!",                                 kind = "achievement", mindSeeker = true, achievementID = 61585, wowheadURL = "https://www.wowhead.com/achievement=61585/you-conduit#comments:id=6300813" },
-  { name = "Whodunnit?", 																 kind = "achievement", achievementID = 18646, wowheadURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },	{ name = "Azeroth's Greatest Detective",                 kind = "achievement", achievementID = 40870, linkedSecret = true,  wowheadURL = "https://www.wowhead.com/achievement=40870/azeroths-greatest-detective" },	-- ------------------------------------------------
+  { name = "Whodunnit?",                                  kind = "achievement", achievementID = 18646, wowheadURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
+	{ name = "Azeroth's Greatest Detective",                 kind = "achievement", achievementID = 40870,  wowheadURL = "https://www.wowhead.com/achievement=40870/azeroths-greatest-detective" },
+	-- ------------------------------------------------
 	
 	-- ------------------------------------------------
 	-- TRANSMOG
@@ -120,7 +122,7 @@ SC.entries = {
 	-- ------------------------------------------------
 	-- MYSTERIES
 	-- ------------------------------------------------
-	{ name = "12 Orb Mystery (Felcycle)",                    kind = "mystery", wowheadURL = "https://www.wowhead.com/guide/secrets/ratts-revenge-incognitro-felcycle-guide",
+	{ name = "12 Orb Mystery",                    kind = "mystery", wowheadURL = "https://www.wowhead.com/guide/secrets/ratts-revenge-incognitro-felcycle-guide",
 	  steps = {
 	    { label = "Orb 1 – Love",           questID = 84676, note = "N. Barrens, Humble Monument @ 55.0, 40.2",               waypoint = { mapID = 10,   x = 0.5500, y = 0.4020 } },
 	    { label = "Orb 2 – Pray",           questID = 84677, note = "BFA Vale of Eternal Blossoms @ 83.69, 27.58",             waypoint = { mapID = 1530, x = 0.8369, y = 0.2758 } },
