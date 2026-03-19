@@ -639,10 +639,8 @@ function SC:BuildGuidesPanel(frame, L)
 		local status = SC.GetEntryStatus and SC:GetEntryStatus(entry) or "unknown"
 		if status == "collected" then
 			detailName:SetTextColor(1, 0.82, 0)
-		elseif status == "missing" then
-			detailName:SetTextColor(0.6, 0.6, 0.6)
 		else
-			detailName:SetTextColor(1, 1, 1)
+			detailName:SetTextColor(0.6, 0.6, 0.6)
 		end
 
 		if status == "collected" then
@@ -964,10 +962,8 @@ function SC:BuildGuidesPanel(frame, L)
 				row.lbl:SetText(entryName)
 				if isCol then
 					row.lbl:SetTextColor(1, 0.82, 0)
-				elseif isMis then
-					row.lbl:SetTextColor(0.5, 0.5, 0.5)
 				else
-					row.lbl:SetTextColor(0.9, 0.9, 0.9)
+					row.lbl:SetTextColor(0.5, 0.5, 0.5)
 				end
 
 				if isCol then

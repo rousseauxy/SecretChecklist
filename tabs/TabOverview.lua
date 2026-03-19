@@ -349,12 +349,9 @@ function SC:BuildOverviewPanel(frame, L)
 			if isCollected then
 				button.name:SetTextColor(1, 0.82, 0, 1)
 				button.name:SetShadowColor(0, 0, 0, 1)
-			elseif isMissing then
+			else
 				button.name:SetTextColor(0.33, 0.27, 0.20, 1)
 				button.name:SetShadowColor(0, 0, 0, 0.33)
-			else
-				button.name:SetTextColor(1.0, 0.82, 0.0, 1)
-				button.name:SetShadowColor(0, 0, 0, 1)
 			end
 
 			local x = START_OFFSET_X + col * (BUTTON_WIDTH + BUTTON_PADDING_X)
