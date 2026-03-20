@@ -299,6 +299,7 @@ function SC:GetStepStatus(step)
 	if step.itemID then
 		local have = GetItemCount(step.itemID, true)  -- true = include bank
 		if have >= (step.count or 1) then return "ready" end
+		if PlayerHasToy and PlayerHasToy(step.itemID) then return "done" end
 	end
 	return "missing"
 end

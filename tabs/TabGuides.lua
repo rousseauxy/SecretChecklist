@@ -324,6 +324,91 @@ function SC:BuildGuidesPanel(frame, L)
 	detailDesc:SetTextColor(0.8, 0.8, 0.8)
 	detailDesc:SetWordWrap(true)
 
+	-- ---- Requirement cross-reference links (shown between description and steps) ----
+	-- reqLastWidget tracks the bottommost visible widget above the steps header;
+	-- updated in Guides_ShowDetail each time an entry is displayed.
+	local reqLastWidget = detailDesc
+
+	local function MakeReqLinkRow()
+		local row = CreateFrame("Frame", nil, detailContent)
+		row:SetHeight(20)
+		row:Hide()
+
+		local lbl = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+		lbl:SetPoint("LEFT", row, "LEFT", 0, 0)
+		lbl:SetPoint("TOP",  row, "TOP",  0, 0)
+		lbl:SetTextColor(0.55, 0.55, 0.55)
+		row.lbl = lbl
+
+		local btn = CreateFrame("Button", nil, row)
+		local btnHL = btn:CreateTexture(nil, "HIGHLIGHT")
+		btnHL:SetAllPoints()
+		btnHL:SetColorTexture(0.4, 0.78, 1, 0.06)
+		btn:SetHighlightTexture(btnHL)
+		local btnLbl = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		btnLbl:SetAllPoints()
+		btnLbl:SetJustifyH("LEFT")
+		btnLbl:SetTextColor(0.4, 0.78, 1)
+		btn.lbl = btnLbl
+		btn:SetPoint("LEFT",   lbl, "RIGHT",  4, 0)
+		btn:SetPoint("RIGHT",  row, "RIGHT",  0, 0)
+		btn:SetPoint("TOP",    row, "TOP",    0, 0)
+		btn:SetPoint("BOTTOM", row, "BOTTOM", 0, 0)
+		btn:SetScript("OnEnter", function(self)
+			if not self.targetEntry then return end
+			local e  = self.targetEntry
+			local kc = ({
+				mount={0.6,0.8,1}, pet={0.6,1,0.6}, toy={1,0.6,1},
+				achievement={1,0.82,0}, quest={1,0.7,0.3}, transmog={0.8,0.6,1},
+				housing={1,0.85,0.5}, mystery={0.7,0.5,1},
+			})[e.kind] or {0.8,0.8,0.8}
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:SetText(e.name or "?", 1, 0.82, 0)
+			local kindStr = e.kind and (e.kind:sub(1,1):upper()..e.kind:sub(2)) or ""
+			GameTooltip:AddLine(kindStr, kc[1], kc[2], kc[3])
+			local st = SC.GetEntryStatus and SC:GetEntryStatus(e) or "unknown"
+			if st == "collected" then
+				GameTooltip:AddLine(L["TOOLTIP_COLLECTED"] or "Collected", 0, 1, 0)
+			elseif st == "missing" then
+				GameTooltip:AddLine(L["TOOLTIP_NOT_COLLECTED"] or "Not collected", 1, 0, 0)
+			end
+			GameTooltip:AddLine("Click to view", 0.55, 0.55, 0.55)
+			GameTooltip:Show()
+		end)
+		btn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+		btn:SetScript("OnClick", function(self)
+			local target = self.targetEntry
+			if not target then return end
+			-- Find and click the matching list row if it is visible in the current filter
+			for _, r in pairs(guides_rowButtons) do
+				if r.entry == target then
+					r:Click()
+					for i, e in ipairs(guides_entries) do
+						if e == target then
+							local visH     = scrollFrame:GetHeight() or 0
+							local targetY  = (i - 1) * GP_ROW_H
+							local scrollTo = math_max(0, targetY - math_max(0, (visH - GP_ROW_H) / 2))
+							local maxScroll = math_max(0, #guides_entries * GP_ROW_H - visH)
+							scrollTo = math_min(scrollTo, maxScroll)
+							guides_scrollPos = scrollTo
+							scrollFrame:SetVerticalScroll(scrollTo)
+							scrollBar:SetValue(scrollTo)
+							break
+						end
+					end
+					return
+				end
+			end
+			-- Entry not in current filter; show its detail directly
+			Guides_ShowDetail(target)
+		end)
+		row.btn = btn
+		return row
+	end
+
+	local requiresRow    = MakeReqLinkRow()
+	local requiredForRow = MakeReqLinkRow()
+
 	-- Wowhead guide link button — same visual template as the Filter dropdown
 	-- DropdownButton + WowStyle1FilterDropdownTemplate gives the identical look.
 	-- SetScript("OnClick") replaces the built-in dropdown-open handler entirely,
@@ -424,7 +509,15 @@ function SC:BuildGuidesPanel(frame, L)
 	-- ==============================================
 
 	local STEP_ROW_H  = 18
-	local MAX_STEPS   = 14
+	local MAX_STEPS
+	do
+		local maxFound = 0
+		for _, e in ipairs(SC.entries or {}) do
+			local steps = e.steps
+			if steps and #steps > maxFound then maxFound = #steps end
+		end
+		MAX_STEPS = math.max(maxFound, 1)
+	end
 
 	-- Forward-declare so step-row OnClick closures can reference these before they are defined below.
 	local Guides_RelayoutSteps, Guides_UpdateDetailScroll
@@ -659,9 +752,9 @@ function SC:BuildGuidesPanel(frame, L)
 	-- Returns the total pixel height consumed (for Guides_UpdateDetailScroll).
 	Guides_RelayoutSteps = function()
 		if currentNumSteps == 0 then return 0 end
-		-- Anchor the header below detailDesc
+		-- Anchor the header below the last visible requirement row (or detailDesc if none)
 		stepsHeader:ClearAllPoints()
-		stepsHeader:SetPoint("TOPLEFT", detailDesc,    "BOTTOMLEFT", 0, -12)
+		stepsHeader:SetPoint("TOPLEFT", reqLastWidget, "BOTTOMLEFT", 0, -12)
 		stepsHeader:SetPoint("RIGHT",   detailContent, "RIGHT",      0,    0)
 		local totalH = 12 + 20 + 4   -- pre-gap + header height + gap after header
 		if stepsCollapsed then
@@ -715,6 +808,8 @@ function SC:BuildGuidesPanel(frame, L)
 		h = h + 16 + 6               -- status line
 		if hasSource then h = h + 40 + 6 end   -- source  (~2 wrapped lines)
 		if hasDesc   then h = h + 60 + 6 end   -- desc    (~4 wrapped lines)
+		if requiresRow:IsShown()    then h = h + 6 + 20 end   -- requires link row
+		if requiredForRow:IsShown() then h = h + 4 + 20 end   -- requiredFor link row
 		if numSteps > 0 then
 			h = h + Guides_RelayoutSteps()   -- pre-gap + header + step rows + open note panels
 		end
@@ -740,6 +835,9 @@ function SC:BuildGuidesPanel(frame, L)
 			detailStatus:SetText("")
 			detailSource:SetText("")
 			detailDesc:SetText("")
+			requiresRow:Hide()
+			requiredForRow:Hide()
+			reqLastWidget = detailDesc
 			linkBtn.currentURL = ""
 			linkBtn:SetEnabled(false)
 			copyDialog:Hide()
@@ -844,6 +942,54 @@ function SC:BuildGuidesPanel(frame, L)
 		end
 		detailSource:SetText(sourceText)
 		detailDesc:SetText(descText)
+		-- ---- Requirement cross-reference links ----
+		requiresRow:Hide()
+		requiredForRow:Hide()
+		reqLastWidget = detailDesc
+		local prevReqWidget = detailDesc
+		if type(entry.requires) == "string" and entry.requires ~= "" then
+			local target
+			for _, e in ipairs(SC.entries or {}) do
+				if e.name == entry.requires then target = e; break end
+			end
+			requiresRow.lbl:SetText("Requires:")
+			requiresRow.btn.targetEntry = target
+			requiresRow.btn.lbl:SetText(entry.requires)
+			if target then
+				requiresRow.btn.lbl:SetTextColor(0.4, 0.78, 1)
+				requiresRow.btn:SetEnabled(true)
+			else
+				requiresRow.btn.lbl:SetTextColor(0.55, 0.55, 0.55)
+				requiresRow.btn:SetEnabled(false)
+			end
+			requiresRow:ClearAllPoints()
+			requiresRow:SetPoint("TOPLEFT",  prevReqWidget, "BOTTOMLEFT", 0, -6)
+			requiresRow:SetPoint("TOPRIGHT", detailContent, "TOPRIGHT",  -6,  0)
+			requiresRow:Show()
+			prevReqWidget = requiresRow
+			reqLastWidget = requiresRow
+		end
+		if type(entry.requiredFor) == "string" and entry.requiredFor ~= "" then
+			local target
+			for _, e in ipairs(SC.entries or {}) do
+				if e.name == entry.requiredFor then target = e; break end
+			end
+			requiredForRow.lbl:SetText("Required for:")
+			requiredForRow.btn.targetEntry = target
+			requiredForRow.btn.lbl:SetText(entry.requiredFor)
+			if target then
+				requiredForRow.btn.lbl:SetTextColor(0.4, 0.78, 1)
+				requiredForRow.btn:SetEnabled(true)
+			else
+				requiredForRow.btn.lbl:SetTextColor(0.55, 0.55, 0.55)
+				requiredForRow.btn:SetEnabled(false)
+			end
+			requiredForRow:ClearAllPoints()
+			requiredForRow:SetPoint("TOPLEFT",  prevReqWidget, "BOTTOMLEFT", 0, -4)
+			requiredForRow:SetPoint("TOPRIGHT", detailContent, "TOPRIGHT",  -6,  0)
+			requiredForRow:Show()
+			reqLastWidget = requiredForRow
+		end
 		-- ---- Progress Steps ----
 		-- Resolve stepsRef: if this entry delegates its steps to another entry, find that entry.
 		local stepsEntry = entry
@@ -855,13 +1001,16 @@ function SC:BuildGuidesPanel(frame, L)
 		local steps = stepsEntry.steps
 		local numSteps = steps and #steps or 0
 		currentNumSteps = numSteps
+		-- If the entry opts into stepsOverrideOnDone, force all steps green once the entry itself is complete.
+		-- Only use this for entries whose steps have no questIDs and get consumed on completion (e.g. Shu'halo fortunes).
+		local entryDone = entry.stepsOverrideOnDone and SC.GetEntryStatus and (SC:GetEntryStatus(entry)) == "collected"
 		local doneCount = 0
 		for i = 1, MAX_STEPS do
 			local step = steps and steps[i]
 			local row  = stepRows[i]
 			local np   = row.notePanel
 			if step then
-				local st = SC.GetStepStatus and SC:GetStepStatus(step) or "missing"
+				local st = entryDone and "done" or (SC.GetStepStatus and SC:GetStepStatus(step) or "missing")
 				-- Status dot colour + label text colour
 				if st == "done" then
 					doneCount = doneCount + 1
