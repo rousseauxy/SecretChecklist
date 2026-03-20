@@ -416,7 +416,7 @@ function SC:BuildGuidesPanel(frame, L)
 	local linkBtn = CreateFrame("DropdownButton", nil, detailPane, "WowStyle1FilterDropdownTemplate")
 	linkBtn:SetSize(90, 22)
 	linkBtn:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT", 0, GP_PAD)
-	linkBtn:SetText("Wowhead")
+	linkBtn:SetText("Guide")
 	linkBtn.currentURL = ""
 	linkBtn:SetEnabled(false)  -- greyed until a URL is present
 	-- Hide the dropdown arrow — iterate regions to find it by texture path/atlas
@@ -432,7 +432,7 @@ function SC:BuildGuidesPanel(frame, L)
 	end
 	linkBtn:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:SetText("Wowhead Guide", 1, 0.82, 0)
+		GameTooltip:SetText("Guide", 1, 0.82, 0)
 		if self.currentURL ~= "" then
 			GameTooltip:AddLine("Click to copy link", 0.8, 0.8, 0.8)
 		else
@@ -860,7 +860,7 @@ function SC:BuildGuidesPanel(frame, L)
 		-- Always start on Info tab when switching entries; reset model tab state
 		SwitchDetailTab("info")
 		SetModelTabEnabled(false)
-		linkBtn.currentURL = entry.wowheadURL or ""
+		linkBtn.currentURL = entry.guideURL or ""
 		linkBtn:SetEnabled(linkBtn.currentURL ~= "")
 
 		local icon = SC.GetEntryIcon and SC:GetEntryIcon(entry) or "Interface\\Icons\\INV_Misc_QuestionMark"

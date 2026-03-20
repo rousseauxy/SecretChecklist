@@ -12,7 +12,7 @@ SC.entries = {
 	-- ------------------------------------------------
 	-- MOUNTS
 	-- ------------------------------------------------
-	{ name = "Blanchy's Reins", kind = "mount", mindSeeker = true, itemID = 182614, wowheadURL = "https://www.wowhead.com/news/sinrunner-blanchy-mount-obtained-special-mounting-animation-317673",
+	{ name = "Blanchy's Reins", kind = "mount", mindSeeker = true, itemID = 182614, guideURL = "https://www.wowhead.com/news/sinrunner-blanchy-mount-obtained-special-mounting-animation-317673",
 	  steps = {
 		{ label = "Day 1 – Handful of Oats (×8)",          questID = 62038, itemID = 182581, count = 8, note = "Westfall @ 56.50, 36.68 – scattered around Saldean's Farm (requires level 55)", waypoint = { mapID = 52, x = 0.5650, y = 0.3668 } },
 		{ label = "Day 2 – Grooming Brush",                questID = 62042, itemID = 182585, count = 1, note = "Revendreth @ 63.26, 61.63 – talk to Snickersnee",                                                                                                              waypoint = { mapID = 1525, x = 0.6326, y = 0.6163 } },
@@ -22,7 +22,7 @@ SC.entries = {
 		{ label = "Day 6 – Dredhollow Apple (×3)",         questID = 62050, itemID = 179271, count = 3, note = "Revendreth @ 40.86, 46.74 – bought from Mims",                                                                                                                    waypoint = { mapID = 1525, x = 0.4086, y = 0.4674 } },
 	  },
 	},
-	{ name = "Bound Shadehound",                             kind = "mount", mindSeeker = true, itemID = 184168, camScale = 1.5, wowheadURL = "https://www.wowhead.com/news/bound-shadehound-mount-craftable-maw-mount-in-patch-9-0-5-320988",
+	{ name = "Bound Shadehound",                             kind = "mount", mindSeeker = true, itemID = 184168, camScale = 1.5, guideURL = "https://warcraft-secrets.com/guides/bound-shadehound",
 	  steps = {
 	    { label = "Complete Maw intro + 'Rule 5: Be Audacious' + 'Rule 6: Concealment is Everything'", note = "Prereqs to access Perdition Hold (Rule 5, questID 60284) and The Beastwarrens (Rule 6, questID 60285). Both have daily lockouts." },
 	    { label = "Reach Appreciative rep with Ve'nari — buy Animated Levitating Chain + Stygia Dowser", itemID = 184653, note = "Ve'nari @ 46.9, 41.7 in The Maw. Animated Levitating Chain (184653, 1000 Stygia) teaches grapple hooks. Stygia Dowser (184870, 1550 Stygia) is required for the Rune Puzzle and later Stygia farming.", waypoint = { mapID = 1543, x = 0.469, y = 0.417 } },
@@ -40,7 +40,7 @@ SC.entries = {
 	    { label = "Use Feral Shadehound — perform rune binding ritual (order from Crumbling Stele) → Bound Shadehound", itemID = 184168, note = "Input runes in the order shown on the Crumbling Stele. Retry allowed after 1 min on failure." },
 	  },
 	},
-	{ name = "Crimson Tidestallion",                         kind = "mount", mindSeeker = true, itemID = 169202, wowheadURL = "https://www.wowhead.com/item=169202/crimson-tidestallion#comments:id=3130821",
+	{ name = "Crimson Tidestallion",                         kind = "mount", mindSeeker = true, itemID = 169202, guideURL = "https://warcraft-secrets.com/guides/mrrls-secret-stash",
 	  steps = {
 	    { label = "Unlock Mrrl — escort quest 'A Safer Place'",       questID = 55530, note = "Nazjatar @ 48, 45 — pick up 'A Safer Place' and escort Mrrl to Newhome (Horde) or Mezzamere (Alliance). Follow-up 'No Backs' has you buy one item from each of the 4 murloc traders.", waypoint = { mapID = 1355, x = 0.480, y = 0.450 } },
 	    { label = "Get Azsh'ari Stormsurger Cape (Benthic cloak)",     itemID = 169489, note = "Nazjatar — reward from world quests/rares, or buy a Benthic Cloak (5 Prismatic Manapearls) from Finder Palta/Artisan Itanu and hope for the Stormsurger Cape. Equip it to see traders' Special Stocks." },
@@ -50,7 +50,7 @@ SC.entries = {
 	    { label = "Wait for Crimson Tidestallion in Mrrl's Special Stock & buy it", itemID = 169202, note = "Nazjatar — mount only appears in Mrrl's Special Stock on certain days. Equip Azsh'ari Stormsurger Cape and check daily, or join the Achievements Discord for notifications. Buy with 4× Cultist Pinky Finger + 2× Pulsating Blood Stone + 1× Hungry Herald's Tentacle Taco." },
 	  },
 	},
-	{ name = "Fathom Dweller (Kosumoth)",                    kind = "mount", mindSeeker = true, mountID = 838, wowheadURL = "https://www.wowhead.com/guide/kosumoth-the-hungering-secret-mount-pet",
+	{ name = "Fathom Dweller (Kosumoth)",                    kind = "mount", mindSeeker = true, mountID = 838, guideURL = "https://www.wowhead.com/guide/kosumoth-the-hungering-secret-mount-pet",
 	  steps = {
 	    { label = "1. Talk to Drak'thul",          questID = 43715, note = "Broken Shore @ 37.00, 71.00 – talk until he tells you to go away",              waypoint = { mapID = 646, x = 0.3700, y = 0.7100 } },
 	    { label = "2. Weathered Relic from cave",  questID = 43725, note = "Broken Shore @ 58.54, 54.05 – loot it from the cave",                            waypoint = { mapID = 646, x = 0.5854, y = 0.5405 } },
@@ -68,8 +68,8 @@ SC.entries = {
 	    { label = "14. Activate Kosumoth",         questID = 45479, note = "Eye of Azshara @ 46.00, 52.00 – reward cycles between Fathom Dweller and Hungering Claw biweekly", waypoint = { mapID = 790, x = 0.4600, y = 0.5200 } },
 	  },
 	},
-	{ name = "Felreaver Deathcycle (Voidfire Deathcycle)",   kind = "mount", mindSeeker = true, itemID = 211089, wowheadURL = "https://www.wowhead.com/news/voidfire-deathcycle-earned-from-horrific-visions-in-patch-11-1-5-375774" },
-	{ name = "Keys to Incognitro, the Indecipherable Felcycle", kind = "mount", mindSeeker = true, itemID = 229348, wowheadURL = "https://www.wowhead.com/guide/secrets/ratts-revenge-incognitro-felcycle-guide",
+	{ name = "Felreaver Deathcycle (Voidfire Deathcycle)",   kind = "mount", mindSeeker = true, itemID = 211089, guideURL = "https://www.wowhead.com/news/voidfire-deathcycle-earned-from-horrific-visions-in-patch-11-1-5-375774" },
+	{ name = "Keys to Incognitro, the Indecipherable Felcycle", kind = "mount", mindSeeker = true, itemID = 229348, guideURL = "https://www.wowhead.com/guide/secrets/ratts-revenge-incognitro-felcycle-guide",
 	  steps = {
 	    { label = "Orb 1 – Love",           questID = 84676, note = "Earn 3× The Light of Their Love buff – visit Humble Monument (N. Barrens @ 55.0, 40.2) and Olgra (Nagrand or Maldraxxus) with Torch of Pyrreth active",                                                                 waypoint = { mapID = 10,   x = 0.5500, y = 0.4020 } },
 	    { label = "Orb 2 – Pray",           questID = 84677, note = "BFA Vale of Eternal Blossoms @ 83.69, 27.58 – Ny'alotha Obelisk; summon Perky Pug with Dogg/Yipp-Saron Costume, activate N'Zoth eye buff, then /pray targeting the Obelisk",                                           waypoint = { mapID = 1530, x = 0.8369, y = 0.2758 } },
@@ -85,8 +85,8 @@ SC.entries = {
 	    { label = "Orb 12 – Footlocker",                      note = "Hidden Footlocker near the 12th unlit pillar – visible only with Gift of Oddsight + Starry-Eyed Goggles buffs active; requires Spare Key (item 262559) which has not yet been found" },
 	  },
 	},
-	{ name = "Long-Forgotten Hippogryph",                    kind = "mount", mindSeeker = true, itemID = 138258, wowheadURL = "https://www.wowhead.com/guide/reins-of-the-long-forgotten-hippogryph-mount" },
-	{ name = "Lucid Nightmare",                              kind = "mount", mindSeeker = true, itemID = 151623, wowheadURL = "https://www.wowhead.com/guide/lucid-nightmare-secret-mount",
+	{ name = "Long-Forgotten Hippogryph",                    kind = "mount", mindSeeker = true, itemID = 138258, guideURL = "https://www.wowhead.com/guide/reins-of-the-long-forgotten-hippogryph-mount" },
+	{ name = "Lucid Nightmare",                              kind = "mount", mindSeeker = true, itemID = 151623, guideURL = "https://www.wowhead.com/guide/lucid-nightmare-secret-mount",
 	  steps = {
 	    { label = "Note #1 – Dalaran (start)",   questID = 47826, note = "Broken Isles Dalaran – read Inconspicuous Note on table at the top of Curiosities & Moore",            waypoint = { mapID = 627, x = 0.4100, y = 0.3500 } },
 	    { label = "Note #1 – Ulduar light puzzle", questID = 47837, note = "Ulduar Scrapyard (NW corner) – click Rusty Lever to reveal 20×20 grid of lights; click lights to form the correct pattern, then loot the Inconspicuous Note",  waypoint = { mapID = 117, x = 0.5200, y = 0.2800 } },
@@ -98,15 +98,15 @@ SC.entries = {
 	    { label = "Note #7 – Forgotten Crypt",   questID = 47885, note = "Karazhan Catacombs – Pit of Criminals; loot the chest on the pile of bones to receive the Lucid Nightmare mount",                                           waypoint = { mapID = 46,  x = 0.4100, y = 0.9000 } },
 	  },
 	},
-	{ name = "Mimiron's Jumpjets",                           kind = "mount", mindSeeker = true, itemID = 210022, wowheadURL = "https://www.wowhead.com/news/secrets-of-azeroth-community-clue-4-solution-mimirons-jumpjets-mount-now-334998" },
-	{ name = "Nazjatar Blood Serpent",                       kind = "mount", mindSeeker = true, itemID = 161479, wowheadURL = "https://www.wowhead.com/item=161479/nazjatar-blood-serpent",
+	{ name = "Mimiron's Jumpjets",                           kind = "mount", mindSeeker = true, itemID = 210022, guideURL = "https://www.wowhead.com/news/secrets-of-azeroth-community-clue-4-solution-mimirons-jumpjets-mount-now-334998" },
+	{ name = "Nazjatar Blood Serpent",                       kind = "mount", mindSeeker = true, itemID = 161479, guideURL = "https://www.wowhead.com/item=161479/nazjatar-blood-serpent",
 	  steps = {
 	    { label = "Collect 20× Abyssal Fragments",          itemID = 161344, note = "Drop from any creature in Kul Tiras or Zandalar (not soulbound — can also buy on AH). Farm any BfA-zone mobs.", count = 20 },
 	    { label = "Combine at Altar of the Abyss → Abhorrent Essence of the Abyss", itemID = 161345, note = "Stormsong Valley — cave hidden behind a waterfall. Enter @ 73.6, 23.3; altar @ 74.6, 21.8. Combine 20× Abyssal Fragments to create the Essence.", waypoint = { mapID = 942, x = 0.736, y = 0.233 } },
 	    { label = "Summon & defeat Adherent of the Abyss — claim mount", itemID = 161479, note = "Stormsong Valley — cave @ 46.6, 36.2; use Abhorrent Essence of the Abyss in front of The Abyssal Flame @ 45.1, 36.8. Defeat the Adherent (bring a friend if undergeared). Mount drops for the summoner only; Aether of the Abyss drops for the whole party.", waypoint = { mapID = 942, x = 0.466, y = 0.362 } },
 	  },
 	},
-	{ name = "Nilganihmaht Control Ring",                    kind = "mount", mindSeeker = true, itemID = 186713,  camScale = 3, wowheadURL = "https://www.wowhead.com/news/hand-of-nilganihmaht-secret-mount-in-chains-of-domination-322780",
+	{ name = "Nilganihmaht Control Ring",                    kind = "mount", mindSeeker = true, itemID = 186713,  camScale = 3, guideURL = "https://www.wowhead.com/news/hand-of-nilganihmaht-secret-mount-in-chains-of-domination-322780",
 	  steps = {
 	    -- Stone Ring: 4 Quartered Ancient Rings + combine
 	    { label = "Wait for Necrolord Assault 'Putting a Plan Together' — needed for Overcharged Centurion", questID = 63545, note = "The Necrolord Assault cycles every few weeks. The Overcharged Centurion it unlocks lets you reach two of the four Quartered Ancient Rings.", waypoint = { mapID = 1543, x = 0.350, y = 0.697 } },
@@ -127,7 +127,7 @@ SC.entries = {
 	    { label = "Enter The Rift — place all 5 rings on Hand of Nilganihmaht — 'Gotta Hand It To Ya'", questID = 64202, note = "Cave entrance at @ 25.6, 32.0 in The Rift. Place each ring on a finger of the hand. Placing all five triggers the quest and awards the mount. You can place rings gradually across multiple rift visits.", waypoint = { mapID = 1543, x = 0.256, y = 0.320 } },
 	  },
 	},
-	{ name = "Otto",                                         kind = "mount", mindSeeker = true, itemID = 198870, wowheadURL = "https://www.wowhead.com/news/otto-mount-found-fish-around-the-dragon-isles-for-otter-mount-330658",
+	{ name = "Otto",                                         kind = "mount", mindSeeker = true, itemID = 198870, guideURL = "https://www.wowhead.com/news/otto-mount-found-fish-around-the-dragon-isles-for-otter-mount-330658",
 	  steps = {
 	    { label = "Farm Gold Coin of the Isles (×1)",          itemID = 199340, note = "Farm Coins of the Isles across Dragon Isles. Best method: use Elusive Croaking Crabs at Empty Crab Traps in Forbidden Reach (respawn 5–10 min) @ 23.2, 66.8 / 47.8, 90.9 / 70.5, 41.5. Copper/Silver coins can be exchanged at The Great Swog (Ohn'ahran Plains @ 82.2, 73.2).", waypoint = { mapID = 2151, x = 0.232, y = 0.668 } },
 	    { label = "Get Aquatic Shades toy from The Great Swog", itemID = 202042, note = "Ohn'ahran Plains @ 82.2, 73.2 — trade your Gold Coin of the Isles to The Great Swog for an Immaculate Sac of Swog Treasures, then open it to receive the Aquatic Shades toy.", waypoint = { mapID = 2023, x = 0.822, y = 0.732 } },
@@ -139,7 +139,7 @@ SC.entries = {
 	    { label = "Return Overflowing Fish Barrel & claim Otto",  questID = 72738, note = "Waking Shores @ 20.3, 39.7 — return the filled barrel to Hissing Grotto; Otto appears. Pick up quest 'The Way to an Otto's Heart' and complete it to receive the mount!", waypoint = { mapID = 2022, x = 0.203, y = 0.397 } },
 	  },
 	},
-	{ name = "Riddler's Mind-Worm",                          kind = "mount", mindSeeker = true, itemID = 147835, wowheadURL = "https://www.wowhead.com/guide/riddlers-mind-worm-secret-mount",
+	{ name = "Riddler's Mind-Worm",                          kind = "mount", mindSeeker = true, itemID = 147835, guideURL = "https://www.wowhead.com/guide/riddlers-mind-worm-secret-mount",
 	  steps = {
 	    { label = "Page 1 (page 9) – Dalaran",           questID = 45470, note = "Broken Isles Dalaran – Legerdemain Lounge; Page 9 on a bookshelf on the ground floor",                                 waypoint = { mapID = 627,  x = 0.5130, y = 0.3670 } },
 	    { label = "Page 2 (page 78) – Duskwood",         questID = 47207, note = "Duskwood @ 49.0, 33.0 – Page 78 on the table near the moonwell in Twilight Grove",                                     waypoint = { mapID = 47,   x = 0.4900, y = 0.3300 } },
@@ -152,7 +152,7 @@ SC.entries = {
 	    { label = "Loot Gift of the Mind-Seekers",        questID = 47213, note = "Westfall @ 30.5, 28.0 – west coast; loot the Gift of the Mind-Seekers chest to receive the mount",                    waypoint = { mapID = 52,   x = 0.3050, y = 0.2800 } },
 	  },
 	},
-	{ name = "Slime Serpent",                                kind = "mount", mindSeeker = true, mountID = 1445, wowheadURL = "https://www.wowhead.com/guide/shadowlands-mount-guide-10510#:~:text=The%20Necrotic%20Wake-,Slime%20Serpent,-Description%3A%20This",
+	{ name = "Slime Serpent",                                kind = "mount", mindSeeker = true, mountID = 1445, guideURL = "https://warcraft-secrets.com/guides/slime-serpent",
 	  steps = {
 	    { label = "Enter Plaguefall solo on Heroic or Mythic difficulty", note = "Maldraxxus dungeon entrance.", waypoint = { mapID = 1536, x = 0.438, y = 0.722 } },
 	    { label = "Defeat Globgrog" },
@@ -162,7 +162,7 @@ SC.entries = {
 	    { label = "Take the transport pad to the surface — interact with the Curious Slime Serpent in the slime pools" },
 	  },
 	},
-	{ name = "The Hivemind",                                 kind = "mount", mindSeeker = true, itemID = 156798, wowheadURL = "https://www.wowhead.com/guide/the-hivemind",
+	{ name = "The Hivemind",                                 kind = "mount", mindSeeker = true, itemID = 156798, guideURL = "https://www.wowhead.com/guide/the-hivemind",
 	  steps = {
 	    { label = "Get Talisman of True Treasure Tracking",         itemID = 27944,  note = "Buy from Griftah in Shattrath (100g). Equip it — nearby items glow, leading to 4 monocle puzzles.",       waypoint = { mapID = 111, x = 0.658, y = 0.682 } },
 	    { label = "Red Crystal Monocle — Vashj'ir Trading Game",    itemID = 156725, note = "Vashj'ir: buy Seashells from Sir Finley Mrrgglton (total 2380g) and trade through 4 item chains (5–60 min timers).",  waypoint = { mapID = 205, x = 0.440, y = 0.200 } },
@@ -184,7 +184,7 @@ SC.entries = {
 	    { label = "Channel on The Hivemind — Receive Mount",        itemID = 156798, note = "Final room: all 5 players stand on the 5 purple spots and channel simultaneously. The Hivemind is awarded to everyone's bags!" },
 	  },
 	},
-	{ name = "Thrayir, Eyes of the Siren",                   kind = "mount", mindSeeker = true, itemID = 232639, wowheadURL = "https://www.wowhead.com/news/how-to-obtain-thrayir-eyes-of-the-siren-in-patch-11-0-7-stormcrow-mount-354470",
+	{ name = "Thrayir, Eyes of the Siren",                   kind = "mount", mindSeeker = true, itemID = 232639, guideURL = "https://warcraft-secrets.com/guides/thrayir-eyes-of-the-siren",
 	  steps = {
 	    { label = "Complete 'A Song of Secrets' Siren Isle questline", note = "Required to unlock the Runecaster's Eye spell, which lets you see Rune Storm Caches for Thunderous Fragments." },
 	    { label = "Enter the Seafury Tempest — speak with Suzie Boltwrench", note = "All 5 runekeys can only be obtained during the Seafury Tempest.", waypoint = { mapID = 2369, x = 0.690, y = 0.492 } },
@@ -197,7 +197,7 @@ SC.entries = {
 	    { label = "Use all 5 runekeys to break Thrayir's seal — claim the mount", itemID = 232639, waypoint = { mapID = 2375, x = 0.727, y = 0.614 } },
 	  },
 	},
-	{ name = "Xy Trustee's Gearglider",                      kind = "mount", mindSeeker = true, itemID = 186639, wowheadURL = "https://www.wowhead.com/news/xy-trustees-gearglider-mount-and-cartel-transmorpher-toy-discovered-by-wow-379066",
+	{ name = "Xy Trustee's Gearglider",                      kind = "mount", mindSeeker = true, itemID = 186639, guideURL = "https://warcraft-secrets.com/guides/xy-trustees-gearglider",
 	  steps = {
 	    { label = "Reach Renown 8 with Manaforge Vandals", note = "Earn reputation via Manaforge Omega raid and world quests in K'aresh." },
 	    { label = "Obtain Deal: Cartel Ba", itemID = 249702, note = "Crafted by players or purchased from the Auction House." },
@@ -210,12 +210,12 @@ SC.entries = {
 	    { label = "Speak with Zo'turu — complete 'Someone Like Me' for Gearglider + Cartel Transmorpher", waypoint = { mapID = 2371, x = 0.420, y = 0.222 } },
 	  },
 	},
-	{ name = "Pattie's Cap",                                 kind = "mount", itemID = 208152, wowheadURL = "https://www.wowhead.com/item=208152/patties-cap#guides" },
+	{ name = "Pattie's Cap",                                 kind = "mount", itemID = 208152, guideURL = "https://www.wowhead.com/item=208152/patties-cap#guides" },
 
 	-- ------------------------------------------------
 	-- PETS
 	-- ------------------------------------------------
-	{ name = "Baa'ls Darksign",                              kind = "pet",   mindSeeker = true, speciesID = 2352, itemID = 162578,  requires = "Uuna (from Uuna's Doll)", requiredFor = "Waist of Time", wowheadURL = "https://www.wowhead.com/guide/baal-secret-demonic-goat-battle-pet",
+	{ name = "Baa'ls Darksign",                              kind = "pet",   mindSeeker = true, speciesID = 2352, itemID = 162578,  requires = "Uuna (from Uuna's Doll)", requiredFor = "Waist of Time", guideURL = "https://www.wowhead.com/guide/baal-secret-demonic-goat-battle-pet",
 	  steps = {
 	    { label = "Conspicuous Note",    questID = 52819, note = "Nazmir @ 51.8, 59.1 – ledge on side of Heart of Darkness temple; fly directly to it",         waypoint = { mapID = 863,  x = 0.5180, y = 0.5910 } },
 	    { label = "Pebble 1",            questID = 52809, note = "Broken Shore @ 37.5, 71.6 – on Drak'thul's table; realm-hop or toggle War Mode if blocked",   waypoint = { mapID = 646,  x = 0.3750, y = 0.7160 } },
@@ -235,12 +235,12 @@ SC.entries = {
 	    { label = "Seek Knowledge",      questID = 52829, note = "Summon Baa'l anywhere – he speaks words with hidden capitalized letters spelling SEEK KNOWLEDGE" },
 	  },
 	},
-	{ name = "Courage",                                      kind = "pet",   mindSeeker = true, speciesID = 3065, itemID = 184400,  wowheadURL = "https://www.wowhead.com/news/secret-battle-pet-courage-found-321354",
+	{ name = "Courage",                                      kind = "pet",   mindSeeker = true, speciesID = 3065, itemID = 184400,  guideURL = "https://www.wowhead.com/news/secret-battle-pet-courage-found-321354",
 	  steps = {
 	    { label = "Go to Nemea's Retreat — interact with 5+ Larion Cubs simultaneously", itemID = 184400, note = "Bastion @ ~57, 40 (mapID 1533). GROUP: need at least 3 players (5 recommended). Coordinate a countdown and all interact with at least 5 of the 9 Larion Cubs within 10 seconds. Courage spawns near Nemea — interact within 30 seconds!", waypoint = { mapID = 1533, x = 0.5733, y = 0.3936 } },
 	  },
 	},
-	{ name = "Glimr's Cracked Egg",                          kind = "pet",   mindSeeker = true, speciesID = 2888, itemID = 180034,  wowheadURL = "https://www.wowhead.com/news/secret-purple-murloc-battle-pet-find-glimr-and-the-glimmerfin-tribe-in-grizzly-318904",
+	{ name = "Glimr's Cracked Egg",                          kind = "pet",   mindSeeker = true, speciesID = 2888, itemID = 180034,  guideURL = "https://www.wowhead.com/news/secret-purple-murloc-battle-pet-find-glimr-and-the-glimmerfin-tribe-in-grizzly-318904",
 	  steps = {
 	    { label = "Find Glimmerfin Scout — pick up the scale", questID = 60605, note = "Grizzly Hills @ 18.4, 88.2 — approach the scout on the iceberg to scare him off, then pick up the Glimmerfin Scale (respawns ~5 min if missing).", waypoint = { mapID = 116, x = 0.184, y = 0.882 } },
 	    { label = "Glimmerfin Scale — speak with King Mrgl-Mrgl", questID = 60605, note = "Borean Tundra @ 43.5, 13.9 — hand the scale to King Mrgl-Mrgl; receive 3× Elixir of Water Breathing and next quest.", waypoint = { mapID = 114, x = 0.435, y = 0.139 } },
@@ -253,7 +253,7 @@ SC.entries = {
 	    { label = "Guardian of the Smallest — slay Great Mua'kin & claim Glimr's Cracked Egg", questID = 60620, note = "Grizzly Hills @ 8.8, 91.1 — defeat the elite makrura Great Mua'kin (106k HP, Spiked Carapace). Return to Oracle; egg hatches > receive Glimr's Cracked Egg!", waypoint = { mapID = 116, x = 0.088, y = 0.911 } },
 	  },
 	},
-	{ name = "Gurgl",                                        kind = "pet",   mindSeeker = true, speciesID = 3107, wowheadURL = "https://www.wowhead.com/guide/gurgl-secret-blue-murloc-battle-pet",
+	{ name = "Gurgl",                                        kind = "pet",   mindSeeker = true, speciesID = 3107, guideURL = "https://www.wowhead.com/guide/gurgl-secret-blue-murloc-battle-pet",
 	  steps = {
 	    { label = "Pets Detective — speak with Breanni",      questID = 64167, note = "Dalaran (Broken Isles) pet shop — talk to Breanni to start the questline investigating lost supplies and the Violetsail Pirates.", waypoint = { mapID = 627, x = 0.414, y = 0.278 } },
 	    { label = "Pet Up — find and wake Zantini",           questID = 64196, note = "Eye of Azshara — locate Breanni's supplier Zantini and his two pets.", waypoint = { mapID = 634, x = 0.500, y = 0.500 } },
@@ -262,7 +262,7 @@ SC.entries = {
 	    { label = "Gurgl and the Bandit — defeat Iris Greedsway & claim Gurgl", questID = 64237, note = "Eye of Azshara — find Violetsail Pirates leader Iris Greedsway and beat her in a pet battle. Return Gurgl to Breanni; she lets you keep him!" },
 	  },
 	},
-	{ name = "Jenafur",                                      kind = "pet",   mindSeeker = true, speciesID = 2795, wowheadURL = "https://www.wowhead.com/guide/jenafur-secret-cat-battle-pet",
+	{ name = "Jenafur",                                      kind = "pet",   mindSeeker = true, speciesID = 2795, guideURL = "https://www.wowhead.com/guide/jenafur-secret-cat-battle-pet",
 	  steps = {
 	    { label = "Speak with Amara Lunastar",    note = "Ashenvale @ 17.4, 49.3 — speak with Amara to start the quest chain and unlock the Karazhan changes.",                                                                               waypoint = { mapID = 63,  x = 0.174, y = 0.493 } },
 	    { label = "Interact with the Empty Dish", note = "Elwynn Forest @ 44.2, 53.1 — Donni Anthania's house (Crazy Cat Lady). If the dish isn't visible, return to Amara and speak with her again.",                                        waypoint = { mapID = 37,  x = 0.442, y = 0.531 } },
@@ -270,7 +270,7 @@ SC.entries = {
 	    { label = "Place food on Opera Hall tiles & claim Jenafur", note = "Place the 8 food items on the correct tiles in the Opera Hall (matching the solution image on warcraft-secrets.com). Amara's Wish plays > Jenafur spawns. Interact with her to add her to your collection!" },
 	  },
 	},
-	{ name = "Phoenix Wishwing",                             kind = "pet",   mindSeeker = true, speciesID = 3292, itemID = 193373,  wowheadURL = "https://www.wowhead.com/news/new-secret-discovered-phoenix-wishwing-battle-pet-332187#news-post-332187",
+	{ name = "Phoenix Wishwing",                             kind = "pet",   mindSeeker = true, speciesID = 3292, itemID = 193373,  guideURL = "https://www.wowhead.com/news/new-secret-discovered-phoenix-wishwing-battle-pet-332187#news-post-332187",
 	  steps = {
 	    { label = "Loot Glittering Phoenix Ember (×1)",   itemID = 199099, note = "Firelands raid — drops from Alysrazor during Cataclysm Timewalking event only." },
 	    { label = "Farm Inert Phoenix Ash (×20)",         itemID = 199092, note = "Un'Goro Crater — loot from Scorching Elementals and Living Blaze. Low drop rate; mobs respawn ~5 min." },
@@ -282,8 +282,8 @@ SC.entries = {
 	    { label = "Complete Tale of the Phoenix — claim Phoenix Wishwing", questID = 72798, note = "Waking Shores @ 16.2, 62.6 — bring 1× Phoenix Ash Talisman + 15× Smoldering Phoenix Ash + 20× Ash Feather to Tarjin the Blind and complete the quest.", waypoint = { mapID = 2022, x = 0.162, y = 0.626 } },
 	  },
 	},
-	{ name = "Tobias' Leash",                                kind = "pet",   mindSeeker = true, speciesID = 4263, itemID = 208151,  wowheadURL = "https://www.wowhead.com/news/secrets-of-azeroth-event-tenth-community-satchel-found-event-spoilers-334983" },
-	{ name = "Uuna (from Uuna's Doll)",                      kind = "pet",   mindSeeker = true, speciesID = 2136, itemID = 153195,  requiredFor = "Baa'ls Darksign", wowheadURL = "https://www.wowhead.com/guide/uunas-storyline-a-dark-place-5508",
+	{ name = "Tobias' Leash",                                kind = "pet",   mindSeeker = true, speciesID = 4263, itemID = 208151,  guideURL = "https://www.wowhead.com/news/secrets-of-azeroth-event-tenth-community-satchel-found-event-spoilers-334983" },
+	{ name = "Uuna (from Uuna's Doll)",                      kind = "pet",   mindSeeker = true, speciesID = 2136, itemID = 153195,  requiredFor = "Baa'ls Darksign", guideURL = "https://www.wowhead.com/guide/uunas-storyline-a-dark-place-5508",
 	  steps = {
 	    { label = "Prerequisite – Call of the Devourer",      questID = 50098, itemID = 152786, note = "Scavenger's Boneyard @ 52.0, 38.0 – loot from scattered mobs",                               waypoint = { mapID = 885, x = 0.5200, y = 0.3800 } },
 	    { label = "Prerequisite – Ur'zul Bone",              questID = 50098, itemID = 152993, note = "Antoran Wastes @ 50.4, 56.1 – near the altar",                                                  waypoint = { mapID = 885, x = 0.5040, y = 0.5610 } },
@@ -313,7 +313,7 @@ SC.entries = {
 	    { label = "World Tour 8: Temple of Karabor",         questID = 50147, note = "Shadowmoon Valley (Draenor) @ 70.6, 46.5 – Temple of Karabor; completes storyline",              waypoint = { mapID = 539, x = 0.7060, y = 0.4650 } },
 	  },
 	},
-	{ name = "Wicker Pup (Spooky Bundle of Sticks)",         kind = "pet",   mindSeeker = true, speciesID = 2411, itemID = 163497,  wowheadURL = "https://www.wowhead.com/item=163497/spooky-bundle-of-sticks#comments",
+	{ name = "Wicker Pup (Spooky Bundle of Sticks)",         kind = "pet",   mindSeeker = true, speciesID = 2411, itemID = 163497,  guideURL = "https://warcraft-secrets.com/guides/mrrls-secret-stash",
 	  steps = {
 	    { label = "Loot Bundle of Wicker Sticks from Hexed Chest",      itemID = 163709, note = "Drustvar @ 18.5, 51.3", waypoint = { mapID = 896, x = 0.185, y = 0.513 } },
 	    { label = "Loot Miniature Stag Skull from Ensorcelled Chest",   itemID = 163710, note = "Drustvar @ 67.6, 73.6", waypoint = { mapID = 896, x = 0.676, y = 0.736 } },
@@ -322,7 +322,7 @@ SC.entries = {
 	    { label = "Combine all 4 items — claim Wicker Pup",             itemID = 163497, note = "Combine Bundle of Wicker Sticks + Miniature Stag Skull + Wolf Pup Spine + Spooky Incantation to create the Spooky Bundle of Sticks and unlock Wicker Pup!" },
 	  },
 	},
-	{ name = "Sun Darter Hatchling",                         kind = "pet",   speciesID = 382, itemID = 142223, wowheadURL = "https://www.wowhead.com/guide/sun-darter-hatchling-secret-pet",
+	{ name = "Sun Darter Hatchling",                         kind = "pet",   speciesID = 382, itemID = 142223, guideURL = "https://www.wowhead.com/guide/sun-darter-hatchling-secret-pet",
 	  steps = {
 	    -- No questIDs exist; itemIDs show yellow "ready" when the item is in bags
 	    { label = "1. Fire Gate – Major Fire Protection Potion",   itemID = 22841, note = "Winterspring, Caverns of Consumption @ 57.2, 13.9 – enter cave; drink Major Fire Protection Potion to pass Fire Barrier; drink all 5 other Major Protection Potions (Arcane/Frost/Holy/Nature/Shadow) to pass the Chaos Barrier", waypoint = { mapID = 12, x = 0.5720, y = 0.1390 } },
@@ -335,14 +335,14 @@ SC.entries = {
 	    { label = "8. Loot Oddly-Colored Egg",                     itemID = 955,   note = "With both Sign of the First and Sign of the Second active, go downstairs through the final gate; read Tarnished Plaque; remove Winterfall Firewater buff, then use Scroll of Intellect (smallest intellect buff); loot the Oddly-Colored Egg" },
 	  },
 	},
-	{ name = "Terky",                                        kind = "pet",   speciesID = 1073, itemID = 22780, wowheadURL = "https://www.wowhead.com/object=244447/white-murloc-egg" },
-	{ name = "Hungering Claw (Kosumoth)",                    kind = "pet",   speciesID = 1926, itemID = 140261, linkedSecret = true,  partOf = "Fathom Dweller (Kosumoth)",  stepsRef = "Fathom Dweller (Kosumoth)",  wowheadURL = "https://www.wowhead.com/guide/kosumoth-the-hungering-secret-mount-pet" },
-	{ name = "Gortham",                                      kind = "pet",   speciesID = 4967, itemID = 262774,  wowheadURL = "https://www.wowhead.com/npc=256567/gortham" },
+	{ name = "Terky",                                        kind = "pet",   speciesID = 1073, itemID = 22780, guideURL = "https://www.wowhead.com/object=244447/white-murloc-egg" },
+	{ name = "Hungering Claw (Kosumoth)",                    kind = "pet",   speciesID = 1926, itemID = 140261, linkedSecret = true,  partOf = "Fathom Dweller (Kosumoth)",  stepsRef = "Fathom Dweller (Kosumoth)",  guideURL = "https://www.wowhead.com/guide/kosumoth-the-hungering-secret-mount-pet" },
+	{ name = "Gortham",                                      kind = "pet",   speciesID = 4967, itemID = 262774,  guideURL = "https://www.wowhead.com/npc=256567/gortham" },
 
 	-- ------------------------------------------------
 	-- TOYS
 	-- ------------------------------------------------
-	{ name = "Black Dragon's Challenge Dummy",               kind = "toy",   mindSeeker = true, itemID = 201933, wowheadURL = "https://www.wowhead.com/item=201933/black-dragons-challenge-dummy#comments",
+	{ name = "Black Dragon's Challenge Dummy",               kind = "toy",   mindSeeker = true, itemID = 201933, guideURL = "https://www.wowhead.com/item=201933/black-dragons-challenge-dummy#comments",
 	  steps = {
 	    { label = "Pick up Sour Apple near Blacktalon Pack Goat", note = "Waking Shores @ 43.7, 71.7 — loot a Sour Apple from the ground next to the goat.", waypoint = { mapID = 2022, x = 0.437, y = 0.717 } },
 	    { label = "Throw apple at Blacktalon Shadowclaw, then ride it", note = "Waking Shores @ 43.2, 67.2 — throw the Sour Apple at the Blacktalon Shadowclaw, then interact with it to ride up the mountain.", waypoint = { mapID = 2022, x = 0.432, y = 0.672 } },
@@ -350,25 +350,25 @@ SC.entries = {
 	    { label = "Loot Lost Obsidian Cache — claim Black Dragon's Challenge Dummy", itemID = 201933, note = "Waking Shores @ 44.6, 70.1 — enter the cave and follow the ramp at the back to find the Lost Obsidian Cache.", waypoint = { mapID = 2022, x = 0.446, y = 0.701 } },
 	  },
 	},
-	{ name = "Enlightened Hearthstone",                      kind = "toy",   mindSeeker = true, itemID = 190196, source = "Discovery: Ponderer's Portal", wowheadURL = "https://www.wowhead.com/news/enlightened-hearthstone-hidden-hearthstone-toy-found-in-zereth-mortis-337545",
+	{ name = "Enlightened Hearthstone",                      kind = "toy",   mindSeeker = true, itemID = 190196, source = "Discovery: Ponderer's Portal", guideURL = "https://warcraft-secrets.com/guides/enlightened-hearthstone",
 	  steps = {
 	    { label = "Obtain Sphere of Enlightened Cogitation", itemID = 190177, note = "Drops from The Enlightened paragon chest in Zereth Mortis. Join the Achievements Discord to find group members for the ritual." },
 	    { label = "6 players each stand on a pillar, /sit, and use the Sphere", note = "Around the pool at the Forge of Afterlives in Zereth Mortis. Pillars: South 47.5,57.0 / SW 45.5,55.3 / NW 45.5,51.8 / North 47.5,50.0 / NE 49.6,51.7 / SE 49.6,55.3", waypoint = { mapID = 1970, x = 0.475, y = 0.570 } },
 	    { label = "Loot Enlightened Hearthstone from the Ponderer's Portal", itemID = 190196, note = "The portal opens at the south pillar after all 6 players complete the ritual. All nearby players can loot — no sphere required.", waypoint = { mapID = 1970, x = 0.475, y = 0.570 } },
 	  },
 	},
-	{ name = "Cartel Transmorpher",                          kind = "toy",   mindSeeker = true, itemID = 249713, source = "Quest: Someone Like Me\nFaction: Manaforge Vandals",  wowheadURL = "https://www.wowhead.com/news/xy-trustees-gearglider-mount-and-cartel-transmorpher-toy-discovered-by-wow-379066",
+	{ name = "Cartel Transmorpher",                          kind = "toy",   mindSeeker = true, itemID = 249713, source = "Quest: Someone Like Me\nFaction: Manaforge Vandals",  guideURL = "https://warcraft-secrets.com/guides/xy-trustees-gearglider",
 	  partOf = "Xy Trustee's Gearglider", stepsRef = "Xy Trustee's Gearglider",
 	},
-	{ name = "Tricked-Out-Thinking Cap" ,                 	 kind = "toy",    itemID = 206696,  wowheadURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
-	{ name = "Torch of Pyrreth" ,                             kind = "toy",   itemID = 208092,  wowheadURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
-	{ name = "Idol of Ohn'ahra" ,                             kind = "toy",   itemID = 207730,  wowheadURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
-	{ name = "Starry-Eyed Goggles",                          kind = "toy",   itemID = 228966, partOf = "Keys to Incognitro, the Indecipherable Felcycle", wowheadURL = "https://www.wowhead.com/item=228966/starry-eyed-goggles" },
+	{ name = "Tricked-Out-Thinking Cap" ,                 	 kind = "toy",    itemID = 206696,  guideURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
+	{ name = "Torch of Pyrreth" ,                             kind = "toy",   itemID = 208092,  guideURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
+	{ name = "Idol of Ohn'ahra" ,                             kind = "toy",   itemID = 207730,  guideURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
+	{ name = "Starry-Eyed Goggles",                          kind = "toy",   itemID = 228966, partOf = "Keys to Incognitro, the Indecipherable Felcycle", guideURL = "https://www.wowhead.com/item=228966/starry-eyed-goggles" },
 
 	-- ------------------------------------------------
 	-- ACHIEVEMENTS
 	-- ------------------------------------------------
-	{ name = "Leaders of Scholomance (Necromantic Knowledge)", kind = "achievement", mindSeeker = true, achievementID = 18558, wowheadURL = "https://www.wowhead.com/news/how-to-enter-old-scholomance-farm-once-removed-transmog-items-333981",
+	{ name = "Leaders of Scholomance (Necromantic Knowledge)", kind = "achievement", mindSeeker = true, achievementID = 18558, guideURL = "https://www.wowhead.com/news/how-to-enter-old-scholomance-farm-once-removed-transmog-items-333981",
 	  steps = {
 	    -- No questIDs; itemID = yellow when item is in bags, achievementID = green when done
 	    { label = "Get Krastinov's Bag of Horrors",      itemID = 88566,  note = "Heroic Scholomance – after killing Rattlegore, Doctor Theolen Krastinov has a chance to spawn and yell 'The doctor is in!'; loot the bag from him. Alternatively bring a friend who owns it." },
@@ -383,18 +383,18 @@ SC.entries = {
 	    { label = "Leaders of Scholomance",              achievementID = 18558, note = "Inside Memory of Scholomance – defeat Darkmaster Gandling (clear all 6 rooms first) and Kirtonos the Herald (summon with Blood of Innocents on Brazier of the Herald in Chamber of Summoning)" },
 	  },
 	},
-	{ name = "Mind-Seeker",                                  kind = "achievement", mindSeeker = true, achievementID = 62189, wowheadURL = "https://www.wowhead.com/news/join-the-secret-cabal-of-mind-seekers-new-secret-discovery-in-progress-380212" },
-	{ name = "You Conduit!",                                 kind = "achievement", mindSeeker = true, achievementID = 61585, wowheadURL = "https://www.wowhead.com/achievement=61585/you-conduit#comments:id=6300813" },
-  { name = "Whodunnit?",                                  kind = "achievement", achievementID = 18646, wowheadURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
-	{ name = "Azeroth's Greatest Detective",                 kind = "achievement", achievementID = 40870, partOf = "Keys to Incognitro, the Indecipherable Felcycle", wowheadURL = "https://www.wowhead.com/achievement=40870/azeroths-greatest-detective" },
-	{ name = "Ratts' Revenge",                               kind = "achievement", achievementID = 40967, linkedSecret = true, partOf = "Keys to Incognitro, the Indecipherable Felcycle", wowheadURL = "https://www.wowhead.com/achievement=40967/ratts-revenge" },
-	{ name = "Radiant Singer",                               kind = "achievement", achievementID = 61516, linkedSecret = true, partOf = "12 Orb Mystery",              wowheadURL = "https://www.wowhead.com/achievement=61516/radiant-singer" },
+	{ name = "Mind-Seeker",                                  kind = "achievement", mindSeeker = true, achievementID = 62189, guideURL = "https://www.wowhead.com/news/join-the-secret-cabal-of-mind-seekers-new-secret-discovery-in-progress-380212" },
+	{ name = "You Conduit!",                                 kind = "achievement", mindSeeker = true, achievementID = 61585, guideURL = "https://www.wowhead.com/achievement=61585/you-conduit#comments:id=6300813" },
+  { name = "Whodunnit?",                                  kind = "achievement", achievementID = 18646, guideURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth" },
+	{ name = "Azeroth's Greatest Detective",                 kind = "achievement", achievementID = 40870, partOf = "Keys to Incognitro, the Indecipherable Felcycle", guideURL = "https://www.wowhead.com/achievement=40870/azeroths-greatest-detective" },
+	{ name = "Ratts' Revenge",                               kind = "achievement", achievementID = 40967, linkedSecret = true, partOf = "Keys to Incognitro, the Indecipherable Felcycle", guideURL = "https://www.wowhead.com/achievement=40967/ratts-revenge" },
+	{ name = "Radiant Singer",                               kind = "achievement", achievementID = 61516, linkedSecret = true, partOf = "12 Orb Mystery",              guideURL = "https://www.wowhead.com/achievement=61516/radiant-singer" },
 	-- ------------------------------------------------
 	
 	-- ------------------------------------------------
 	-- TRANSMOG
 	-- ------------------------------------------------
-	{ name = "Waist of Time",                                kind = "transmog", mindSeeker = true, itemID = 162690, requires = "Baa'ls Darksign", wowheadURL = "https://www.wowhead.com/guide/waist-of-time-secret-belt-transmog",
+	{ name = "Waist of Time",                                kind = "transmog", mindSeeker = true, itemID = 162690, requires = "Baa'ls Darksign", guideURL = "https://www.wowhead.com/guide/waist-of-time-secret-belt-transmog",
 	  steps = {
 	    -- ---- Hidden Objects (click in exact order) ----
 	    { label = "Object 1 – Lit Orb",               questID = 52830, note = "Spires of Arak @ 35.5, 32.0 – near Skyreach entrance",                                         waypoint = { mapID = 542,  x = 0.3550, y = 0.3200 } },
@@ -435,7 +435,7 @@ SC.entries = {
 	-- ------------------------------------------------
 	-- QUESTS
 	-- ------------------------------------------------
-	{ name = "Wan'be's Buried Goods",                        kind = "quest",  mindSeeker = true, questID = 52192,  icon = 133644, wowheadURL = "https://www.wowhead.com/object=296454/wanbes-buried-goods#comments:id=6275341",
+	{ name = "Wan'be's Buried Goods",                        kind = "quest",  mindSeeker = true, questID = 52192,  icon = 133644, guideURL = "https://www.wowhead.com/object=296454/wanbes-buried-goods#comments:id=6275341",
 	  steps = {
 	    { label = "Get Ghostly Explorer's Skull",       itemID = 163213, note = "Buy Ghostly Explorer's Skull from Hoarder Jena, the Voldunai emissary vendor in Vol'dun" },
 	    { label = "Step 1 – Sabers in the snow",        itemID = 163213, note = "Winterspring – Frostsaber Rock (northernmost area); place skull on floor and speak with Wan'be",                                     waypoint = { mapID = 12,  x = 0.5500, y = 0.0800 } },
@@ -449,7 +449,7 @@ SC.entries = {
 	-- ------------------------------------------------
 	-- MYSTERIES
 	-- ------------------------------------------------
-	{ name = "12 Orb Mystery",                    kind = "mystery", wowheadURL = "https://www.wowhead.com/guide/secrets/ratts-revenge-incognitro-felcycle-guide",
+	{ name = "12 Orb Mystery",                    kind = "mystery", guideURL = "https://www.wowhead.com/guide/secrets/ratts-revenge-incognitro-felcycle-guide",
 	  steps = {
 	    { label = "Orb 1 – Love",           questID = 84676, note = "N. Barrens, Humble Monument @ 55.0, 40.2",               waypoint = { mapID = 10,   x = 0.5500, y = 0.4020 } },
 	    { label = "Orb 2 – Pray",           questID = 84677, note = "BFA Vale of Eternal Blossoms @ 83.69, 27.58",             waypoint = { mapID = 1530, x = 0.8369, y = 0.2758 } },
@@ -469,7 +469,7 @@ SC.entries = {
 	-- ------------------------------------------------
 	-- HOUSING
 	-- ------------------------------------------------
-	{ name = "Shu'halo Perspective Painting",            kind = "housing", itemID = 246857, stepsOverrideOnDone = true, wowheadURL = "https://www.wowhead.com/news/how-to-buy-the-shuhalo-perspective-painting-for-less-than-gold-cap-380630",
+	{ name = "Shu'halo Perspective Painting",            kind = "housing", itemID = 246857, stepsOverrideOnDone = true, guideURL = "https://www.wowhead.com/news/how-to-buy-the-shuhalo-perspective-painting-for-less-than-gold-cap-380630",
 	  steps = {
 	    -- Soothsayer Sargle is at the start of Murder Row dungeon (before first boss). One fortune per run.
 	    -- Have all 13 in bags when buying from Cravitz Lorent (after first boss) to pay 999g instead of 9,999,999g.
