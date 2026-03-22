@@ -261,8 +261,7 @@ SwitchTab = function(tabID)
 	frame.ProgressBar:SetShown(isOverview or isGuides)
 	frame.PagingFrame:SetShown(isOverview)
 
-	-- FilterDropdown is shared: overview anchors top-right of Inset;
-	-- guides anchors top-right of the list pane (inside the left panel)
+	-- FilterDropdown is shared across overview and guides
 	if frame.FilterDropdown then
 		frame.FilterDropdown:SetShown(isOverview or isGuides)
 		frame.FilterDropdown:ClearAllPoints()
@@ -273,7 +272,7 @@ SwitchTab = function(tabID)
 
 	-- Show/hide content panels
 	if SC.guidesPanel then SC.guidesPanel:SetShown(isGuides) end
-	if SC.aboutPanel  then SC.aboutPanel:SetShown(tabID == "about")  end
+	if SC.aboutPanel  then SC.aboutPanel:SetShown(tabID == "about") end
 
 	if isOverview then
 		if SC.updateOverviewPage then SC.updateOverviewPage(frame.currentPage) end
@@ -461,6 +460,7 @@ local function Initialize()
 				if SC.updateOverviewPage then SC.updateOverviewPage(1) end
 			elseif SC.currentTab == "guides" and SC.onFilterChange then
 				SC.onFilterChange()
+
 			end
 			UpdateFilterButtonText()
 		end
@@ -534,6 +534,7 @@ local function Initialize()
 					function() local f = tabFilters[SC.currentTab]; return f and f.kinds[opt.kind] == true end,
 					function() local f = tabFilters[SC.currentTab]; if f then f.kinds[opt.kind] = not f.kinds[opt.kind]; OnFilterChanged() end end)
 			end
+
 		end)
 
 	-- Reset button callbacks
@@ -567,11 +568,11 @@ end
 	SC:BuildGuidesPanel(frame, L)
 	SC:BuildAboutPanel(frame, L)
 
-	-- Create tab buttons (Overview | Guides)
-	-- The About panel is a hidden easter egg — see portrait click handler below.
+	-- Create tab buttons
 	local tabDefs = {
 		{ id = "overview", label = L["TAB_OVERVIEW"] or "Overview" },
 		{ id = "guides",   label = L["TAB_GUIDES"]   or "Guides"   },
+		{ id = "about",    label = L["TAB_ABOUT"]    or "About"    },
 	}
 	local prevBtn = nil
 	for i, def in ipairs(tabDefs) do
@@ -645,7 +646,6 @@ local function CreateMinimapButton()
 		GameTooltip:AddLine(L["TOOLTIP_CLICK_TOGGLE"] or "Click to toggle window", 0.8, 0.8, 0.8)
 		GameTooltip:AddLine(L["TOOLTIP_RIGHT_CLICK_OPTIONS"] or "Right-click to open options", 0.8, 0.8, 0.8)
 		GameTooltip:AddLine(L["TOOLTIP_DRAG_MOVE"] or "Drag to move", 0.5, 0.5, 0.5)
-		GameTooltip:AddLine(L["TOOLTIP_ALT_CLICK_ABOUT"] or "Alt-click for About", 0.5, 0.5, 0.5)
 		GameTooltip:Show()
 	end)
 	
@@ -659,7 +659,6 @@ local function CreateMinimapButton()
                         if SC.OpenOptionsPanel then SC:OpenOptionsPanel() end
                 elseif IsAltKeyDown() then
                         SC:OpenSecretsFrame()
-                        SC:UnlockAboutTab()
                         SwitchTab("about")
 		else
 			SC:ToggleSecretsFrame()
@@ -793,6 +792,28 @@ local function CreateOptionsPanel()
 			return container:GetData()
 		end
 		Settings.CreateDropdown(category, themeSetting, GetThemeOptions, L["SETTINGS_THEME_DESC"] or "Select a visual theme for SecretChecklist.")
+
+		-- Guides tab style dropdown
+		local function GetTabStyle() return SecretChecklistDB.guidesStyle or "sidetabs" end
+		local function SetTabStyle(value)
+			if SC.ApplyGuideStyle then SC.ApplyGuideStyle(value) end
+		end
+		local tabStyleSetting = Settings.RegisterProxySetting(
+			category,
+			"SECRETCHECKLIST_TAB_STYLE",
+			Settings.VarType.String,
+			"Guides tab style",
+			"sidetabs",
+			GetTabStyle,
+			SetTabStyle
+		)
+		local function GetTabStyleOptions()
+			local container = Settings.CreateControlTextContainer()
+			container:Add("sidetabs",   "Default", "SpellBook-style side tabs on the right edge of the detail pane.")
+			container:Add("horizontal", "Modern",  "Classic horizontal Info / Model tab bar inside the detail pane.")
+			return container:GetData()
+		end
+		Settings.CreateDropdown(category, tabStyleSetting, GetTabStyleOptions, "Choose how the Info and Model tabs are shown in the Guides panel.")
 	end
 end
 
@@ -848,6 +869,19 @@ do
 		ScheduleCollectionRefresh()
 		if SC.CheckForNewCollections then SC:CheckForNewCollections() end
 	end)
+
+	-- Housing catalog loads asynchronously; using the generic diff-based snapshot
+	-- for housing causes false-positive "Secret Collected!" toasts on every login
+	-- (the catalog returns quantity=0 at snapshot time, then loads correctly and
+	-- looks like a missing->collected transition).
+	-- Instead: silently re-snapshot housing when catalog data is ready, and fire
+	-- alerts directly on acquisition events.
+	local housingFrame = CreateFrame("Frame")
+	housingFrame:RegisterEvent("HOUSE_DECOR_ADDED_TO_CHEST")
+	housingFrame:SetScript("OnEvent", function()
+		ScheduleCollectionRefresh()
+		if SC.CheckHousingCollections then SC:CheckHousingCollections() end
+	end)
 end
 
 -- Apply minimap button visibility and position on PLAYER_LOGIN, which guarantees
@@ -871,10 +905,8 @@ do
 			SecretChecklistDB.theme = "ElvUI"
 		end
 		SC:ApplyTheme(SecretChecklistDB.theme or "Default")
-		-- Restore About tab unlock (deferred here so SavedVariables are committed)
-		if SecretChecklistDB.aboutUnlocked then
-			SC:UnlockAboutTab()
-		end
+		-- Restore saved Guides tab style (deferred to PLAYER_LOGIN so SavedVariables are committed)
+		if SC.ApplyGuideStyle then SC.ApplyGuideStyle(SecretChecklistDB.guidesStyle or "sidetabs") end
 		-- Initialise the secret-collected alert toast system
 		if SC.InitAlertSystem then SC:InitAlertSystem() end
 		-- Build the initial collection snapshot after a short delay so all

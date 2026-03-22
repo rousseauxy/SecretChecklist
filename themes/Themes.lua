@@ -138,12 +138,20 @@ SC:RegisterTheme("ElvUI", {
 		-- The About easter egg is now on the title text instead.
 		if frame.PortraitContainer then frame.PortraitContainer:Hide() end
 
-		-- Skin the close button once (S:HandleCloseButton is idempotent via IsSkinned).
+		-- Skin the close button: strip red atlases and reset ElvUI's IsSkinned
+		-- guard so HandleCloseButton always re-applies, even after OnReset.
 		local closeBtn = frame.CloseButton
-		if closeBtn and S.HandleCloseButton and not closeBtn.IsSkinned then
-			S:HandleCloseButton(closeBtn)
+		if closeBtn then
+			closeBtn:SetNormalAtlas("")
+			closeBtn:SetPushedAtlas("")
+			closeBtn:SetDisabledAtlas("")
+			closeBtn:SetHighlightAtlas("")
+			closeBtn.IsSkinned = nil
+			if S.HandleCloseButton then
+				S:HandleCloseButton(closeBtn)
+			end
+			closeBtn:Show()
 		end
-		if closeBtn then closeBtn:Show() end
 
 		-- Add an ElvUI backdrop to the main frame once; show it on subsequent applies.
 		if not frame.backdrop and frame.CreateBackdrop then
@@ -211,6 +219,38 @@ SC:RegisterTheme("ElvUI", {
 				thumb:SetColorTexture(c[1], c[2], c[3], c[4])
 				thumb:SetWidth(6)
 				thumb:SetHeight(20)
+			end
+		end
+		-- Skin the Guides skill-line side-tab buttons
+		if SC.guidesSkillTabBtns then
+			local blankTex = (E.Media and E.Media.Textures and E.Media.Textures.White8x8)
+				or "Interface\\ChatFrame\\ChatFrameBackground"
+			local br, bg2, bb = 0.3, 0.3, 0.3
+			if E.media and E.media.bordercolor then
+				br, bg2, bb = E.media.bordercolor[1], E.media.bordercolor[2], E.media.bordercolor[3]
+			end
+			for _, btn in ipairs(SC.guidesSkillTabBtns) do
+				if btn.bgTex then btn.bgTex:Hide() end
+				if not btn.elvBg and btn.CreateBackdrop then
+					btn:CreateBackdrop("Transparent")
+				end
+				if btn.backdrop then
+					btn.backdrop:SetBackdrop({
+						bgFile   = blankTex,
+						edgeFile = blankTex,
+						edgeSize = 1,
+						insets   = { left = 1, right = 1, top = 1, bottom = 1 },
+					})
+					btn.backdrop:SetBackdropColor(0.06, 0.06, 0.06, 1)
+					btn.backdrop:SetBackdropBorderColor(br, bg2, bb, 1)
+					btn.backdrop:Show()
+				end
+				-- Inset icon so the backdrop border shows around it
+				if btn.iconTex then
+					btn.iconTex:ClearAllPoints()
+					btn.iconTex:SetSize(22, 22)
+					btn.iconTex:SetPoint("CENTER", btn, "CENTER", 0, 0)
+				end
 			end
 		end
 		-- Re-skin any pooled alert frame instances
@@ -293,6 +333,18 @@ SC:RegisterTheme("ElvUI", {
 				thumb:SetColorTexture(c[1], c[2], c[3], c[4])
 				thumb:SetWidth(6)
 				thumb:SetHeight(20)
+			end
+		end
+		-- Restore Guides skill-line side-tab buttons
+		if SC.guidesSkillTabBtns then
+			for _, btn in ipairs(SC.guidesSkillTabBtns) do
+				if btn.backdrop then btn.backdrop:Hide() end
+				if btn.bgTex then btn.bgTex:Show() end
+				-- Restore icon to fill the full button
+				if btn.iconTex then
+					btn.iconTex:ClearAllPoints()
+					btn.iconTex:SetAllPoints(btn)
+				end
 			end
 		end
 		-- Restore default alert frame skin

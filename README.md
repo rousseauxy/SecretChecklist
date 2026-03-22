@@ -6,6 +6,11 @@ A World of Warcraft addon that helps you track and check your progress on secret
 <img width="1164" height="753" alt="gL11bkA9ow" src="https://github.com/user-attachments/assets/945a9665-e563-492b-aae6-76336934e65b" />
 <img width="1042" height="783" alt="0PxHX4fTLx" src="https://github.com/user-attachments/assets/38035af6-5b34-47b6-966e-0f7895b3b885" />
 
+## Download
+
+- [CurseForge](https://www.curseforge.com/wow/addons/secretchecklist)
+- [Wago Addons](https://addons.wago.io/addons/secretchecklist)
+
 ## Features
 
 - **Minimap Button**: Quick access with a draggable minimap button
@@ -22,6 +27,8 @@ A World of Warcraft addon that helps you track and check your progress on secret
 - **Mystery Category**: Track community secrets still being investigated (e.g. active discoveries from the Secret Finding Discord)
 - **Custom Lists**: Easily edit the list to track the secrets you want
 - **Pre-Configured**: Comes with 46 secrets ready to track
+- **Live Requirement Checks**: Step progress automatically checks renown level, faction reputation, and Mind-Seeker secret count from the game API — shown inline as e.g. `(5 / 8)` when not yet complete
+- **About Tab**: Always-visible About tab with addon credits and community links
 
 ## Installation
 
@@ -128,6 +135,7 @@ Your filter preferences and minimap button position are automatically saved to S
 
 ## Version History
 
+- **1.8.0**: Added live requirement checks for renown, faction reputation, and Mind-Seeker secret count — incomplete steps now display current progress inline (e.g. `(5 / 8)`); added step walkthroughs for all previously missing entries (Mimiron's Jumpjets, Pattie's Cap, Tobias' Leash, Starry-Eyed Goggles, Mind-Seeker); split Mind-Seeker secret-count requirement into its own dedicated step; About tab is now always visible (no longer a hidden easter egg); added `questID` and `repReq` to Bound Shadehound steps; updated cross-references and `requires`/`requiredFor` to arrays throughout; **note: some guide walkthroughs are still a work in progress and step data may not yet be complete or fully accurate for all entries**
 - **1.7.1**: Improved Guides tab UI polish — map-pin icon on waypoint button; consistent top margin when Info/Model tab bar is hidden; increased step/note font size to 12pt for readability without ElvUI; increased gap between description and progress steps header; removed duplicate filter logic; fixed quest name lookup using correct WoW API
 - **1.7.0**: Added Mystery category for community-investigated secrets; added interactive Progress Steps with click-to-waypoint in Guides tab; added step-by-step walkthroughs for Blanchy's Reins, Kosumoth (Fathom Dweller + Hungering Claw), Keys to Incognitro, and 12 Orb Mystery; added Starry-Eyed Goggles (toy) and Azeroth's Greatest Detective (achievement); fixed Hungering Claw pet speciesID; filter Deselect All now shows all entries instead of hiding them; type filter menu stays open while toggling; unknown/uninvestigated secrets now shown in grey (same as missing); model viewer hidden for entry types without a 3D model
 - **1.6.3**: Fixed overview icon clicks not working; fixed guides scroll position resetting on tab switch; added toast alert when a secret is newly collected

@@ -248,7 +248,7 @@ function SC:CheckEntry(entry)
 				return hasTransmog == true, "transmog"
 			end
 		end
-		-- Fallback: use GetItemInfo
+		-- Fallback: use C_TransmogCollection.GetItemInfo
 		local _, _, _, _, isCollected = C_TransmogCollection.GetItemInfo(entry.itemID)
 		if isCollected ~= nil then
 			return isCollected == true, "transmog"
@@ -267,8 +267,28 @@ function SC:CheckEntry(entry)
 		if not info then
 			return nil, "Housing catalog data not loaded yet."
 		end
-		local owned = (info.quantity or 0) + (info.numPlaced or 0) + (info.remainingRedeemable or 0) > 0
-		return owned, "housing"
+		-- Prefer explicit boolean ownership fields (most reliable)
+		if type(info.isOwned)     == "boolean" then return info.isOwned,     "housing" end
+		if type(info.isCollected) == "boolean" then return info.isCollected,  "housing" end
+		-- GetCatalogEntryInfoByRecordID gives a more authoritative read (used by HousingCompanion / HomeDecor)
+		if info.entryID and C_HousingCatalog.GetCatalogEntryInfoByRecordID then
+			local ok, full = pcall(C_HousingCatalog.GetCatalogEntryInfoByRecordID,
+				info.entryID.entryType, info.entryID.recordID, true)
+			if ok and full then
+				if type(full.isOwned)     == "boolean" then return full.isOwned,    "housing" end
+				if type(full.isCollected) == "boolean" then return full.isCollected, "housing" end
+				local qty    = (full.quantity            or 0)
+				local redeem = (full.remainingRedeemable or 0)
+				local placed = (full.numPlaced           or 0)
+				if qty + redeem + placed > 0 then return true, "housing" end
+			end
+		end
+		-- Fallback: quantity-based check from base info
+		local qty    = (info.quantity            or 0)
+		local redeem = (info.remainingRedeemable or 0)
+		local placed = (info.numPlaced           or 0)
+		if qty + redeem + placed > 0 then return true, "housing" end
+		return false, "housing"
 	end
 
 	if entry.kind == "mystery" then
@@ -296,8 +316,29 @@ function SC:GetStepStatus(step)
 		local _, _, _, completed = GetAchievementInfo(step.achievementID)
 		if completed then return "done" end
 	end
+	if step.renownReq and C_MajorFactions and C_MajorFactions.GetCurrentRenownLevel then
+		local current = C_MajorFactions.GetCurrentRenownLevel(step.renownReq.factionID)
+		if current and current >= step.renownReq.level then return "done" end
+		return "missing"
+	end
+	if step.mindseekerReq then
+		local count = 0
+		for _, e in ipairs(SC.entries or {}) do
+			if e.mindSeeker and SC:GetEntryStatus(e) == "collected" then
+				count = count + 1
+			end
+		end
+		if count >= step.mindseekerReq then return "done" end
+		return "missing"
+	end
+	if step.repReq then
+		local data = C_Reputation and C_Reputation.GetFactionDataByID and C_Reputation.GetFactionDataByID(step.repReq.factionID)
+		local standingID = data and data.reaction or 0
+		if standingID >= step.repReq.standingID then return "done" end
+		return "missing"
+	end
 	if step.itemID then
-		local have = GetItemCount(step.itemID, true)  -- true = include bank
+		local have = C_Item.GetItemCount(step.itemID, true)  -- true = include bank
 		if have >= (step.count or 1) then return "ready" end
 		if PlayerHasToy and PlayerHasToy(step.itemID) then return "done" end
 	end

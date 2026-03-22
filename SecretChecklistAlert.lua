@@ -192,7 +192,7 @@ SC._alertReady    = false
 function SC:BuildAlertSnapshot()
 	SC._alertSnapshot = {}
 	for _, entry in ipairs(SC.entries or {}) do
-		if entry.kind ~= "manual" then
+		if entry.kind ~= "manual" and entry.kind ~= "housing" then
 			local status = SC:GetEntryStatus(entry)
 			if status == "collected" then
 				SC._alertSnapshot[entry] = true
@@ -201,6 +201,9 @@ function SC:BuildAlertSnapshot()
 			end
 			-- "unknown" intentionally left as nil
 		end
+		-- housing entries are excluded here; their snapshots are managed by
+		-- CheckHousingCollections, triggered by HOUSING_CATALOG_UPDATED and
+		-- HOUSING_DECOR_ITEM_LEARNED / HOUSING_DECOR_UNLOCKED events.
 	end
 	SC._alertReady = true
 end
@@ -208,7 +211,9 @@ end
 function SC:CheckForNewCollections()
 	if not SC._alertReady or not SC._alertSnapshot then return end
 	for _, entry in ipairs(SC.entries or {}) do
-		if entry.kind ~= "manual" then
+		-- Housing is excluded: its catalog data loads asynchronously and would
+		-- cause false-positive toasts. Use CheckHousingCollections instead.
+		if entry.kind ~= "manual" and entry.kind ~= "housing" then
 			local status     = SC:GetEntryStatus(entry)
 			local isCollected = (status == "collected")
 			local isMissing   = (status == "missing")
@@ -222,6 +227,31 @@ function SC:CheckForNewCollections()
 				SC._alertSnapshot[entry] = true
 			elseif isMissing and snapshot == nil then
 				-- First confirmed missing reading; set it so future collection fires
+				SC._alertSnapshot[entry] = false
+			end
+			-- "unknown" status: leave snapshot unchanged
+		end
+	end
+end
+
+-- Called when HOUSING_CATALOG_UPDATED fires (catalog data now reliable) and
+-- when HOUSING_DECOR_ITEM_LEARNED / HOUSING_DECOR_UNLOCKED fires (new acquisition).
+-- Silently sets the housing snapshot on catalog load; fires alert on transitions.
+function SC:CheckHousingCollections()
+	if not SC._alertSnapshot then return end
+	for _, entry in ipairs(SC.entries or {}) do
+		if entry.kind == "housing" then
+			local status    = SC:GetEntryStatus(entry)
+			local snapshot  = SC._alertSnapshot[entry]
+			if status == "collected" then
+				if snapshot == false then
+					-- Confirmed transition: missing → collected during this session
+					SC:FireSecretAlert(entry)
+				end
+				-- snapshot == nil means catalog just loaded with item already owned –
+				-- do NOT toast; just record as collected.
+				SC._alertSnapshot[entry] = true
+			elseif status == "missing" then
 				SC._alertSnapshot[entry] = false
 			end
 			-- "unknown" status: leave snapshot unchanged

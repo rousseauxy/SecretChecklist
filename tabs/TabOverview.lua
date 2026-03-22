@@ -256,7 +256,7 @@ function SC:BuildOverviewPanel(frame, L)
 				-- Ctrl+Click: insert an item/achievement link into the active chat box
 				local link
 				if entry.itemID then
-					link = select(2, GetItemInfo(entry.itemID))
+					link = select(2, C_Item.GetItemInfo(entry.itemID))
 				elseif entry.achievementID then
 					link = GetAchievementLink and GetAchievementLink(entry.achievementID)
 				end
