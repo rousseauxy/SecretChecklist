@@ -62,69 +62,7 @@ Both `/secrets` and `/secretchecklist` work as aliases:
 
 ## Tracked Secrets
 
-The addon comes pre-configured with **46 secret collectibles**:
-
-### Mounts (18)
-- Blanchy's Reins
-- Bound Shadehound
-- Crimson Tidestallion
-- Fathom Dweller (Kosumoth)
-- Felreaver Deathcycle (Voidfire Deathcycle)
-- Keys to Incognitro, the Indecipherable Felcycle
-- Long-Forgotten Hippogryph
-- Lucid Nightmare
-- Mimiron's Jumpjets
-- Nazjatar Blood Serpent
-- Nilganihmaht Control Ring
-- Otto
-- Pattie's Cap
-- Riddler's Mind-Worm
-- Slime Serpent
-- The Hivemind
-- Thrayir, Eyes of the Siren
-- Xy Trustee's Gearglider
-
-### Pets (12)
-- Baa'l's Darksign
-- Courage
-- Glimr's Cracked Egg
-- Gortham
-- Hungering Claw (Kosumoth)
-- Jenafur
-- Phoenix Wishwing
-- Sun Darter Hatchling
-- Terky
-- Tobias' Leash
-- Uuna
-- Wicker Pup
-
-### Toys (7)
-- Black Dragon's Challenge Dummy
-- Cartel Transmorpher
-- Enlightened Hearthstone
-- Idol of Ohn'ahra
-- Starry-Eyed Goggles
-- Torch of Pyrreth
-- Tricked-Out-Thinking Cap
-
-### Achievements (5)
-- Azeroth's Greatest Detective
-- Leaders of Scholomance (Necromantic Knowledge)
-- Mind-Seeker
-- Whodunnit?
-- You Conduit!
-
-### Transmog (1)
-- Waist of Time
-
-### Quests (1)
-- Wan'be's Buried Goods
-
-### Housing (1)
-- Shu'halo Perspective Painting
-
-### Mysteries (1)
-- 12 Orb Mystery
+Comes pre-configured with **46 secret collectibles** across mounts, pets, toys, achievements, transmog, quests, housing, and mysteries — with more being added regularly.
 
 ### Saving Your Preferences
 
