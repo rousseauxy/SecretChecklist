@@ -607,7 +607,6 @@ function SC:BuildGuidesPanel(frame, L)
 	local Guides_RelayoutSteps, Guides_UpdateDetailScroll
 	local STEP_NOTE_INDENT = 14   -- note panels are indented; step headers stay flush left
 	local STEP_NOTE_PAD    = 5    -- vertical padding inside note panel
-	local stepsCollapsed   = false -- steps start expanded; toggled by clicking the header
 
 	local stepRows = {}
 	for i = 1, MAX_STEPS do
@@ -816,40 +815,18 @@ function SC:BuildGuidesPanel(frame, L)
 	-- (Row TOPLEFT anchors are set dynamically by Guides_RelayoutSteps.)
 
 	-- Steps header: "Progress  X / Y  steps" — clickable to expand/collapse all steps
-	local stepsHeader = CreateFrame("Button", nil, detailContent)
+	local stepsHeader = CreateFrame("Frame", nil, detailContent)
 	stepsHeader:SetHeight(20)
 	stepsHeader:Hide()
 	local stepsHdrBg = stepsHeader:CreateTexture(nil, "BACKGROUND")
 	stepsHdrBg:SetAllPoints()
 	stepsHdrBg:SetColorTexture(0.08, 0.08, 0.14, 0.90)
-	local stepsHdrHL = stepsHeader:CreateTexture(nil, "HIGHLIGHT")
-	stepsHdrHL:SetAllPoints()
-	stepsHdrHL:SetColorTexture(1, 1, 1, 0.05)
-	stepsHeader:SetHighlightTexture(stepsHdrHL)
 	local stepsHdrLbl = stepsHeader:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	stepsHdrLbl:SetPoint("LEFT",  stepsHeader, "LEFT",  6, 0)
 	stepsHdrLbl:SetPoint("RIGHT", stepsHeader, "RIGHT", -6, 0)
 	stepsHdrLbl:SetJustifyH("LEFT")
 	stepsHdrLbl:SetTextColor(0.7, 0.7, 0.7)
 	stepsHeader.lbl = stepsHdrLbl
-	stepsHeader:SetScript("OnClick", function()
-		stepsCollapsed = not stepsCollapsed
-		if stepsCollapsed then
-			-- Collapse: hide all rows and their open note panels
-			for i = 1, currentNumSteps do
-				stepRows[i]:Hide()
-				stepRows[i].notePanel:Hide()
-			end
-		else
-			-- Expand: show all rows (note panels stay closed until individually clicked)
-			for i = 1, currentNumSteps do
-				stepRows[i]:Show()
-			end
-		end
-		local label = stepsHeader.lbl:GetText() or ""
-		stepsHeader.lbl:SetText((stepsCollapsed and "+" or "-") .. label:sub(2))
-		Guides_UpdateDetailScroll(currentNumSteps, detailSource:GetText() ~= "", detailDesc:GetText() ~= "", false)
-	end)
 
 	-- ==============================================
 	-- 3-D MODEL VIEWER  (fills modelPane — the Model sub-tab)
@@ -935,14 +912,6 @@ function SC:BuildGuidesPanel(frame, L)
 		stepsHeader:SetPoint("TOPLEFT", reqLastWidget, "BOTTOMLEFT", 0, -12)
 		stepsHeader:SetPoint("RIGHT",   detailContent, "RIGHT",      0,    0)
 		local totalH = 12 + 20 + 4   -- pre-gap + header height + gap after header
-		if stepsCollapsed then
-			-- Hide all rows; only the header is shown
-			for i = 1, currentNumSteps do
-				stepRows[i]:Hide()
-				stepRows[i].notePanel:Hide()
-			end
-			return totalH
-		end
 		local prevFrame = stepsHeader
 		local contentW  = detailContent:GetWidth() or 280
 		local lbl_avail = math_max(contentW - 39, 50)  -- 20 (arrow) + 10 (ico) + 5 (gap) + 4 (right pad)
@@ -1420,8 +1389,7 @@ function SC:BuildGuidesPanel(frame, L)
 			end
 		end
 		if numSteps > 0 then
-			stepsCollapsed = false  -- always start expanded when loading a new entry
-			stepsHeader.lbl:SetText("-  Progress  " .. doneCount .. " / " .. numSteps .. "  steps")
+			stepsHeader.lbl:SetText("Progress  " .. doneCount .. " / " .. numSteps .. "  steps")
 			stepsHeader:Show()
 		else
 			stepsHeader:Hide()
