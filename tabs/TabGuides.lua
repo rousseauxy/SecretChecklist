@@ -607,7 +607,7 @@ function SC:BuildGuidesPanel(frame, L)
 	local Guides_RelayoutSteps, Guides_UpdateDetailScroll
 	local STEP_NOTE_INDENT = 14   -- note panels are indented; step headers stay flush left
 	local STEP_NOTE_PAD    = 5    -- vertical padding inside note panel
-	local stepsCollapsed   = true -- steps start collapsed; toggled by clicking the header
+	local stepsCollapsed   = false -- steps start expanded; toggled by clicking the header
 
 	local stepRows = {}
 	for i = 1, MAX_STEPS do
@@ -1420,8 +1420,8 @@ function SC:BuildGuidesPanel(frame, L)
 			end
 		end
 		if numSteps > 0 then
-			stepsCollapsed = true   -- always start collapsed when loading a new entry
-			stepsHeader.lbl:SetText("+  Progress  " .. doneCount .. " / " .. numSteps .. "  steps")
+			stepsCollapsed = false  -- always start expanded when loading a new entry
+			stepsHeader.lbl:SetText("-  Progress  " .. doneCount .. " / " .. numSteps .. "  steps")
 			stepsHeader:Show()
 		else
 			stepsHeader:Hide()
