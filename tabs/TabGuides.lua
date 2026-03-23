@@ -585,7 +585,7 @@ function SC:BuildGuidesPanel(frame, L)
 			local steps = e.steps
 			if steps and #steps > maxFound then maxFound = #steps end
 		end
-		MAX_STEPS = math.max(maxFound, 1)
+		MAX_STEPS = math_max(maxFound, 1)
 	end
 
 	local MAX_SUBSTEPS
@@ -1306,7 +1306,7 @@ function SC:BuildGuidesPanel(frame, L)
 							local displayText = itemLink or sub.label
 							if sub.count and sub.count > 1 then
 								local have = C_Item.GetItemCount(sub.itemID, true)
-								displayText = displayText .. "  (" .. math.min(have, sub.count) .. " / " .. sub.count .. ")"
+								displayText = displayText .. "  (" .. math_min(have, sub.count) .. " / " .. sub.count .. ")"
 							end
 							sr.lbl:SetText(displayText)
 							sr.itemLink = itemLink

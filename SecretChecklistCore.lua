@@ -5,6 +5,9 @@ local math_cos, math_sin, math_atan2, math_deg, math_rad = math.cos, math.sin, m
 local tinsert = table.insert
 local string_format = string.format
 
+-- Kind sort order used by GetFilteredEntries; defined once at module level
+local kindOrder = { mount=1, pet=2, toy=3, achievement=4, transmog=5, quest=6, housing=7, mystery=8 }
+
 -- Localization accessor
 local L = _G.SecretChecklistLocale or {}
 
@@ -66,9 +69,6 @@ local function GetFilteredEntries()
 	local mindSeekerOnly   = f.mindSeekerOnly
 	local sortBy           = f.sortBy or "type"
 
-	-- Kind sort order for "type" sort
-	local kindOrder = { mount=1, pet=2, toy=3, achievement=4, transmog=5, quest=6, housing=7, mystery=8 }
-
 	-- Pre-compute whether any kind filter is active (invariant across entries)
 	local anyKindEnabled = false
 	for _, v in pairs(filterKinds) do if v then anyKindEnabled = true; break end end
@@ -107,28 +107,28 @@ local function GetFilteredEntries()
 	-- Sort
 	if sortBy == "name" then
 		table.sort(filtered, function(a, b)
-			local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
-			local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
+			local na = SC:GetEntryName(a)
+			local nb = SC:GetEntryName(b)
 			return na:lower() < nb:lower()
 		end)
 	elseif sortBy == "status" then
 		local statusOrder = { missing=1, unknown=2, manual=3, collected=4 }
 		table.sort(filtered, function(a, b)
-			local sa = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(a) or "unknown"] or 2
-			local sb = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(b) or "unknown"] or 2
+			local sa = statusOrder[SC:GetEntryStatus(a)] or 2
+			local sb = statusOrder[SC:GetEntryStatus(b)] or 2
 			if sa ~= sb then return sa < sb end
-			local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
-			local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
+			local na = SC:GetEntryName(a)
+			local nb = SC:GetEntryName(b)
 			return na:lower() < nb:lower()
 		end)
 	elseif sortBy == "status_col" then
 		local statusOrder = { collected=1, missing=2, unknown=3, manual=4 }
 		table.sort(filtered, function(a, b)
-			local sa = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(a) or "unknown"] or 3
-			local sb = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(b) or "unknown"] or 3
+			local sa = statusOrder[SC:GetEntryStatus(a)] or 3
+			local sb = statusOrder[SC:GetEntryStatus(b)] or 3
 			if sa ~= sb then return sa < sb end
-			local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
-			local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
+			local na = SC:GetEntryName(a)
+			local nb = SC:GetEntryName(b)
 			return na:lower() < nb:lower()
 		end)
 	else -- "type" (default)
@@ -136,8 +136,8 @@ local function GetFilteredEntries()
 			local ka = kindOrder[a.kind or "unknown"] or 99
 			local kb = kindOrder[b.kind or "unknown"] or 99
 			if ka ~= kb then return ka < kb end
-			local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
-			local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
+			local na = SC:GetEntryName(a)
+			local nb = SC:GetEntryName(b)
 			return na:lower() < nb:lower()
 		end)
 	end
