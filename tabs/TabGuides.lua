@@ -588,6 +588,21 @@ function SC:BuildGuidesPanel(frame, L)
 		MAX_STEPS = math.max(maxFound, 1)
 	end
 
+	local MAX_SUBSTEPS
+	do
+		local maxSubs = 0
+		for _, e in ipairs(SC.entries or {}) do
+			if e.steps then
+				for _, s in ipairs(e.steps) do
+					if s.substeps and #s.substeps > maxSubs then
+						maxSubs = #s.substeps
+					end
+				end
+			end
+		end
+		MAX_SUBSTEPS = maxSubs
+	end
+
 	-- Forward-declare so step-row OnClick closures can reference these before they are defined below.
 	local Guides_RelayoutSteps, Guides_UpdateDetailScroll
 	local STEP_NOTE_INDENT = 14   -- note panels are indented; step headers stay flush left
@@ -678,12 +693,30 @@ function SC:BuildGuidesPanel(frame, L)
 		wpLbl:SetJustifyH("LEFT")
 		wpLbl:SetTextColor(0.4, 0.78, 1)
 		wpLbl:SetText("Set Waypoint")
+		wpBtn.lbl = wpLbl  -- store reference for the rendering loop
 		wpBtn:SetScript("OnClick", function(self)
+			if self.waypoints then
+				if TomTom and TomTom.AddWaypoint then
+					for _, wp in ipairs(self.waypoints) do
+						local lbl = wp.label or row.lbl:GetText() or ""
+						TomTom:AddWaypoint(wp.mapID, wp.x, wp.y, { title = lbl, from = "Secret Checklist" })
+					end
+				else
+					-- Native C_Map supports only one waypoint — set the first one
+					local wp = self.waypoints[1]
+					if wp then
+						C_Map.SetUserWaypoint(UiMapPoint.CreateFromCoordinates(wp.mapID, wp.x, wp.y))
+						C_SuperTrack.SetSuperTrackedUserWaypoint(true)
+					end
+				end
+				return
+			end
+			-- Single waypoint
 			local wp = self.waypoint
 			if not wp then return end
 			local label = row.lbl:GetText() or ""
 			if TomTom and TomTom.AddWaypoint then
-				TomTom:AddWaypoint(wp.mapID, wp.x, wp.y, { title = label })
+				TomTom:AddWaypoint(wp.mapID, wp.x, wp.y, { title = label, from = "Secret Checklist" })
 			else
 				C_Map.SetUserWaypoint(UiMapPoint.CreateFromCoordinates(wp.mapID, wp.x, wp.y))
 				C_SuperTrack.SetSuperTrackedUserWaypoint(true)
@@ -691,6 +724,81 @@ function SC:BuildGuidesPanel(frame, L)
 		end)
 		wpBtn:Hide()
 		np.wpBtn = wpBtn
+
+		-- Substep row pool (pre-allocated; used when step.substeps is set)
+		local substepRows_pool = {}
+		for j = 1, MAX_SUBSTEPS do
+			local sr = CreateFrame("Button", nil, np)
+			sr:SetHeight(16)
+			local srIco = sr:CreateTexture(nil, "ARTWORK")
+			srIco:SetSize(8, 8)
+			srIco:SetPoint("LEFT", sr, "LEFT", 4, 0)
+			sr.ico = srIco
+			local srLbl = sr:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+			srLbl:SetPoint("LEFT",  srIco, "RIGHT", 5, 0)
+			srLbl:SetPoint("RIGHT", sr,    "RIGHT", -22, 0)  -- leave room for waypoint pin
+			srLbl:SetJustifyH("LEFT")
+			srLbl:SetWordWrap(true)
+			sr.lbl = srLbl
+			-- Tiny waypoint pin (shown only when substep has a waypoint)
+			local srWp = CreateFrame("Button", nil, sr)
+			srWp:SetSize(16, 16)
+			srWp:SetPoint("RIGHT", sr, "RIGHT", -2, 0)
+			local srWpHL = srWp:CreateTexture(nil, "HIGHLIGHT")
+			srWpHL:SetAllPoints()
+			srWpHL:SetColorTexture(0.4, 0.78, 1, 0.15)
+			srWp:SetHighlightTexture(srWpHL)
+			local srWpIco = srWp:CreateTexture(nil, "ARTWORK")
+			srWpIco:SetSize(14, 14)
+			srWpIco:SetAllPoints()
+			srWpIco:SetAtlas("Waypoint-MapPin-Tracked")
+			srWp:SetScript("OnEnter", function(self)
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetText(self.waypoints and "Set All Waypoints" or "Set Waypoint")
+				GameTooltip:Show()
+			end)
+			srWp:SetScript("OnLeave", function() GameTooltip:Hide() end)
+			srWp:SetScript("OnClick", function(self)
+				local label = self:GetParent().lbl:GetText() or ""
+				if self.waypoints then
+					if TomTom and TomTom.AddWaypoint then
+						for _, wp in ipairs(self.waypoints) do
+							local lbl = (wp.label and (label .. ": " .. wp.label)) or label
+							TomTom:AddWaypoint(wp.mapID, wp.x, wp.y, { title = lbl, from = "Secret Checklist" })
+						end
+					else
+						-- Native C_Map supports only one waypoint — set the first one
+						local wp = self.waypoints[1]
+						if wp then
+							C_Map.SetUserWaypoint(UiMapPoint.CreateFromCoordinates(wp.mapID, wp.x, wp.y))
+							C_SuperTrack.SetSuperTrackedUserWaypoint(true)
+						end
+					end
+				elseif self.waypoint then
+					local wp = self.waypoint
+					if TomTom and TomTom.AddWaypoint then
+						TomTom:AddWaypoint(wp.mapID, wp.x, wp.y, { title = label, from = "Secret Checklist" })
+					else
+						C_Map.SetUserWaypoint(UiMapPoint.CreateFromCoordinates(wp.mapID, wp.x, wp.y))
+						C_SuperTrack.SetSuperTrackedUserWaypoint(true)
+					end
+				end
+			end)
+			srWp:Hide()
+			sr.wpBtn = srWp
+			sr:SetScript("OnEnter", function(self)
+				if self.itemLink then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+					GameTooltip:SetHyperlink(self.itemLink)
+					GameTooltip:Show()
+				end
+			end)
+			sr:SetScript("OnLeave", function() GameTooltip:Hide() end)
+			sr:Hide()
+			substepRows_pool[j] = sr
+		end
+		np.substepRows     = substepRows_pool
+		np.numSubstepsShown = 0
 
 		row.notePanel = np
 		row.isOpen    = false
@@ -857,10 +965,25 @@ function SC:BuildGuidesPanel(frame, L)
 			if np:IsShown() then
 				-- Give noteLbl an explicit width so GetStringHeight is accurate
 				np.noteLbl:SetWidth(math_max(contentW - STEP_NOTE_INDENT - 4 - 10, 50))
-				local textH  = np.noteLbl:GetStringHeight()
-				local panelH = STEP_NOTE_PAD
-				             + (textH > 0 and textH or 46)
-				             + STEP_NOTE_PAD
+				local textH   = np.noteLbl:GetStringHeight()
+				local numSubs = np.numSubstepsShown or 0
+				-- Measure each substep row's actual wrapped height and resize it
+				local subLblW = math_max(contentW - STEP_NOTE_INDENT - 54, 40)
+				local subsH   = 0
+				if numSubs > 0 then
+					for j = 1, numSubs do
+						local sr = np.substepRows[j]
+						sr.lbl:SetWidth(subLblW)
+						local srStrH = sr.lbl:GetStringHeight()
+						local srH = math_max(16, srStrH > 0 and (srStrH + 4) or 16)
+						sr:SetHeight(srH)
+						subsH = subsH + srH + 2
+					end
+				end
+				local panelH  = STEP_NOTE_PAD
+				              + (textH > 0 and textH or (numSubs > 0 and 0 or 46))
+				              + STEP_NOTE_PAD
+				if numSubs > 0 then panelH = panelH + subsH end
 				if np.itemBtn:IsShown() then panelH = panelH + 4 + 16 end
 				if np.wpBtn:IsShown()   then panelH = panelH + 4 + 16 end
 				panelH = panelH + STEP_NOTE_PAD  -- bottom breathing room
@@ -1096,6 +1219,11 @@ function SC:BuildGuidesPanel(frame, L)
 			local row  = stepRows[i]
 			local np   = row.notePanel
 			if step then
+				-- Pre-compute substep progress for label + substep row rendering
+				local subsDone, subsTotal
+				if step.substeps then
+					subsDone, subsTotal = SC:GetSubstepProgress(step)
+				end
 				local st = entryDone and "done" or (SC.GetStepStatus and SC:GetStepStatus(step) or "missing")
 				-- Status dot colour + label text colour
 				if st == "done" then
@@ -1127,11 +1255,98 @@ function SC:BuildGuidesPanel(frame, L)
 						local current = (data and data.reaction) or 0
 						local target = step.repReq.standingName or step.repReq.standingID
 						labelText = labelText .. "  (Rank " .. current .. " / " .. target .. ")"
+					elseif step.substeps then
+						labelText = labelText .. "  (" .. subsDone .. " / " .. subsTotal .. ")"
 					end
 					row.lbl:SetText(labelText)
 				end
 				-- Populate note panel
 				np.noteLbl:SetText(step.note or "")
+				-- Substep rows
+				local substepRows = np.substepRows
+				local numSubstepsCap = substepRows and #substepRows or 0
+				local numSubstepsShown = 0
+				local lastSubstepFrame = nil
+				if step.substeps and numSubstepsCap > 0 then
+					local prevSRAnchor = np.noteLbl
+					for j, sub in ipairs(step.substeps) do
+						if j > numSubstepsCap then break end
+						local sr = substepRows[j]
+						local srDone, srReady = false, false
+						if step.chain then
+							if subsDone > 0 then
+								if j < subsDone then srDone = true
+								elseif j == subsDone then srReady = true
+								end
+							end
+						else
+							if sub.questID and C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
+								srDone = C_QuestLog.IsQuestFlaggedCompleted(sub.questID)
+							elseif sub.itemID then
+								local have = C_Item.GetItemCount(sub.itemID, true)
+								if sub.count then
+									srDone = have >= sub.count
+								else
+									srDone = have >= 1
+								end
+							end
+						end
+						if srDone then
+							sr.ico:SetColorTexture(0, 0.8, 0)
+							sr.lbl:SetTextColor(0.50, 0.50, 0.50)
+						elseif srReady then
+							sr.ico:SetColorTexture(1, 0.82, 0)
+							sr.lbl:SetTextColor(1, 0.82, 0)
+						else
+							sr.ico:SetColorTexture(0.8, 0.2, 0.2)
+							sr.lbl:SetTextColor(0.80, 0.80, 0.80)
+						end
+						if sub.itemID then
+							local _, itemLink = C_Item.GetItemInfo(sub.itemID)
+							local displayText = itemLink or sub.label
+							if sub.count and sub.count > 1 then
+								local have = C_Item.GetItemCount(sub.itemID, true)
+								displayText = displayText .. "  (" .. math.min(have, sub.count) .. " / " .. sub.count .. ")"
+							end
+							sr.lbl:SetText(displayText)
+							sr.itemLink = itemLink
+						else
+							sr.lbl:SetText(sub.label)
+							sr.itemLink = nil
+						end
+						-- Substep waypoint pin
+						if sub.waypoints then
+							sr.wpBtn.waypoints = sub.waypoints
+							sr.wpBtn.waypoint  = nil
+							sr.wpBtn:Show()
+						else
+							sr.wpBtn.waypoints = nil
+							local resolvedSubWp = sub.waypoint
+							if sub.factionWaypoint then
+								local fkey = (UnitFactionGroup and UnitFactionGroup("player") == "Alliance") and "alliance" or "horde"
+								resolvedSubWp = sub.factionWaypoint[fkey] or resolvedSubWp
+							end
+							if resolvedSubWp then
+								sr.wpBtn.waypoint = resolvedSubWp
+								sr.wpBtn:Show()
+							else
+								sr.wpBtn.waypoint = nil
+								sr.wpBtn:Hide()
+							end
+						end
+						sr:ClearAllPoints()
+						sr:SetPoint("TOPLEFT", prevSRAnchor, "BOTTOMLEFT", 0, -2)
+						sr:SetPoint("RIGHT", np, "RIGHT", -6, 0)
+						sr:Show()
+						prevSRAnchor = sr
+						numSubstepsShown = numSubstepsShown + 1
+						lastSubstepFrame = sr
+					end
+				end
+				for j = numSubstepsShown + 1, numSubstepsCap do
+					substepRows[j]:Hide()
+				end
+				np.numSubstepsShown = numSubstepsShown
 				-- Item hyperlink (only when item is cached; returns nil otherwise)
 				local itemBtn = np.itemBtn
 				if step.itemID then
@@ -1143,8 +1358,9 @@ function SC:BuildGuidesPanel(frame, L)
 						end
 						itemBtn.lbl:SetText(display)
 						itemBtn.itemLink = itemLink
-						itemBtn:SetPoint("TOPLEFT", np.noteLbl, "BOTTOMLEFT", 0, -4)
-						itemBtn:SetPoint("RIGHT",   np,         "RIGHT",     -6,  0)
+						local itemBtnAnchor = lastSubstepFrame or np.noteLbl
+						itemBtn:SetPoint("TOPLEFT", itemBtnAnchor, "BOTTOMLEFT", 0, -4)
+						itemBtn:SetPoint("RIGHT",   np,            "RIGHT",     -6,  0)
 						itemBtn:Show()
 					else
 						itemBtn.itemLink = nil
@@ -1156,18 +1372,39 @@ function SC:BuildGuidesPanel(frame, L)
 				end
 				-- Waypoint button
 				local wpBtn = np.wpBtn
-				if step.waypoint then
-					wpBtn.waypoint = step.waypoint
-					local wpAnchor = itemBtn:IsShown() and itemBtn or np.noteLbl
+				if step.waypoints then
+					wpBtn.waypoints = step.waypoints
+					wpBtn.waypoint  = nil
+					wpBtn.lbl:SetText("Set All Waypoints")
+					local wpAnchor = itemBtn:IsShown() and itemBtn or (lastSubstepFrame or np.noteLbl)
+					wpBtn:SetPoint("TOPLEFT", wpAnchor, "BOTTOMLEFT", 0, -4)
+					wpBtn:SetPoint("RIGHT",   np,       "RIGHT",     -6,  0)
+					wpBtn:Show()
+				elseif step.waypoint then
+					wpBtn.waypoint  = step.waypoint
+					wpBtn.waypoints = nil
+					wpBtn.lbl:SetText("Set Waypoint")
+					local wpAnchor = itemBtn:IsShown() and itemBtn or (lastSubstepFrame or np.noteLbl)
+					wpBtn:SetPoint("TOPLEFT", wpAnchor, "BOTTOMLEFT", 0, -4)
+					wpBtn:SetPoint("RIGHT",   np,       "RIGHT",     -6,  0)
+					wpBtn:Show()
+				elseif step.factionWaypoint then
+					local fkey = (UnitFactionGroup and UnitFactionGroup("player") == "Alliance") and "alliance" or "horde"
+					wpBtn.waypoint  = step.factionWaypoint[fkey]
+					wpBtn.waypoints = nil
+					wpBtn.lbl:SetText("Set Waypoint")
+					local wpAnchor = itemBtn:IsShown() and itemBtn or (lastSubstepFrame or np.noteLbl)
 					wpBtn:SetPoint("TOPLEFT", wpAnchor, "BOTTOMLEFT", 0, -4)
 					wpBtn:SetPoint("RIGHT",   np,       "RIGHT",     -6,  0)
 					wpBtn:Show()
 				else
-					wpBtn.waypoint = nil
+					wpBtn.waypoint  = nil
+					wpBtn.waypoints = nil
 					wpBtn:Hide()
 				end
 				-- Show expand arrow only when there is something to reveal in the note panel
 				local hasNote = (step.note and step.note ~= "")
+				             or (step.substeps and #step.substeps > 0)
 				             or itemBtn:IsShown()
 				             or wpBtn:IsShown()
 				row.hasNote = hasNote

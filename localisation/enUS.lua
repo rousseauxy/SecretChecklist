@@ -2,11 +2,11 @@
 local L = {}
 
 -- General
-L["ADDON_NAME"] = "Secrets Checklist"
+L["ADDON_NAME"] = "Secret Checklist"
 L["ADDON_LOADED"] = "Loaded. Type /secrets to open."
 
 -- UI Elements
-L["WINDOW_TITLE"] = "Secrets Checklist"
+L["WINDOW_TITLE"] = "Secret Checklist"
 L["PAGE_FORMAT"] = "Page %d / %d"
 L["SECRETS"] = "Secrets"
 L["MIND_SEEKER"] = "Mind-Seeker"

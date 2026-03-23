@@ -337,12 +337,58 @@ function SC:GetStepStatus(step)
 		if standingID >= step.repReq.standingID then return "done" end
 		return "missing"
 	end
+	if step.substeps then
+		-- If the parent item is already in bags, it's done regardless of substep state
+		-- (substep items may be consumed on combine, e.g. Quartered Ancient Rings)
+		if step.itemID and C_Item.GetItemCount(step.itemID, true) >= (step.count or 1) then return "done" end
+		-- If a final item is required but not yet obtained, stay red — substep rows show per-key progress
+		if step.itemID then return "missing" end
+		-- No final item: derive status purely from substep completion
+		local done, total = SC:GetSubstepProgress(step)
+		if done >= total then return "done" end
+		return "missing"
+	end
 	if step.itemID then
 		local have = C_Item.GetItemCount(step.itemID, true)  -- true = include bank
-		if have >= (step.count or 1) then return "ready" end
+		if have >= (step.count or 1) then
+			-- No questID means having the item IS completion (e.g. ring drops, climb rewards).
+			-- With a questID, the item is a prerequisite you're holding but haven't used yet → yellow.
+			if not step.questID then return "done" end
+			return "ready"
+		end
 		if PlayerHasToy and PlayerHasToy(step.itemID) then return "done" end
 	end
 	return "missing"
+end
+
+-- Returns (doneCount, total) for a step with substeps.
+-- Collection: doneCount = number of substeps whose item/quest is completed.
+-- Chain:      doneCount = index of the currently-held item (0 = nothing held).
+function SC:GetSubstepProgress(step)
+	if step.chain then
+		local total = #step.substeps
+		local highestHeld = 0
+		for idx, sub in ipairs(step.substeps) do
+			if sub.itemID and C_Item.GetItemCount(sub.itemID, true) >= 1 then
+				highestHeld = idx
+			end
+		end
+		return highestHeld, total
+	else
+		local done, total = 0, 0
+		for _, sub in ipairs(step.substeps) do
+			local subTotal = sub.count or 1
+			total = total + subTotal
+			if sub.questID and C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted
+					and C_QuestLog.IsQuestFlaggedCompleted(sub.questID) then
+				done = done + subTotal
+			elseif sub.itemID then
+				local have = C_Item.GetItemCount(sub.itemID, true)
+				done = done + math.min(have, subTotal)
+			end
+		end
+		return done, total
+	end
 end
 
 SLASH_SECRETCHECKLIST1 = "/secrets"
