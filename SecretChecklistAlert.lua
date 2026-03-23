@@ -52,8 +52,7 @@ function SecretChecklist_AlertFrameMixin:SetAlert(entry, icon)
 	self.entry = entry
 	self.Icon.Texture:SetTexture(icon or "Interface\\Icons\\INV_Misc_QuestionMark")
 	self.Name:SetText("Secret Collected!")
-	local name = SC.GetEntryName and SC:GetEntryName(entry) or (entry.name or "Unknown")
-	self.Label:SetText(name)
+	self.Label:SetText(SC:GetEntryName(entry))
 
 	-- Trigger the glow / shine animations
 	if self.glow  then self.glow:Show();  self.glow.animIn:Play()  end
@@ -62,10 +61,9 @@ end
 
 function SecretChecklist_AlertFrameMixin:OnEnter()
 	if not self.entry then return end
-	local name = SC.GetEntryName and SC:GetEntryName(self.entry) or (self.entry.name or "Unknown")
 	GameTooltip:SetOwner(self, "ANCHOR_NONE")
 	GameTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", -10, -2)
-	GameTooltip:SetText(name, 1, 1, 1)
+	GameTooltip:SetText(SC:GetEntryName(self.entry), 1, 1, 1)
 	GameTooltip:AddLine("Click to view guide", 0.6, 0.6, 0.6)
 	GameTooltip:Show()
 end
@@ -169,8 +167,7 @@ end
 function SC:FireSecretAlert(entry)
 	if not alertSubSystem then return end
 	if SecretChecklistDB and SecretChecklistDB.alertsEnabled == false then return end
-	local icon = SC.GetEntryIcon and SC:GetEntryIcon(entry) or "Interface\\Icons\\INV_Misc_QuestionMark"
-	alertSubSystem:AddAlert(entry, icon)
+	alertSubSystem:AddAlert(entry, SC:GetEntryIcon(entry))
 end
 
 -- ==============================================

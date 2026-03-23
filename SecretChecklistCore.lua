@@ -90,7 +90,7 @@ local function GetFilteredEntries()
 
 		-- Filter by collection status (only when the two checkboxes differ)
 		if shouldInclude and showCollected ~= showMissing then
-			local status = SC.GetEntryStatus and SC:GetEntryStatus(entry) or "unknown"
+			local status = SC:GetEntryStatus(entry) or "unknown"
 			local isCollected = (status == "collected")
 			if showCollected and not isCollected then
 				shouldInclude = false
@@ -105,40 +105,42 @@ local function GetFilteredEntries()
 	end
 
 	-- Sort
+	-- Pre-compute sort keys once (O(N)) so the comparator closure does not
+	-- call GetEntryName / GetEntryStatus O(N log N) times during the sort.
 	if sortBy == "name" then
-		table.sort(filtered, function(a, b)
-			local na = SC:GetEntryName(a)
-			local nb = SC:GetEntryName(b)
-			return na:lower() < nb:lower()
-		end)
+		local lowerName = {}
+		for _, e in ipairs(filtered) do lowerName[e] = SC:GetEntryName(e):lower() end
+		table.sort(filtered, function(a, b) return lowerName[a] < lowerName[b] end)
 	elseif sortBy == "status" then
 		local statusOrder = { missing=1, unknown=2, manual=3, collected=4 }
+		local lowerName, statusKey = {}, {}
+		for _, e in ipairs(filtered) do
+			lowerName[e]  = SC:GetEntryName(e):lower()
+			statusKey[e]  = statusOrder[SC:GetEntryStatus(e)] or 2
+		end
 		table.sort(filtered, function(a, b)
-			local sa = statusOrder[SC:GetEntryStatus(a)] or 2
-			local sb = statusOrder[SC:GetEntryStatus(b)] or 2
-			if sa ~= sb then return sa < sb end
-			local na = SC:GetEntryName(a)
-			local nb = SC:GetEntryName(b)
-			return na:lower() < nb:lower()
+			if statusKey[a] ~= statusKey[b] then return statusKey[a] < statusKey[b] end
+			return lowerName[a] < lowerName[b]
 		end)
 	elseif sortBy == "status_col" then
 		local statusOrder = { collected=1, missing=2, unknown=3, manual=4 }
+		local lowerName, statusKey = {}, {}
+		for _, e in ipairs(filtered) do
+			lowerName[e]  = SC:GetEntryName(e):lower()
+			statusKey[e]  = statusOrder[SC:GetEntryStatus(e)] or 3
+		end
 		table.sort(filtered, function(a, b)
-			local sa = statusOrder[SC:GetEntryStatus(a)] or 3
-			local sb = statusOrder[SC:GetEntryStatus(b)] or 3
-			if sa ~= sb then return sa < sb end
-			local na = SC:GetEntryName(a)
-			local nb = SC:GetEntryName(b)
-			return na:lower() < nb:lower()
+			if statusKey[a] ~= statusKey[b] then return statusKey[a] < statusKey[b] end
+			return lowerName[a] < lowerName[b]
 		end)
 	else -- "type" (default)
+		local lowerName = {}
+		for _, e in ipairs(filtered) do lowerName[e] = SC:GetEntryName(e):lower() end
 		table.sort(filtered, function(a, b)
 			local ka = kindOrder[a.kind or "unknown"] or 99
 			local kb = kindOrder[b.kind or "unknown"] or 99
 			if ka ~= kb then return ka < kb end
-			local na = SC:GetEntryName(a)
-			local nb = SC:GetEntryName(b)
-			return na:lower() < nb:lower()
+			return lowerName[a] < lowerName[b]
 		end)
 	end
 

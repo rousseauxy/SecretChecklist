@@ -431,7 +431,7 @@ function SC:BuildGuidesPanel(frame, L)
 			GameTooltip:SetText(e.name or "?", 1, 0.82, 0)
 			local kindStr = e.kind and (e.kind:sub(1,1):upper()..e.kind:sub(2)) or ""
 			GameTooltip:AddLine(kindStr, kc[1], kc[2], kc[3])
-			local st = SC.GetEntryStatus and SC:GetEntryStatus(e) or "unknown"
+			local st = SC:GetEntryStatus(e) or "unknown"
 			if st == "collected" then
 				GameTooltip:AddLine(L["TOOLTIP_COLLECTED"] or "Collected", 0, 1, 0)
 			elseif st == "missing" then
@@ -1062,8 +1062,7 @@ function SC:BuildGuidesPanel(frame, L)
 		linkBtn.currentURL = entry.guideURL or ""
 		linkBtn:SetEnabled(linkBtn.currentURL ~= "")
 
-		local icon = SC.GetEntryIcon and SC:GetEntryIcon(entry) or "Interface\\Icons\\INV_Misc_QuestionMark"
-		detailIcon:SetTexture(icon)
+		detailIcon:SetTexture(SC:GetEntryIcon(entry))
 
 		local kindColors = {
 			mount       = { 0.6, 0.8, 1 },
@@ -1080,10 +1079,9 @@ function SC:BuildGuidesPanel(frame, L)
 		detailKind:SetText(kindStr)
 		detailKind:SetTextColor(kc[1], kc[2], kc[3])
 
-		local entryName = SC.GetEntryName and SC:GetEntryName(entry) or entry.name or "?"
-		detailName:SetText(entryName)
+		detailName:SetText(SC:GetEntryName(entry))
 
-		local status = SC.GetEntryStatus and SC:GetEntryStatus(entry) or "unknown"
+		local status = SC:GetEntryStatus(entry) or "unknown"
 		if status == "collected" then
 			detailName:SetTextColor(1, 0.82, 0)
 		else
@@ -1224,7 +1222,7 @@ function SC:BuildGuidesPanel(frame, L)
 				if step.substeps then
 					subsDone, subsTotal = SC:GetSubstepProgress(step)
 				end
-				local st = entryDone and "done" or (SC.GetStepStatus and SC:GetStepStatus(step) or "missing")
+				local st = entryDone and "done" or (SC:GetStepStatus(step) or "missing")
 				-- Status dot colour + label text colour
 				if st == "done" then
 					doneCount = doneCount + 1
@@ -1242,7 +1240,7 @@ function SC:BuildGuidesPanel(frame, L)
 					if step.mindseekerReq then
 						local count = 0
 						for _, e in ipairs(SC.entries or {}) do
-							if e.mindSeeker and SC.GetEntryStatus and SC:GetEntryStatus(e) == "collected" then
+							if e.mindSeeker and SC:GetEntryStatus(e) == "collected" then
 								count = count + 1
 							end
 						end
@@ -1639,16 +1637,14 @@ function SC:BuildGuidesPanel(frame, L)
 			local row   = Guides_GetOrCreateRow(i)
 
 			if entry then
-				local icon = SC.GetEntryIcon and SC:GetEntryIcon(entry) or "Interface\\Icons\\INV_Misc_QuestionMark"
-				row.ico:SetTexture(icon)
+				row.ico:SetTexture(SC:GetEntryIcon(entry))
 
-				local status = SC.GetEntryStatus and SC:GetEntryStatus(entry) or "unknown"
+				local status = SC:GetEntryStatus(entry) or "unknown"
 				local isCol  = (status == "collected")
 				local isMis  = (status == "missing")
 				row.ico:SetDesaturated(not isCol)
 
-				local entryName = SC.GetEntryName and SC:GetEntryName(entry) or entry.name or "?"
-				row.lbl:SetText(entryName)
+				row.lbl:SetText(SC:GetEntryName(entry))
 				if isCol then
 					row.lbl:SetTextColor(1, 0.82, 0)
 				else
