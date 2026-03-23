@@ -918,6 +918,7 @@ function SC:BuildGuidesPanel(frame, L)
 		for i = 1, currentNumSteps do
 			local row = stepRows[i]
 			local np  = row.notePanel
+			row:Show()
 			-- Size label width first so GetStringHeight returns the correct wrapped height
 			row.lbl:SetWidth(lbl_avail)
 			local lblH = row.lbl:GetStringHeight()
