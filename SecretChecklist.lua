@@ -8,6 +8,28 @@ _G.SecretChecklist = SC
 
 SecretChecklistDB = SecretChecklistDB or {}
 
+-- Globals required by AddonCompartmentFunc / Enter / Leave
+function SecretChecklist_OnAddonCompartmentClick(addonName, buttonName)
+	if buttonName == "RightButton" then
+		if SC.OpenOptionsPanel then SC:OpenOptionsPanel() end
+	else
+		SC:ToggleSecretsFrame()
+	end
+end
+
+function SecretChecklist_OnAddonCompartmentEnter(addonName, self)
+	local L = _G.SecretChecklistLocale or {}
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+	GameTooltip:SetText(L["ADDON_NAME"] or "Secrets Checklist", 1, 1, 1)
+	GameTooltip:AddLine(L["TOOLTIP_CLICK_TOGGLE"] or "Click to toggle window", 0.8, 0.8, 0.8)
+	GameTooltip:AddLine(L["TOOLTIP_RIGHT_CLICK_OPTIONS"] or "Right-click to open options", 0.8, 0.8, 0.8)
+	GameTooltip:Show()
+end
+
+function SecretChecklist_OnAddonCompartmentLeave(addonName, self)
+	GameTooltip:Hide()
+end
+
 -- Entries are now defined in data/SecretEntries.lua
 
 -- ==============================================
