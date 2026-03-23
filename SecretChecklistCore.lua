@@ -884,6 +884,16 @@ do
 		ScheduleCollectionRefresh()
 		if SC.CheckHousingCollections then SC:CheckHousingCollections() end
 	end)
+
+	-- Refresh step/substep item counts when bag contents change or when the bank
+	-- is opened for the first time in a session (GetItemCount only returns bank
+	-- data after BANKFRAME_OPENED has fired at least once).
+	local bagFrame = CreateFrame("Frame")
+	bagFrame:RegisterEvent("BAG_UPDATE")
+	bagFrame:RegisterEvent("BANKFRAME_OPENED")
+	bagFrame:SetScript("OnEvent", function()
+		ScheduleCollectionRefresh()
+	end)
 end
 
 -- Apply minimap button visibility and position on PLAYER_LOGIN, which guarantees
