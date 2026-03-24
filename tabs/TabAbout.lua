@@ -12,11 +12,10 @@ local SC = _G.SecretChecklist
 if not SC then return end
 
 function SC:BuildAboutPanel(frame, L)
-
 	SC.aboutPanel = CreateFrame("Frame", nil, frame.Inset)
 	SC.aboutPanel:SetAllPoints(frame.Inset)
 	SC.aboutPanel:Hide()
-	local aboutPanel = SC.aboutPanel  -- local alias
+	local aboutPanel = SC.aboutPanel -- local alias
 
 	local aboutVersion = aboutPanel:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 	aboutVersion:SetPoint("TOP", aboutPanel, "TOP", 0, -20)
@@ -44,7 +43,7 @@ function SC:BuildAboutPanel(frame, L)
 	terkyModel:SetPoint("TOP", aboutDesc, "BOTTOM", 0, -12)
 
 	local function StartDance(self)
-		self:SetAnimation(69)  -- dance
+		self:SetAnimation(69) -- dance
 	end
 
 	-- Terky's display ID is a static game asset (verified: 15398). Hardcoded to avoid
@@ -109,8 +108,8 @@ function SC:BuildAboutPanel(frame, L)
 	copyBg:SetColorTexture(0.05, 0.05, 0.08, 0.95)
 
 	local copyBorderLine = copyDialog:CreateTexture(nil, "BORDER")
-	copyBorderLine:SetPoint("TOPLEFT",     copyDialog, "TOPLEFT",      1, -1)
-	copyBorderLine:SetPoint("BOTTOMRIGHT", copyDialog, "BOTTOMRIGHT", -1,  1)
+	copyBorderLine:SetPoint("TOPLEFT", copyDialog, "TOPLEFT", 1, -1)
+	copyBorderLine:SetPoint("BOTTOMRIGHT", copyDialog, "BOTTOMRIGHT", -1, 1)
 	copyBorderLine:SetColorTexture(0.35, 0.30, 0.18, 0.9)
 
 	local copyLabel = copyDialog:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -119,8 +118,8 @@ function SC:BuildAboutPanel(frame, L)
 	copyLabel:SetTextColor(0.65, 0.65, 0.65)
 
 	local copyBox = CreateFrame("EditBox", nil, copyDialog)
-	copyBox:SetPoint("BOTTOMLEFT",  copyDialog, "BOTTOMLEFT",   8,  6)
-	copyBox:SetPoint("BOTTOMRIGHT", copyDialog, "BOTTOMRIGHT", -8,  6)
+	copyBox:SetPoint("BOTTOMLEFT", copyDialog, "BOTTOMLEFT", 8, 6)
+	copyBox:SetPoint("BOTTOMRIGHT", copyDialog, "BOTTOMRIGHT", -8, 6)
 	copyBox:SetHeight(24)
 	copyBox:SetAutoFocus(true)
 	copyBox:SetMaxLetters(512)
@@ -130,8 +129,8 @@ function SC:BuildAboutPanel(frame, L)
 	local copyBoxBg = copyBox:CreateTexture(nil, "BACKGROUND")
 	copyBoxBg:SetAllPoints()
 	copyBoxBg:SetColorTexture(0.1, 0.1, 0.15, 0.95)
-	copyBox:SetScript("OnEscapePressed",   function() copyDialog:Hide() end)
-	copyBox:SetScript("OnEnterPressed",    function() copyDialog:Hide() end)
+	copyBox:SetScript("OnEscapePressed", function() copyDialog:Hide() end)
+	copyBox:SetScript("OnEnterPressed", function() copyDialog:Hide() end)
 	copyBox:SetScript("OnEditFocusGained", function(self) self:HighlightText() end)
 	copyBox:SetScript("OnTextChanged", function(self, userInput)
 		if userInput then
@@ -170,7 +169,8 @@ function SC:BuildAboutPanel(frame, L)
 	wsThanksText:SetWidth(480)
 	wsThanksText:SetJustifyH("CENTER")
 	wsThanksText:SetTextColor(0.8, 0.8, 0.8)
-	wsThanksText:SetText("Guide content and step data sourced from\nWowhead and Warcraft Secrets — the definitive community\nresources for WoW secret collectibles.")
+	wsThanksText:SetText(
+	"Guide content and step data sourced from\nWowhead and Warcraft Secrets — the definitive community\nresources for WoW secret collectibles.")
 
 	local wsURL = "https://warcraft-secrets.com"
 	local wsBtn = CreateFrame("Button", nil, aboutPanel)
@@ -207,5 +207,4 @@ function SC:BuildAboutPanel(frame, L)
 		copyBox:SetFocus()
 		copyBox:HighlightText()
 	end)
-
-end  -- SC:BuildAboutPanel
+end -- SC:BuildAboutPanel

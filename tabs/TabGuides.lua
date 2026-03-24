@@ -25,18 +25,17 @@ local select = select
 -- Defined once at module level so neither MakeReqLinkRow nor Guides_ShowDetail
 -- allocate a new table on every call.
 local kindColors = {
-	mount       = { 0.6, 0.8, 1   },
-	pet         = { 0.6, 1,   0.6 },
-	toy         = { 1,   0.6, 1   },
-	achievement = { 1,   0.82, 0  },
-	quest       = { 1,   0.7, 0.3 },
-	transmog    = { 0.8, 0.6, 1   },
-	housing     = { 1,   0.85, 0.5 },
-	mystery     = { 0.7, 0.5, 1   },
+	mount       = { 0.6, 0.8, 1 },
+	pet         = { 0.6, 1, 0.6 },
+	toy         = { 1, 0.6, 1 },
+	achievement = { 1, 0.82, 0 },
+	quest       = { 1, 0.7, 0.3 },
+	transmog    = { 0.8, 0.6, 1 },
+	housing     = { 1, 0.85, 0.5 },
+	mystery     = { 0.7, 0.5, 1 },
 }
 
 function SC:BuildGuidesPanel(frame, L)
-
 	-- ==============================================
 	-- PANEL FRAME
 	-- ==============================================
@@ -44,23 +43,23 @@ function SC:BuildGuidesPanel(frame, L)
 	SC.guidesPanel = CreateFrame("Frame", nil, frame.Inset)
 	SC.guidesPanel:SetAllPoints(frame.Inset)
 	SC.guidesPanel:Hide()
-	local guidesPanel = SC.guidesPanel  -- local alias for readability
+	local guidesPanel       = SC.guidesPanel -- local alias for readability
 
 	-- ---- dimension constants ----
-	local GP_LEFT_W    = 240   -- width of the list pane
-	local GP_DIV_W     = 2     -- divider strip
-	local GP_PAD       = 8     -- general padding
-	local GP_ROW_H     = 44    -- height of each list row
-	local GP_FILTER_H  = 28    -- height reserved at top of list pane for filter dropdown
-	local GP_TOP_DRP   = GP_PAD + 20  -- total drop from panel top to list pane start
+	local GP_LEFT_W         = 240   -- width of the list pane
+	local GP_DIV_W          = 2     -- divider strip
+	local GP_PAD            = 8     -- general padding
+	local GP_ROW_H          = 44    -- height of each list row
+	local GP_FILTER_H       = 28    -- height reserved at top of list pane for filter dropdown
+	local GP_TOP_DRP        = GP_PAD + 20 -- total drop from panel top to list pane start
 
 	-- ---- per-panel state ----
-	local guides_entries    = {}   -- filtered entry list
-	local guides_rowButtons = {}   -- row button frames in scrollChild
-	local guides_selected   = nil  -- currently selected entry
-	local guides_scrollPos  = 0    -- persists scroll position across tab switches (WoW resets GetVerticalScroll on hide)
-	local scrollFrame, scrollBar   -- scroll widgets assigned in Left Pane section below
-	local currentNumSteps   = 0      -- step count for the currently displayed entry
+	local guides_entries    = {} -- filtered entry list
+	local guides_rowButtons = {} -- row button frames in scrollChild
+	local guides_selected   = nil -- currently selected entry
+	local guides_scrollPos  = 0  -- persists scroll position across tab switches (WoW resets GetVerticalScroll on hide)
+	local scrollFrame, scrollBar -- scroll widgets assigned in Left Pane section below
+	local currentNumSteps   = 0  -- step count for the currently displayed entry
 
 	-- ==============================================
 	-- FILTERING  (reads shared filter state via SC accessors)
@@ -78,7 +77,7 @@ function SC:BuildGuidesPanel(frame, L)
 	SC.onFilterChange = function()
 		guides_scrollPos = 0
 		if scrollFrame then scrollFrame:SetVerticalScroll(0) end
-		if scrollBar   then scrollBar:SetValue(0) end
+		if scrollBar then scrollBar:SetValue(0) end
 		Guides_ApplyFilter()
 		Guides_RefreshList()
 	end
@@ -95,13 +94,13 @@ function SC:BuildGuidesPanel(frame, L)
 	-- ==============================================
 
 	local listPane = CreateFrame("Frame", nil, guidesPanel)
-	listPane:SetPoint("TOPLEFT",    guidesPanel, "TOPLEFT",    GP_PAD, -GP_TOP_DRP)
-	listPane:SetPoint("BOTTOMLEFT", guidesPanel, "BOTTOMLEFT", GP_PAD,  GP_PAD)
+	listPane:SetPoint("TOPLEFT", guidesPanel, "TOPLEFT", GP_PAD, -GP_TOP_DRP)
+	listPane:SetPoint("BOTTOMLEFT", guidesPanel, "BOTTOMLEFT", GP_PAD, GP_PAD)
 	listPane:SetWidth(GP_LEFT_W)
 
 	-- ScrollFrame: clips the list rows and handles vertical scrolling
 	scrollFrame = CreateFrame("ScrollFrame", nil, listPane)
-	scrollFrame:SetPoint("TOPLEFT",     listPane, "TOPLEFT",     0, -GP_PAD)
+	scrollFrame:SetPoint("TOPLEFT", listPane, "TOPLEFT", 0, -GP_PAD)
 	scrollFrame:SetPoint("BOTTOMRIGHT", listPane, "BOTTOMRIGHT", 0, 0)
 
 	-- Export top-right of listPane so SwitchTab can anchor FilterDropdown here
@@ -117,8 +116,8 @@ function SC:BuildGuidesPanel(frame, L)
 	scrollBar = CreateFrame("Slider", nil, guidesPanel)
 	scrollBar:SetOrientation("VERTICAL")
 	scrollBar:SetWidth(6)
-	scrollBar:SetPoint("TOPLEFT",    listPane, "TOPRIGHT",    4, -16)
-	scrollBar:SetPoint("BOTTOMLEFT", listPane, "BOTTOMRIGHT", 4,  16)
+	scrollBar:SetPoint("TOPLEFT", listPane, "TOPRIGHT", 4, -16)
+	scrollBar:SetPoint("BOTTOMLEFT", listPane, "BOTTOMRIGHT", 4, 16)
 	scrollBar:SetMinMaxValues(0, 0)
 	scrollBar:SetValueStep(GP_ROW_H)
 	scrollBar:SetObeyStepOnDrag(true)
@@ -139,11 +138,11 @@ function SC:BuildGuidesPanel(frame, L)
 	-- Vertical divider
 	local divider = guidesPanel:CreateTexture(nil, "BACKGROUND")
 	divider:SetWidth(GP_DIV_W)
-	divider:SetPoint("TOPLEFT",    listPane, "TOPRIGHT",    16, 0)  -- 6 (scrollbar) + 10
+	divider:SetPoint("TOPLEFT", listPane, "TOPRIGHT", 16, 0)      -- 6 (scrollbar) + 10
 	divider:SetPoint("BOTTOMLEFT", listPane, "BOTTOMRIGHT", 16, 0)
 	local dC = SC:ThemeColor("divider")
 	divider:SetColorTexture(dC[1], dC[2], dC[3], dC[4])
-	SC.themeTargets = SC.themeTargets or {}
+	SC.themeTargets           = SC.themeTargets or {}
 	SC.themeTargets.divider   = divider
 	SC.themeTargets.scrollBar = scrollBar
 
@@ -151,14 +150,14 @@ function SC:BuildGuidesPanel(frame, L)
 	-- RIGHT DETAIL PANE
 	-- ==============================================
 
-	local DP_SCROLL_W  = 8                       -- width of the text-section scrollbar
-	local DP_LINK_AREA = GP_PAD + 22 + GP_PAD   -- vertical room for linkBtn (padding + height + padding)
-	local DP_TAB_H     = 26                      -- height of the Info / Model sub-tab bar
-	local DP_TAB_TOP   = 8                       -- gap above the tab bar
+	local DP_SCROLL_W         = 8            -- width of the text-section scrollbar
+	local DP_LINK_AREA        = GP_PAD + 22 + GP_PAD -- vertical room for linkBtn (padding + height + padding)
+	local DP_TAB_H            = 26           -- height of the Info / Model sub-tab bar
+	local DP_TAB_TOP          = 8            -- gap above the tab bar
 
 	-- "horizontal" = Info/Model bar across the top of the detail pane
 	-- "sidetabs"   = SpellBook-style CheckButtons on the right edge (ManuscriptsJournal look)
-	local guidesStyle = "sidetabs"
+	local guidesStyle         = "sidetabs"
 
 	-- ---- v2: ManuscriptsJournal / SpellBook skill-line tab builder ----
 	local function MakeSkillLineTab(iconID, tooltipText)
@@ -189,12 +188,12 @@ function SC:BuildGuidesPanel(frame, L)
 	end
 
 	local detailPane = CreateFrame("Frame", nil, guidesPanel)
-	detailPane:SetPoint("TOPLEFT",     divider,    "TOPRIGHT",      GP_PAD, 0)
+	detailPane:SetPoint("TOPLEFT", divider, "TOPRIGHT", GP_PAD, 0)
 	detailPane:SetPoint("BOTTOMRIGHT", guidesPanel, "BOTTOMRIGHT", -15, GP_PAD)
 
 	-- ---- Info / Model sub-tab bar ----
 	local detailTabBar = CreateFrame("Frame", nil, detailPane)
-	detailTabBar:SetPoint("TOPLEFT",  detailPane, "TOPLEFT",  0, -DP_TAB_TOP)
+	detailTabBar:SetPoint("TOPLEFT", detailPane, "TOPLEFT", 0, -DP_TAB_TOP)
 	detailTabBar:SetPoint("TOPRIGHT", detailPane, "TOPRIGHT", 0, -DP_TAB_TOP)
 	detailTabBar:SetHeight(DP_TAB_H)
 
@@ -219,46 +218,46 @@ function SC:BuildGuidesPanel(frame, L)
 	local infoTab  = MakeDetailTab("Info")
 	local modelTab = MakeDetailTab("Model")
 	-- Split tab bar in half: "BOTTOM" anchor = horizontal center of parent
-	infoTab:SetPoint( "TOPLEFT",     detailTabBar, "TOPLEFT",     0, 0)
-	infoTab:SetPoint( "BOTTOMRIGHT", detailTabBar, "BOTTOM",      0, 0)
-	modelTab:SetPoint("TOPLEFT",     detailTabBar, "TOP",         0, 0)
+	infoTab:SetPoint("TOPLEFT", detailTabBar, "TOPLEFT", 0, 0)
+	infoTab:SetPoint("BOTTOMRIGHT", detailTabBar, "BOTTOM", 0, 0)
+	modelTab:SetPoint("TOPLEFT", detailTabBar, "TOP", 0, 0)
 	modelTab:SetPoint("BOTTOMRIGHT", detailTabBar, "BOTTOMRIGHT", 0, 0)
 
 	-- Vertical divider between tabs and horizontal line below bar
 	local tabMidLine = detailTabBar:CreateTexture(nil, "BORDER")
 	tabMidLine:SetWidth(1)
-	tabMidLine:SetPoint("TOPLEFT",    infoTab, "TOPRIGHT",    0,  0)
-	tabMidLine:SetPoint("BOTTOMLEFT", infoTab, "BOTTOMRIGHT", 0,  0)
+	tabMidLine:SetPoint("TOPLEFT", infoTab, "TOPRIGHT", 0, 0)
+	tabMidLine:SetPoint("BOTTOMLEFT", infoTab, "BOTTOMRIGHT", 0, 0)
 	tabMidLine:SetColorTexture(0.3, 0.25, 0.15, 0.6)
 	local tabBarLine = detailTabBar:CreateTexture(nil, "BORDER")
 	tabBarLine:SetHeight(1)
-	tabBarLine:SetPoint("BOTTOMLEFT",  detailTabBar, "BOTTOMLEFT",  0, 0)
+	tabBarLine:SetPoint("BOTTOMLEFT", detailTabBar, "BOTTOMLEFT", 0, 0)
 	tabBarLine:SetPoint("BOTTOMRIGHT", detailTabBar, "BOTTOMRIGHT", 0, 0)
 	tabBarLine:SetColorTexture(0.3, 0.25, 0.15, 0.5)
 
 	-- ---- Skill-line side-tab buttons (sidetabs style; shown/hidden by ApplyGuideStyle) ----
 	-- Icons: inv-misc-notescript1d (Info) and inv-misc-notepicture1a (Model)
-	local infoSkBtn  = MakeSkillLineTab(1505956, "Info")
-	local modelSkBtn = MakeSkillLineTab(1505947, "Model")
-	SC.guidesSkillTabBtns = {infoSkBtn, modelSkBtn}
-	infoSkBtn:SetPoint( "TOPLEFT", detailPane, "TOPRIGHT",  22, -36)
-	modelSkBtn:SetPoint("TOPLEFT", infoSkBtn,  "BOTTOMLEFT", 0, -17)
+	local infoSkBtn       = MakeSkillLineTab(1505956, "Info")
+	local modelSkBtn      = MakeSkillLineTab(1505947, "Model")
+	SC.guidesSkillTabBtns = { infoSkBtn, modelSkBtn }
+	infoSkBtn:SetPoint("TOPLEFT", detailPane, "TOPRIGHT", 22, -36)
+	modelSkBtn:SetPoint("TOPLEFT", infoSkBtn, "BOTTOMLEFT", 0, -17)
 	-- Hidden until ApplyGuideStyle("sidetabs") activates them
 	infoSkBtn:Hide()
 	modelSkBtn:Hide()
 
 	-- Sub-panes: both sit below the tab bar, above the Wowhead link button
 	local infoPane = CreateFrame("Frame", nil, detailPane)
-	infoPane:SetPoint("TOPLEFT",     detailTabBar, "BOTTOMLEFT",  0,  -2)
-	infoPane:SetPoint("BOTTOMRIGHT", detailPane,   "BOTTOMRIGHT", 0,   DP_LINK_AREA)
+	infoPane:SetPoint("TOPLEFT", detailTabBar, "BOTTOMLEFT", 0, -2)
+	infoPane:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT", 0, DP_LINK_AREA)
 	local modelPane = CreateFrame("Frame", nil, detailPane)
-	modelPane:SetPoint("TOPLEFT",     detailTabBar, "BOTTOMLEFT",  0,  -2)
-	modelPane:SetPoint("BOTTOMRIGHT", detailPane,   "BOTTOMRIGHT", 0,   DP_LINK_AREA)
+	modelPane:SetPoint("TOPLEFT", detailTabBar, "BOTTOMLEFT", 0, -2)
+	modelPane:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT", 0, DP_LINK_AREA)
 	modelPane:Hide()
 
 	-- Tab switching logic (branches on guidesStyle; set by ApplyGuideStyle)
 	local activeDetailTab = "info"
-	local SwitchDetailTab  -- forward declaration so SetModelTabEnabled can call it
+	local SwitchDetailTab -- forward declaration so SetModelTabEnabled can call it
 	local SetModelTabEnabled
 	SetModelTabEnabled = function(enabled)
 		if guidesStyle == "sidetabs" then
@@ -268,26 +267,26 @@ function SC:BuildGuidesPanel(frame, L)
 			if not enabled and activeDetailTab == "model" then
 				SwitchDetailTab("info")
 			end
-		else  -- "horizontal"
+		else -- "horizontal"
 			modelTab.hasModel = enabled
 			if enabled then
 				-- Show the tab bar and anchor panes below it
 				detailTabBar:Show()
 				infoPane:ClearAllPoints()
-				infoPane:SetPoint("TOPLEFT",     detailTabBar, "BOTTOMLEFT",  0, -2)
-				infoPane:SetPoint("BOTTOMRIGHT", detailPane,   "BOTTOMRIGHT", 0,  DP_LINK_AREA)
+				infoPane:SetPoint("TOPLEFT", detailTabBar, "BOTTOMLEFT", 0, -2)
+				infoPane:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT", 0, DP_LINK_AREA)
 				modelPane:ClearAllPoints()
-				modelPane:SetPoint("TOPLEFT",     detailTabBar, "BOTTOMLEFT",  0, -2)
-				modelPane:SetPoint("BOTTOMRIGHT", detailPane,   "BOTTOMRIGHT", 0,  DP_LINK_AREA)
+				modelPane:SetPoint("TOPLEFT", detailTabBar, "BOTTOMLEFT", 0, -2)
+				modelPane:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT", 0, DP_LINK_AREA)
 			else
 				-- No model: hide the tab bar but preserve the same top margin as when it is shown
 				detailTabBar:Hide()
 				local noTabTop = -(DP_TAB_TOP + DP_TAB_H + 2)
 				infoPane:ClearAllPoints()
-				infoPane:SetPoint("TOPLEFT",     detailPane, "TOPLEFT",     0, noTabTop)
+				infoPane:SetPoint("TOPLEFT", detailPane, "TOPLEFT", 0, noTabTop)
 				infoPane:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT", 0, DP_LINK_AREA)
 				modelPane:ClearAllPoints()
-				modelPane:SetPoint("TOPLEFT",     detailPane, "TOPLEFT",     0, noTabTop)
+				modelPane:SetPoint("TOPLEFT", detailPane, "TOPLEFT", 0, noTabTop)
 				modelPane:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT", 0, DP_LINK_AREA)
 				if activeDetailTab == "model" then
 					SwitchDetailTab("info")
@@ -297,51 +296,53 @@ function SC:BuildGuidesPanel(frame, L)
 	end
 	SwitchDetailTab = function(which)
 		activeDetailTab = which
-		infoPane:SetShown( which == "info")
+		infoPane:SetShown(which == "info")
 		modelPane:SetShown(which == "model")
 		if guidesStyle == "sidetabs" then
-			infoSkBtn:SetChecked( which == "info")
+			infoSkBtn:SetChecked(which == "info")
 			if modelSkBtn:IsShown() then
 				modelSkBtn:SetChecked(which == "model")
 			end
-		else  -- "horizontal"
+		else -- "horizontal"
 			-- Active tab: brighter bg + gold text; inactive: darker + grey (dimmer if disabled)
-			infoTab.bg:SetColorTexture(  which == "info"  and 0.20 or 0.10,  which == "info"  and 0.20 or 0.10,  which == "info"  and 0.28 or 0.14, 0.95)
-			modelTab.bg:SetColorTexture( which == "model" and 0.20 or 0.10,  which == "model" and 0.20 or 0.10,  which == "model" and 0.28 or 0.14, 0.95)
+			infoTab.bg:SetColorTexture(which == "info" and 0.20 or 0.10, which == "info" and 0.20 or 0.10,
+				which == "info" and 0.28 or 0.14, 0.95)
+			modelTab.bg:SetColorTexture(which == "model" and 0.20 or 0.10, which == "model" and 0.20 or 0.10,
+				which == "model" and 0.28 or 0.14, 0.95)
 			if which == "info" then
-				infoTab.lbl:SetTextColor( 1, 0.82, 0)
+				infoTab.lbl:SetTextColor(1, 0.82, 0)
 				local g = modelTab.hasModel and 0.6 or 0.35
 				modelTab.lbl:SetTextColor(g, g, g)
 			else
-				infoTab.lbl:SetTextColor( 0.6, 0.6, 0.6)
+				infoTab.lbl:SetTextColor(0.6, 0.6, 0.6)
 				modelTab.lbl:SetTextColor(1, 0.82, 0)
 			end
 		end
 	end
 	SwitchDetailTab("info")
-	infoTab:SetScript( "OnClick", function() SwitchDetailTab("info") end)
+	infoTab:SetScript("OnClick", function() SwitchDetailTab("info") end)
 	modelTab:SetScript("OnClick", function()
 		if modelTab.hasModel then SwitchDetailTab("model") end
 	end)
-	infoSkBtn:SetScript( "OnClick", function() SwitchDetailTab("info") end)
+	infoSkBtn:SetScript("OnClick", function() SwitchDetailTab("info") end)
 	modelSkBtn:SetScript("OnClick", function()
 		if modelSkBtn.hasModel then SwitchDetailTab("model") end
 	end)
 
 	-- ---- Scrollable text section (fills infoPane entirely) ----
 	local detailScroll = CreateFrame("ScrollFrame", nil, infoPane)
-	detailScroll:SetPoint("TOPLEFT",     infoPane, "TOPLEFT",     0, 0)
+	detailScroll:SetPoint("TOPLEFT", infoPane, "TOPLEFT", 0, 0)
 	detailScroll:SetPoint("BOTTOMRIGHT", infoPane, "BOTTOMRIGHT", -(DP_SCROLL_W + 4), 0)
 
 	local detailContent = CreateFrame("Frame")
-	detailContent:SetWidth(300)   -- corrected to match scroll width each time an entry is shown
-	detailContent:SetHeight(500)  -- overwritten by Guides_UpdateDetailScroll
+	detailContent:SetWidth(300) -- corrected to match scroll width each time an entry is shown
+	detailContent:SetHeight(500) -- overwritten by Guides_UpdateDetailScroll
 	detailScroll:SetScrollChild(detailContent)
 
 	local detailScrollBar = CreateFrame("Slider", nil, infoPane)
 	detailScrollBar:SetOrientation("VERTICAL")
 	detailScrollBar:SetWidth(DP_SCROLL_W)
-	detailScrollBar:SetPoint("TOPLEFT",    detailScroll, "TOPRIGHT",    4, 0)
+	detailScrollBar:SetPoint("TOPLEFT", detailScroll, "TOPRIGHT", 4, 0)
 	detailScrollBar:SetPoint("BOTTOMLEFT", detailScroll, "BOTTOMRIGHT", 4, 0)
 	detailScrollBar:SetMinMaxValues(0, 0)
 	detailScrollBar:SetThumbTexture("Interface\\ChatFrame\\ChatFrameBackground")
@@ -373,8 +374,8 @@ function SC:BuildGuidesPanel(frame, L)
 
 	-- Entry name (right of icon, vertically centered with icon)
 	local detailName = detailContent:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	detailName:SetPoint("LEFT",  detailIcon,    "RIGHT",  10, 0)
-	detailName:SetPoint("RIGHT", detailContent, "RIGHT",  -6, 0)
+	detailName:SetPoint("LEFT", detailIcon, "RIGHT", 10, 0)
+	detailName:SetPoint("RIGHT", detailContent, "RIGHT", -6, 0)
 	detailName:SetJustifyH("LEFT")
 	detailName:SetWordWrap(false)
 
@@ -389,16 +390,16 @@ function SC:BuildGuidesPanel(frame, L)
 
 	-- Source (gold, word-wrapped)
 	local detailSource = detailContent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	detailSource:SetPoint("TOPLEFT",  detailStatus,  "BOTTOMLEFT", 0,  -6)
-	detailSource:SetPoint("TOPRIGHT", detailContent, "TOPRIGHT",  -6,   0)
+	detailSource:SetPoint("TOPLEFT", detailStatus, "BOTTOMLEFT", 0, -6)
+	detailSource:SetPoint("TOPRIGHT", detailContent, "TOPRIGHT", -6, 0)
 	detailSource:SetJustifyH("LEFT")
 	detailSource:SetTextColor(1, 0.82, 0)
 	detailSource:SetWordWrap(true)
 
 	-- Description (grey, word-wrapped)
 	local detailDesc = detailContent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	detailDesc:SetPoint("TOPLEFT",  detailSource,  "BOTTOMLEFT", 0,  -6)
-	detailDesc:SetPoint("TOPRIGHT", detailContent, "TOPRIGHT",  -6,   0)
+	detailDesc:SetPoint("TOPLEFT", detailSource, "BOTTOMLEFT", 0, -6)
+	detailDesc:SetPoint("TOPRIGHT", detailContent, "TOPRIGHT", -6, 0)
 	detailDesc:SetJustifyH("LEFT")
 	detailDesc:SetTextColor(0.8, 0.8, 0.8)
 	detailDesc:SetWordWrap(true)
@@ -414,8 +415,8 @@ function SC:BuildGuidesPanel(frame, L)
 		row:Hide()
 
 		local lbl = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-		lbl:SetPoint("LEFT",   row, "LEFT",   0, 0)
-		lbl:SetPoint("TOP",    row, "TOP",    0, 0)
+		lbl:SetPoint("LEFT", row, "LEFT", 0, 0)
+		lbl:SetPoint("TOP", row, "TOP", 0, 0)
 		lbl:SetPoint("BOTTOM", row, "BOTTOM", 0, 0)
 		lbl:SetTextColor(0.55, 0.55, 0.55)
 		row.lbl = lbl
@@ -430,17 +431,17 @@ function SC:BuildGuidesPanel(frame, L)
 		btnLbl:SetJustifyH("LEFT")
 		btnLbl:SetTextColor(0.4, 0.78, 1)
 		btn.lbl = btnLbl
-		btn:SetPoint("LEFT",   lbl, "RIGHT",  4, 0)
-		btn:SetPoint("RIGHT",  row, "RIGHT",  0, 0)
-		btn:SetPoint("TOP",    row, "TOP",    0, 0)
+		btn:SetPoint("LEFT", lbl, "RIGHT", 4, 0)
+		btn:SetPoint("RIGHT", row, "RIGHT", 0, 0)
+		btn:SetPoint("TOP", row, "TOP", 0, 0)
 		btn:SetPoint("BOTTOM", row, "BOTTOM", 0, 0)
 		btn:SetScript("OnEnter", function(self)
 			if not self.targetEntry then return end
 			local e  = self.targetEntry
-			local kc = kindColors[e.kind] or {0.8,0.8,0.8}
+			local kc = kindColors[e.kind] or { 0.8, 0.8, 0.8 }
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 			GameTooltip:SetText(e.name or "?", 1, 0.82, 0)
-			local kindStr = e.kind and (e.kind:sub(1,1):upper()..e.kind:sub(2)) or ""
+			local kindStr = e.kind and (e.kind:sub(1, 1):upper() .. e.kind:sub(2)) or ""
 			GameTooltip:AddLine(kindStr, kc[1], kc[2], kc[3])
 			local st = SC:GetEntryStatus(e) or "unknown"
 			if st == "collected" then
@@ -461,11 +462,11 @@ function SC:BuildGuidesPanel(frame, L)
 					r:Click()
 					for i, e in ipairs(guides_entries) do
 						if e == target then
-							local visH     = scrollFrame:GetHeight() or 0
-							local targetY  = (i - 1) * GP_ROW_H
-							local scrollTo = math_max(0, targetY - math_max(0, (visH - GP_ROW_H) / 2))
-							local maxScroll = math_max(0, #guides_entries * GP_ROW_H - visH)
-							scrollTo = math_min(scrollTo, maxScroll)
+							local visH       = scrollFrame:GetHeight() or 0
+							local targetY    = (i - 1) * GP_ROW_H
+							local scrollTo   = math_max(0, targetY - math_max(0, (visH - GP_ROW_H) / 2))
+							local maxScroll  = math_max(0, #guides_entries * GP_ROW_H - visH)
+							scrollTo         = math_min(scrollTo, maxScroll)
 							guides_scrollPos = scrollTo
 							scrollFrame:SetVerticalScroll(scrollTo)
 							scrollBar:SetValue(scrollTo)
@@ -498,7 +499,7 @@ function SC:BuildGuidesPanel(frame, L)
 	linkBtn:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT", 0, GP_PAD)
 	linkBtn:SetText("Guide")
 	linkBtn.currentURL = ""
-	linkBtn:SetEnabled(false)  -- greyed until a URL is present
+	linkBtn:SetEnabled(false) -- greyed until a URL is present
 	-- Hide the dropdown arrow — iterate regions to find it by texture path/atlas
 	for _, region in ipairs({ linkBtn:GetRegions() }) do
 		local rtype = region.GetObjectType and region:GetObjectType()
@@ -535,8 +536,8 @@ function SC:BuildGuidesPanel(frame, L)
 	copyBg:SetColorTexture(0.05, 0.05, 0.08, 0.95)
 
 	local copyBorderLine = copyDialog:CreateTexture(nil, "BORDER")
-	copyBorderLine:SetPoint("TOPLEFT",     copyDialog, "TOPLEFT",      1, -1)
-	copyBorderLine:SetPoint("BOTTOMRIGHT", copyDialog, "BOTTOMRIGHT", -1,  1)
+	copyBorderLine:SetPoint("TOPLEFT", copyDialog, "TOPLEFT", 1, -1)
+	copyBorderLine:SetPoint("BOTTOMRIGHT", copyDialog, "BOTTOMRIGHT", -1, 1)
 	copyBorderLine:SetColorTexture(0.35, 0.30, 0.18, 0.9)
 
 	local copyLabel = copyDialog:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -545,8 +546,8 @@ function SC:BuildGuidesPanel(frame, L)
 	copyLabel:SetTextColor(0.65, 0.65, 0.65)
 
 	local copyBox = CreateFrame("EditBox", nil, copyDialog)
-	copyBox:SetPoint("BOTTOMLEFT",  copyDialog, "BOTTOMLEFT",   8,  6)
-	copyBox:SetPoint("BOTTOMRIGHT", copyDialog, "BOTTOMRIGHT", -8,  6)
+	copyBox:SetPoint("BOTTOMLEFT", copyDialog, "BOTTOMLEFT", 8, 6)
+	copyBox:SetPoint("BOTTOMRIGHT", copyDialog, "BOTTOMRIGHT", -8, 6)
 	copyBox:SetHeight(24)
 	copyBox:SetAutoFocus(true)
 	copyBox:SetMaxLetters(512)
@@ -556,8 +557,8 @@ function SC:BuildGuidesPanel(frame, L)
 	local copyBoxBg = copyBox:CreateTexture(nil, "BACKGROUND")
 	copyBoxBg:SetAllPoints()
 	copyBoxBg:SetColorTexture(0.1, 0.1, 0.15, 0.95)
-	copyBox:SetScript("OnEscapePressed",   function() copyDialog:Hide() end)
-	copyBox:SetScript("OnEnterPressed",    function() copyDialog:Hide() end)
+	copyBox:SetScript("OnEscapePressed", function() copyDialog:Hide() end)
+	copyBox:SetScript("OnEnterPressed", function() copyDialog:Hide() end)
 	copyBox:SetScript("OnEditFocusGained", function(self) self:HighlightText() end)
 	copyBox:SetScript("OnTextChanged", function(self, userInput)
 		if userInput then
@@ -588,7 +589,7 @@ function SC:BuildGuidesPanel(frame, L)
 	-- PROGRESS STEPS  (shown only for entries with a steps table)
 	-- ==============================================
 
-	local STEP_ROW_H  = 18
+	local STEP_ROW_H = 18
 	local MAX_STEPS
 	do
 		local maxFound = 0
@@ -620,7 +621,7 @@ function SC:BuildGuidesPanel(frame, L)
 	local STEP_NOTE_PAD    = 5    -- vertical padding inside note panel
 	local stepsCollapsed   = false -- expanded by default; auto-collapsed for collected entries
 
-	local stepRows = {}
+	local stepRows         = {}
 	for i = 1, MAX_STEPS do
 		-- ---- Header row ----
 		local row = CreateFrame("Button", nil, detailContent)
@@ -646,7 +647,7 @@ function SC:BuildGuidesPanel(frame, L)
 		row.ico = ico
 
 		local lbl = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-		lbl:SetPoint("LEFT",  ico, "RIGHT", 5, 0)
+		lbl:SetPoint("LEFT", ico, "RIGHT", 5, 0)
 		lbl:SetPoint("RIGHT", row, "RIGHT", -4, 0)
 		lbl:SetJustifyH("LEFT")
 		lbl:SetWordWrap(true)
@@ -660,7 +661,7 @@ function SC:BuildGuidesPanel(frame, L)
 		npBg:SetColorTexture(0.07, 0.07, 0.11, 0.65)
 
 		local noteLbl = np:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-		noteLbl:SetPoint("TOPLEFT",  np, "TOPLEFT",  5, -STEP_NOTE_PAD)
+		noteLbl:SetPoint("TOPLEFT", np, "TOPLEFT", 5, -STEP_NOTE_PAD)
 		noteLbl:SetPoint("TOPRIGHT", np, "TOPRIGHT", -5, -STEP_NOTE_PAD)
 		noteLbl:SetJustifyH("LEFT")
 		noteLbl:SetTextColor(0.80, 0.80, 0.80)
@@ -697,14 +698,14 @@ function SC:BuildGuidesPanel(frame, L)
 		wpIco:SetPoint("LEFT", wpBtn, "LEFT", 0, 0)
 		wpIco:SetAtlas("Waypoint-MapPin-Tracked")
 		local wpLbl = wpBtn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-		wpLbl:SetPoint("LEFT",   wpIco, "RIGHT",  3, 0)
-		wpLbl:SetPoint("RIGHT",  wpBtn, "RIGHT",  0, 0)
-		wpLbl:SetPoint("TOP",    wpBtn, "TOP",    0, 0)
+		wpLbl:SetPoint("LEFT", wpIco, "RIGHT", 3, 0)
+		wpLbl:SetPoint("RIGHT", wpBtn, "RIGHT", 0, 0)
+		wpLbl:SetPoint("TOP", wpBtn, "TOP", 0, 0)
 		wpLbl:SetPoint("BOTTOM", wpBtn, "BOTTOM", 0, 0)
 		wpLbl:SetJustifyH("LEFT")
 		wpLbl:SetTextColor(0.4, 0.78, 1)
 		wpLbl:SetText("Set Waypoint")
-		wpBtn.lbl = wpLbl  -- store reference for the rendering loop
+		wpBtn.lbl = wpLbl -- store reference for the rendering loop
 		wpBtn:SetScript("OnClick", function(self)
 			if self.waypoints then
 				if TomTom and TomTom.AddWaypoint then
@@ -746,8 +747,8 @@ function SC:BuildGuidesPanel(frame, L)
 			srIco:SetPoint("LEFT", sr, "LEFT", 4, 0)
 			sr.ico = srIco
 			local srLbl = sr:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-			srLbl:SetPoint("LEFT",  srIco, "RIGHT", 5, 0)
-			srLbl:SetPoint("RIGHT", sr,    "RIGHT", -22, 0)  -- leave room for waypoint pin
+			srLbl:SetPoint("LEFT", srIco, "RIGHT", 5, 0)
+			srLbl:SetPoint("RIGHT", sr, "RIGHT", -22, 0) -- leave room for waypoint pin
 			srLbl:SetJustifyH("LEFT")
 			srLbl:SetWordWrap(true)
 			sr.lbl = srLbl
@@ -808,11 +809,11 @@ function SC:BuildGuidesPanel(frame, L)
 			sr:Hide()
 			substepRows_pool[j] = sr
 		end
-		np.substepRows     = substepRows_pool
+		np.substepRows      = substepRows_pool
 		np.numSubstepsShown = 0
 
-		row.notePanel = np
-		row.isOpen    = false
+		row.notePanel       = np
+		row.isOpen          = false
 		row:SetScript("OnClick", function(self)
 			if not self.hasNote then return end
 			self.isOpen = not self.isOpen
@@ -838,7 +839,7 @@ function SC:BuildGuidesPanel(frame, L)
 	stepsHdrHL:SetColorTexture(1, 1, 1, 0.05)
 	stepsHeader:SetHighlightTexture(stepsHdrHL)
 	local stepsHdrLbl = stepsHeader:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	stepsHdrLbl:SetPoint("LEFT",  stepsHeader, "LEFT",  6, 0)
+	stepsHdrLbl:SetPoint("LEFT", stepsHeader, "LEFT", 6, 0)
 	stepsHdrLbl:SetPoint("RIGHT", stepsHeader, "RIGHT", -6, 0)
 	stepsHdrLbl:SetJustifyH("LEFT")
 	stepsHdrLbl:SetTextColor(0.7, 0.7, 0.7)
@@ -879,14 +880,15 @@ function SC:BuildGuidesPanel(frame, L)
 	local detailModelScene = CreateFrame("ModelScene", nil, modelPane, "PanningModelSceneMixinTemplate")
 	detailModelScene:SetAllPoints(modelPane)
 	detailModelScene:Hide()
-	detailModelScene:TransitionToModelSceneID(HOUSING_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true)
+	detailModelScene:TransitionToModelSceneID(HOUSING_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE,
+		CAMERA_MODIFICATION_TYPE_DISCARD, true)
 
 	-- Dedicated model for zoomed transmog slot view (mirrors AppearanceTooltip's .Zoomed model).
 	-- SetKeepModelOnHide keeps the player loaded between views so TryOn can be called synchronously.
 	local detailModelZoomed = CreateFrame("DressUpModel", nil, modelPane)
 	detailModelZoomed:SetAllPoints(modelPane)
 	detailModelZoomed:SetKeepModelOnHide(true)
-	detailModelZoomed:SetUnit("player")  -- pre-load player model at creation (mirrors AppearanceTooltip's PLAYER_LOGIN)
+	detailModelZoomed:SetUnit("player") -- pre-load player model at creation (mirrors AppearanceTooltip's PLAYER_LOGIN)
 	detailModelZoomed:Hide()
 	detailModelZoomed:SetScript("OnModelLoaded", function(self)
 		-- Only re-apply camera (same as AppearanceTooltip – TryOn is called synchronously, not here)
@@ -909,8 +911,8 @@ function SC:BuildGuidesPanel(frame, L)
 	end)
 	detailModel:SetScript("OnUpdate", function(self)
 		if self.isRotating then
-			local x  = GetCursorPosition()
-			local dx = x - (self.lastMouseX or x)
+			local x         = GetCursorPosition()
+			local dx        = x - (self.lastMouseX or x)
 			self.lastMouseX = x
 			if dx ~= 0 then
 				self.modelFacing = (self.modelFacing or 0) + dx * 0.013
@@ -939,8 +941,8 @@ function SC:BuildGuidesPanel(frame, L)
 		if currentNumSteps == 0 then return 0 end
 		stepsHeader:ClearAllPoints()
 		stepsHeader:SetPoint("TOPLEFT", reqLastWidget, "BOTTOMLEFT", 0, -12)
-		stepsHeader:SetPoint("RIGHT",   detailContent, "RIGHT",      0,    0)
-		local totalH = 12 + 20 + 4   -- pre-gap + header height + gap after header
+		stepsHeader:SetPoint("RIGHT", detailContent, "RIGHT", 0, 0)
+		local totalH = 12 + 20 + 4 -- pre-gap + header height + gap after header
 		if stepsCollapsed then
 			for i = 1, currentNumSteps do
 				stepRows[i]:Hide()
@@ -950,7 +952,7 @@ function SC:BuildGuidesPanel(frame, L)
 		end
 		local prevFrame = stepsHeader
 		local contentW  = detailContent:GetWidth() or 280
-		local lbl_avail = math_max(contentW - 39, 50)  -- 20 (arrow) + 10 (ico) + 5 (gap) + 4 (right pad)
+		local lbl_avail = math_max(contentW - 39, 50) -- 20 (arrow) + 10 (ico) + 5 (gap) + 4 (right pad)
 		for i = 1, currentNumSteps do
 			local row = stepRows[i]
 			local np  = row.notePanel
@@ -962,9 +964,9 @@ function SC:BuildGuidesPanel(frame, L)
 			row:SetHeight(rowH)
 			-- Anchor header below previous frame, always flush with detailContent left
 			row:ClearAllPoints()
-			row:SetPoint("TOP",   prevFrame,     "BOTTOM",  0,  -2)
-			row:SetPoint("LEFT",  detailContent, "LEFT",    0,   0)
-			row:SetPoint("RIGHT", detailContent, "RIGHT",   0,   0)
+			row:SetPoint("TOP", prevFrame, "BOTTOM", 0, -2)
+			row:SetPoint("LEFT", detailContent, "LEFT", 0, 0)
+			row:SetPoint("RIGHT", detailContent, "RIGHT", 0, 0)
 			totalH    = totalH + rowH + 2
 			prevFrame = row
 			-- If this step's note panel is open, anchor and size it
@@ -986,17 +988,17 @@ function SC:BuildGuidesPanel(frame, L)
 						subsH = subsH + srH + 2
 					end
 				end
-				local panelH  = STEP_NOTE_PAD
-				              + (textH > 0 and textH or (numSubs > 0 and 0 or 46))
-				              + STEP_NOTE_PAD
+				local panelH = STEP_NOTE_PAD
+						+ (textH > 0 and textH or (numSubs > 0 and 0 or 46))
+						+ STEP_NOTE_PAD
 				if numSubs > 0 then panelH = panelH + subsH end
 				if np.itemBtn:IsShown() then panelH = panelH + 4 + 16 end
-				if np.wpBtn:IsShown()   then panelH = panelH + 4 + 16 end
-				panelH = panelH + STEP_NOTE_PAD  -- bottom breathing room
+				if np.wpBtn:IsShown() then panelH = panelH + 4 + 16 end
+				panelH = panelH + STEP_NOTE_PAD -- bottom breathing room
 				np:SetHeight(panelH)
 				np:ClearAllPoints()
-				np:SetPoint("TOPLEFT", row,           "BOTTOMLEFT", STEP_NOTE_INDENT, 0)
-				np:SetPoint("RIGHT",   detailContent, "RIGHT",      -4,               0)
+				np:SetPoint("TOPLEFT", row, "BOTTOMLEFT", STEP_NOTE_INDENT, 0)
+				np:SetPoint("RIGHT", detailContent, "RIGHT", -4, 0)
 				totalH    = totalH + panelH
 				prevFrame = np
 			end
@@ -1008,17 +1010,17 @@ function SC:BuildGuidesPanel(frame, L)
 	-- Pass resetScroll=false to preserve the current scroll position (e.g. when expanding a step note).
 	Guides_UpdateDetailScroll = function(numSteps, hasSource, hasDesc, resetScroll)
 		detailContent:SetWidth(detailScroll:GetWidth())
-		local h = GP_PAD + 48 + 8    -- top padding + icon row + gap below icon
-		h = h + 14 + 4               -- kind badge
-		h = h + 16 + 6               -- status line
-		if hasSource then h = h + 40 + 6 end   -- source  (~2 wrapped lines)
-		if hasDesc   then h = h + 60 + 6 end   -- desc    (~4 wrapped lines)
-		for i, r in ipairs(requiresRows)    do if r:IsShown() then h = h + (i == 1 and 6 or 3) + 20 end end  -- requires link rows
-		for i, r in ipairs(requiredForRows) do if r:IsShown() then h = h + (i == 1 and 4 or 3) + 20 end end  -- requiredFor link rows
+		local h = GP_PAD + 48 + 8                                                                         -- top padding + icon row + gap below icon
+		h = h + 14 + 4                                                                                    -- kind badge
+		h = h + 16 + 6                                                                                    -- status line
+		if hasSource then h = h + 40 + 6 end                                                              -- source  (~2 wrapped lines)
+		if hasDesc then h = h + 60 + 6 end                                                                -- desc    (~4 wrapped lines)
+		for i, r in ipairs(requiresRows) do if r:IsShown() then h = h + (i == 1 and 6 or 3) + 20 end end  -- requires link rows
+		for i, r in ipairs(requiredForRows) do if r:IsShown() then h = h + (i == 1 and 4 or 3) + 20 end end -- requiredFor link rows
 		if numSteps > 0 then
-			h = h + Guides_RelayoutSteps()   -- pre-gap + header + step rows + open note panels
+			h = h + Guides_RelayoutSteps()                                                                  -- pre-gap + header + step rows + open note panels
 		end
-		h = h + 20   -- breathing room
+		h = h + 20                                                                                        -- breathing room
 		local scrollH = math_max(1, detailScroll:GetHeight() or 1)
 		h = math_max(h, scrollH)
 		detailContent:SetHeight(h)
@@ -1040,7 +1042,7 @@ function SC:BuildGuidesPanel(frame, L)
 			detailStatus:SetText("")
 			detailSource:SetText("")
 			detailDesc:SetText("")
-			for _, r in ipairs(requiresRows)    do r:Hide() end
+			for _, r in ipairs(requiresRows) do r:Hide() end
 			for _, r in ipairs(requiredForRows) do r:Hide() end
 			reqLastWidget = detailDesc
 			linkBtn.currentURL = ""
@@ -1071,7 +1073,7 @@ function SC:BuildGuidesPanel(frame, L)
 		detailIcon:SetTexture(SC:GetEntryIcon(entry))
 
 		local kc      = kindColors[entry.kind] or { 0.8, 0.8, 0.8 }
-		local kindStr = entry.kind and (entry.kind:sub(1,1):upper() .. entry.kind:sub(2)) or ""
+		local kindStr = entry.kind and (entry.kind:sub(1, 1):upper() .. entry.kind:sub(2)) or ""
 		detailKind:SetText(kindStr)
 		detailKind:SetTextColor(kc[1], kc[2], kc[3])
 
@@ -1102,14 +1104,14 @@ function SC:BuildGuidesPanel(frame, L)
 			end
 			if mountID and C_MountJournal and C_MountJournal.GetMountInfoExtraByID then
 				local _, desc, src = C_MountJournal.GetMountInfoExtraByID(mountID)
-				sourceText = src  or ""
-				descText   = desc or ""
+				sourceText         = src or ""
+				descText           = desc or ""
 			end
 		elseif entry.kind == "pet" then
 			if entry.speciesID and C_PetJournal and C_PetJournal.GetPetInfoBySpeciesID then
 				local _, _, _, _, src, desc = C_PetJournal.GetPetInfoBySpeciesID(entry.speciesID)
-				sourceText = src  or ""
-				descText   = desc or ""
+				sourceText                  = src or ""
+				descText                    = desc or ""
 			end
 		elseif entry.kind == "achievement" and entry.achievementID then
 			local _, _, _, _, _, _, _, desc = GetAchievementInfo(entry.achievementID)
@@ -1127,7 +1129,7 @@ function SC:BuildGuidesPanel(frame, L)
 		end
 		-- Entry-level overrides (for toys and any entry with hand-authored data)
 		if type(entry.source) == "string" and entry.source ~= "" then sourceText = entry.source end
-		if type(entry.desc)   == "string" and entry.desc   ~= "" then descText   = entry.desc   end
+		if type(entry.desc) == "string" and entry.desc ~= "" then descText = entry.desc end
 		-- "Part of" cross-reference shown at top of the source field
 		if type(entry.partOf) == "string" and entry.partOf ~= "" then
 			local prefix = "Part of: " .. entry.partOf
@@ -1136,21 +1138,23 @@ function SC:BuildGuidesPanel(frame, L)
 		detailSource:SetText(sourceText)
 		detailDesc:SetText(descText)
 		-- ---- Requirement cross-reference links ----
-		for _, r in ipairs(requiresRows)    do r:Hide() end
+		for _, r in ipairs(requiresRows) do r:Hide() end
 		for _, r in ipairs(requiredForRows) do r:Hide() end
-		reqLastWidget = detailDesc
+		reqLastWidget       = detailDesc
 		local prevReqWidget = detailDesc
 		-- Normalise: accept both a plain string and a table of strings.
-		local reqList    = type(entry.requires)    == "table" and entry.requires
-		                or (type(entry.requires)    == "string" and entry.requires    ~= "" and { entry.requires })    or {}
-		local reqForList = type(entry.requiredFor) == "table" and entry.requiredFor
-		                or (type(entry.requiredFor) == "string" and entry.requiredFor ~= "" and { entry.requiredFor }) or {}
+		local reqList       = type(entry.requires) == "table" and entry.requires
+				or (type(entry.requires) == "string" and entry.requires ~= "" and { entry.requires }) or {}
+		local reqForList    = type(entry.requiredFor) == "table" and entry.requiredFor
+				or (type(entry.requiredFor) == "string" and entry.requiredFor ~= "" and { entry.requiredFor }) or {}
 		for i, name in ipairs(reqList) do
 			local row = requiresRows[i]
 			if not row then break end
 			local target
 			for _, e in ipairs(SC.entries or {}) do
-				if e.name == name then target = e; break end
+				if e.name == name then
+					target = e; break
+				end
 			end
 			row.lbl:SetText(i == 1 and "Requires:" or "")
 			row.btn.targetEntry = target
@@ -1163,8 +1167,8 @@ function SC:BuildGuidesPanel(frame, L)
 				row.btn:SetEnabled(false)
 			end
 			row:ClearAllPoints()
-			row:SetPoint("TOPLEFT",  prevReqWidget, "BOTTOMLEFT", 0, i == 1 and -6 or -3)
-			row:SetPoint("TOPRIGHT", detailContent, "TOPRIGHT",  -6, 0)
+			row:SetPoint("TOPLEFT", prevReqWidget, "BOTTOMLEFT", 0, i == 1 and -6 or -3)
+			row:SetPoint("TOPRIGHT", detailContent, "TOPRIGHT", -6, 0)
 			row:Show()
 			prevReqWidget = row
 			reqLastWidget = row
@@ -1174,7 +1178,9 @@ function SC:BuildGuidesPanel(frame, L)
 			if not row then break end
 			local target
 			for _, e in ipairs(SC.entries or {}) do
-				if e.name == name then target = e; break end
+				if e.name == name then
+					target = e; break
+				end
 			end
 			row.lbl:SetText(i == 1 and "Required for:" or "")
 			row.btn.targetEntry = target
@@ -1187,8 +1193,8 @@ function SC:BuildGuidesPanel(frame, L)
 				row.btn:SetEnabled(false)
 			end
 			row:ClearAllPoints()
-			row:SetPoint("TOPLEFT",  prevReqWidget, "BOTTOMLEFT", 0, i == 1 and -4 or -3)
-			row:SetPoint("TOPRIGHT", detailContent, "TOPRIGHT",  -6, 0)
+			row:SetPoint("TOPLEFT", prevReqWidget, "BOTTOMLEFT", 0, i == 1 and -4 or -3)
+			row:SetPoint("TOPRIGHT", detailContent, "TOPRIGHT", -6, 0)
 			row:Show()
 			prevReqWidget = row
 			reqLastWidget = row
@@ -1198,7 +1204,9 @@ function SC:BuildGuidesPanel(frame, L)
 		local stepsEntry = entry
 		if entry.stepsRef then
 			for _, e in ipairs(SC.entries or {}) do
-				if e.name == entry.stepsRef then stepsEntry = e; break end
+				if e.name == entry.stepsRef then
+					stepsEntry = e; break
+				end
 			end
 		end
 		local steps = stepsEntry.steps
@@ -1207,7 +1215,8 @@ function SC:BuildGuidesPanel(frame, L)
 		-- If the entry opts into stepsOverrideOnDone, force all steps green once the entry itself is complete.
 		-- Only use this for entries whose steps have no questIDs and get consumed on completion (e.g. Shu'halo fortunes).
 		-- When debug mode is active the override is suppressed so individual step states remain visible.
-		local entryDone = entry.stepsOverrideOnDone and not SecretChecklistDB.debugMode and SC.GetEntryStatus and (SC:GetEntryStatus(entry)) == "collected"
+		local entryDone = entry.stepsOverrideOnDone and not SecretChecklistDB.debugMode and SC.GetEntryStatus and
+		(SC:GetEntryStatus(entry)) == "collected"
 		local doneCount = 0
 		for i = 1, MAX_STEPS do
 			local step = steps and steps[i]
@@ -1246,7 +1255,8 @@ function SC:BuildGuidesPanel(frame, L)
 						local current = C_MajorFactions.GetCurrentRenownLevel(step.renownReq.factionID) or 0
 						labelText = labelText .. "  (" .. current .. " / " .. step.renownReq.level .. ")"
 					elseif step.repReq then
-						local data = C_Reputation and C_Reputation.GetFactionDataByID and C_Reputation.GetFactionDataByID(step.repReq.factionID)
+						local data = C_Reputation and C_Reputation.GetFactionDataByID and
+						C_Reputation.GetFactionDataByID(step.repReq.factionID)
 						local current = (data and data.reaction) or 0
 						local target = step.repReq.standingName or step.repReq.standingID
 						labelText = labelText .. "  (Rank " .. current .. " / " .. target .. ")"
@@ -1270,8 +1280,10 @@ function SC:BuildGuidesPanel(frame, L)
 						local srDone, srReady = false, false
 						if step.chain then
 							if subsDone > 0 then
-								if j < subsDone then srDone = true
-								elseif j == subsDone then srReady = true
+								if j < subsDone then
+									srDone = true
+								elseif j == subsDone then
+									srReady = true
 								end
 							end
 						else
@@ -1330,7 +1342,8 @@ function SC:BuildGuidesPanel(frame, L)
 							end
 						end
 						sr:ClearAllPoints()
-						sr:SetPoint("TOPLEFT", prevSRAnchor, "BOTTOMLEFT", 0, -2)
+						sr:SetPoint("TOP", prevSRAnchor, "BOTTOM", 0, -2)
+						sr:SetPoint("LEFT", np.noteLbl, "LEFT", 14, 0)
 						sr:SetPoint("RIGHT", np, "RIGHT", -6, 0)
 						sr:Show()
 						prevSRAnchor = sr
@@ -1355,7 +1368,7 @@ function SC:BuildGuidesPanel(frame, L)
 						itemBtn.itemLink = itemLink
 						local itemBtnAnchor = lastSubstepFrame or np.noteLbl
 						itemBtn:SetPoint("TOPLEFT", itemBtnAnchor, "BOTTOMLEFT", 0, -4)
-						itemBtn:SetPoint("RIGHT",   np,            "RIGHT",     -6,  0)
+						itemBtn:SetPoint("RIGHT", np, "RIGHT", -6, 0)
 						itemBtn:Show()
 					else
 						itemBtn.itemLink = nil
@@ -1373,7 +1386,7 @@ function SC:BuildGuidesPanel(frame, L)
 					wpBtn.lbl:SetText("Set All Waypoints")
 					local wpAnchor = itemBtn:IsShown() and itemBtn or (lastSubstepFrame or np.noteLbl)
 					wpBtn:SetPoint("TOPLEFT", wpAnchor, "BOTTOMLEFT", 0, -4)
-					wpBtn:SetPoint("RIGHT",   np,       "RIGHT",     -6,  0)
+					wpBtn:SetPoint("RIGHT", np, "RIGHT", -6, 0)
 					wpBtn:Show()
 				elseif step.waypoint then
 					wpBtn.waypoint  = step.waypoint
@@ -1381,16 +1394,16 @@ function SC:BuildGuidesPanel(frame, L)
 					wpBtn.lbl:SetText("Set Waypoint")
 					local wpAnchor = itemBtn:IsShown() and itemBtn or (lastSubstepFrame or np.noteLbl)
 					wpBtn:SetPoint("TOPLEFT", wpAnchor, "BOTTOMLEFT", 0, -4)
-					wpBtn:SetPoint("RIGHT",   np,       "RIGHT",     -6,  0)
+					wpBtn:SetPoint("RIGHT", np, "RIGHT", -6, 0)
 					wpBtn:Show()
 				elseif step.factionWaypoint then
-					local fkey = (UnitFactionGroup and UnitFactionGroup("player") == "Alliance") and "alliance" or "horde"
+					local fkey      = (UnitFactionGroup and UnitFactionGroup("player") == "Alliance") and "alliance" or "horde"
 					wpBtn.waypoint  = step.factionWaypoint[fkey]
 					wpBtn.waypoints = nil
 					wpBtn.lbl:SetText("Set Waypoint")
 					local wpAnchor = itemBtn:IsShown() and itemBtn or (lastSubstepFrame or np.noteLbl)
 					wpBtn:SetPoint("TOPLEFT", wpAnchor, "BOTTOMLEFT", 0, -4)
-					wpBtn:SetPoint("RIGHT",   np,       "RIGHT",     -6,  0)
+					wpBtn:SetPoint("RIGHT", np, "RIGHT", -6, 0)
 					wpBtn:Show()
 				else
 					wpBtn.waypoint  = nil
@@ -1399,16 +1412,16 @@ function SC:BuildGuidesPanel(frame, L)
 				end
 				-- Show expand arrow only when there is something to reveal in the note panel
 				local hasNote = (step.note and step.note ~= "")
-				             or (step.substeps and #step.substeps > 0)
-				             or itemBtn:IsShown()
-				             or wpBtn:IsShown()
+						or (step.substeps and #step.substeps > 0)
+						or itemBtn:IsShown()
+						or wpBtn:IsShown()
 				row.hasNote = hasNote
 				row.arrowLbl:SetShown(hasNote)
 				-- Always reset collapse state when loading a new entry
 				row.isOpen = false
 				row.arrowLbl:SetText("+")
 				np:Hide()
-				row:Hide()   -- hidden until the steps header is expanded
+				row:Hide() -- hidden until the steps header is expanded
 			else
 				row.hasNote = false
 				row.isOpen  = false
@@ -1430,7 +1443,7 @@ function SC:BuildGuidesPanel(frame, L)
 
 		-- Hide model strip for kinds that never have a 3-D model
 		if entry.kind == "achievement" or entry.kind == "quest"
-		or entry.kind == "toy"         or entry.kind == "mystery" then
+				or entry.kind == "toy" or entry.kind == "mystery" then
 			detailModel:Hide()
 			detailModelScene:Hide()
 			detailModelZoomed:Hide()
@@ -1494,11 +1507,16 @@ function SC:BuildGuidesPanel(frame, L)
 			local invType = select(4, C_Item.GetItemInfoInstant(entry.itemID))
 			local appearanceID = C_TransmogCollection and C_TransmogCollection.GetItemInfo(entry.itemID)
 			local cameraID = appearanceID and C_TransmogCollection.GetAppearanceCameraID(appearanceID)
-			if cameraID == 0 then cameraID = nil end  -- 0 is truthy in Lua but means no camera
+			if cameraID == 0 then cameraID = nil end -- 0 is truthy in Lua but means no camera
 			local heldSlots = {
-				INVTYPE_WEAPON=true, INVTYPE_2HWEAPON=true, INVTYPE_WEAPONMAINHAND=true,
-				INVTYPE_WEAPONOFFHAND=true, INVTYPE_RANGED=true, INVTYPE_RANGEDRIGHT=true,
-				INVTYPE_HOLDABLE=true, INVTYPE_SHIELD=true,
+				INVTYPE_WEAPON = true,
+				INVTYPE_2HWEAPON = true,
+				INVTYPE_WEAPONMAINHAND = true,
+				INVTYPE_WEAPONOFFHAND = true,
+				INVTYPE_RANGED = true,
+				INVTYPE_RANGEDRIGHT = true,
+				INVTYPE_HOLDABLE = true,
+				INVTYPE_SHIELD = true,
 			}
 			if heldSlots[invType] then
 				-- Weapon/held: display the item floating alone, no player body
@@ -1533,7 +1551,8 @@ function SC:BuildGuidesPanel(frame, L)
 				if info and info.asset and info.asset > 0 then
 					detailModelScene:ClearScene()
 					detailModelScene:SetViewInsets(0, 0, 0, 0)
-					detailModelScene:TransitionToModelSceneID(HOUSING_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true)
+					detailModelScene:TransitionToModelSceneID(HOUSING_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE,
+						CAMERA_MODIFICATION_TYPE_DISCARD, true)
 					local actor = detailModelScene:GetActorByTag("decor") or detailModelScene:CreateActor("decor")
 					if actor then
 						actor:SetPreferModelCollisionBounds(true)
@@ -1559,7 +1578,7 @@ function SC:BuildGuidesPanel(frame, L)
 		local yOff = -(idx - 1) * GP_ROW_H
 		local row  = CreateFrame("Button", nil, scrollChild)
 		row:SetHeight(GP_ROW_H)
-		row:SetPoint("TOPLEFT",  scrollChild, "TOPLEFT",  0, yOff)
+		row:SetPoint("TOPLEFT", scrollChild, "TOPLEFT", 0, yOff)
 		row:SetPoint("TOPRIGHT", scrollChild, "TOPRIGHT", 0, yOff)
 
 		local rowBg = row:CreateTexture(nil, "BACKGROUND")
@@ -1590,8 +1609,8 @@ function SC:BuildGuidesPanel(frame, L)
 		row.ico = ico
 
 		local lbl = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-		lbl:SetPoint("LEFT",  ico, "RIGHT", 6,   0)
-		lbl:SetPoint("RIGHT", row, "RIGHT", -14, 0)  -- leave room for status dot
+		lbl:SetPoint("LEFT", ico, "RIGHT", 6, 0)
+		lbl:SetPoint("RIGHT", row, "RIGHT", -14, 0) -- leave room for status dot
 		lbl:SetJustifyH("LEFT")
 		lbl:SetMaxLines(2)
 		row.lbl = lbl
@@ -1618,7 +1637,7 @@ function SC:BuildGuidesPanel(frame, L)
 		local contentH = math_max(1, total * GP_ROW_H)
 		scrollChild:SetHeight(contentH)
 
-		local visibleH  = scrollFrame:GetHeight()
+		local visibleH = scrollFrame:GetHeight()
 		if not visibleH or visibleH < GP_ROW_H then visibleH = contentH end
 		local maxScroll = math_max(0, contentH - visibleH)
 		-- Use guides_scrollPos (not scrollFrame:GetVerticalScroll) because WoW resets the
@@ -1713,12 +1732,12 @@ function SC:BuildGuidesPanel(frame, L)
 		if guidesStyle == "sidetabs" then
 			detailTabBar:Hide()
 			infoPane:ClearAllPoints()
-			infoPane:SetPoint("TOPLEFT",     detailPane, "TOPLEFT",     0, 0)
+			infoPane:SetPoint("TOPLEFT", detailPane, "TOPLEFT", 0, 0)
 			infoPane:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT", 0, DP_LINK_AREA)
 			modelPane:ClearAllPoints()
-			modelPane:SetPoint("TOPLEFT",     detailPane, "TOPLEFT",     0, 0)
+			modelPane:SetPoint("TOPLEFT", detailPane, "TOPLEFT", 0, 0)
 			modelPane:SetPoint("BOTTOMRIGHT", detailPane, "BOTTOMRIGHT", 0, DP_LINK_AREA)
-		else  -- "horizontal"
+		else -- "horizontal"
 			infoSkBtn:Hide()
 			modelSkBtn:Hide()
 		end
@@ -1741,11 +1760,11 @@ function SC:BuildGuidesPanel(frame, L)
 			-- Scroll the list so the selected row is visible
 			for i, e in ipairs(guides_entries) do
 				if e == guides_selected then
-					local visH     = scrollFrame:GetHeight() or 0
-					local targetY  = (i - 1) * GP_ROW_H
-					local scrollTo = math_max(0, targetY - math_max(0, (visH - GP_ROW_H) / 2))
-					local maxScroll = math_max(0, #guides_entries * GP_ROW_H - visH)
-					scrollTo = math_min(scrollTo, maxScroll)
+					local visH       = scrollFrame:GetHeight() or 0
+					local targetY    = (i - 1) * GP_ROW_H
+					local scrollTo   = math_max(0, targetY - math_max(0, (visH - GP_ROW_H) / 2))
+					local maxScroll  = math_max(0, #guides_entries * GP_ROW_H - visH)
+					scrollTo         = math_min(scrollTo, maxScroll)
 					guides_scrollPos = scrollTo
 					scrollFrame:SetVerticalScroll(scrollTo)
 					scrollBar:SetValue(scrollTo)
@@ -1764,5 +1783,4 @@ function SC:BuildGuidesPanel(frame, L)
 	-- Initial style applied at PLAYER_LOGIN (deferred so SavedVariables are committed);
 	-- set a neutral starting state here (sidetabs is the default).
 	ApplyGuideStyle("sidetabs")
-
-end  -- SC:BuildGuidesPanel
+end -- SC:BuildGuidesPanel
