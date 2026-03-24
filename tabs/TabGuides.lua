@@ -19,6 +19,21 @@ if not SC then return end
 
 local math_min, math_max = math.min, math.max
 local math_rad = math.rad
+local select = select
+
+-- Colour used for each secret kind in tooltips and the detail pane kind label.
+-- Defined once at module level so neither MakeReqLinkRow nor Guides_ShowDetail
+-- allocate a new table on every call.
+local kindColors = {
+	mount       = { 0.6, 0.8, 1   },
+	pet         = { 0.6, 1,   0.6 },
+	toy         = { 1,   0.6, 1   },
+	achievement = { 1,   0.82, 0  },
+	quest       = { 1,   0.7, 0.3 },
+	transmog    = { 0.8, 0.6, 1   },
+	housing     = { 1,   0.85, 0.5 },
+	mystery     = { 0.7, 0.5, 1   },
+}
 
 function SC:BuildGuidesPanel(frame, L)
 
@@ -422,11 +437,7 @@ function SC:BuildGuidesPanel(frame, L)
 		btn:SetScript("OnEnter", function(self)
 			if not self.targetEntry then return end
 			local e  = self.targetEntry
-			local kc = ({
-				mount={0.6,0.8,1}, pet={0.6,1,0.6}, toy={1,0.6,1},
-				achievement={1,0.82,0}, quest={1,0.7,0.3}, transmog={0.8,0.6,1},
-				housing={1,0.85,0.5}, mystery={0.7,0.5,1},
-			})[e.kind] or {0.8,0.8,0.8}
+			local kc = kindColors[e.kind] or {0.8,0.8,0.8}
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 			GameTooltip:SetText(e.name or "?", 1, 0.82, 0)
 			local kindStr = e.kind and (e.kind:sub(1,1):upper()..e.kind:sub(2)) or ""
@@ -1059,16 +1070,6 @@ function SC:BuildGuidesPanel(frame, L)
 
 		detailIcon:SetTexture(SC:GetEntryIcon(entry))
 
-		local kindColors = {
-			mount       = { 0.6, 0.8, 1 },
-			pet         = { 0.6, 1,   0.6 },
-			toy         = { 1,   0.6, 1   },
-			achievement = { 1,   0.82, 0  },
-			quest       = { 1,   0.7, 0.3 },
-			transmog    = { 0.8, 0.6, 1   },
-			housing     = { 1,   0.85, 0.5 },
-			mystery     = { 0.7, 0.5,  1   },
-		}
 		local kc      = kindColors[entry.kind] or { 0.8, 0.8, 0.8 }
 		local kindStr = entry.kind and (entry.kind:sub(1,1):upper() .. entry.kind:sub(2)) or ""
 		detailKind:SetText(kindStr)
@@ -1205,7 +1206,8 @@ function SC:BuildGuidesPanel(frame, L)
 		currentNumSteps = numSteps
 		-- If the entry opts into stepsOverrideOnDone, force all steps green once the entry itself is complete.
 		-- Only use this for entries whose steps have no questIDs and get consumed on completion (e.g. Shu'halo fortunes).
-		local entryDone = entry.stepsOverrideOnDone and SC.GetEntryStatus and (SC:GetEntryStatus(entry)) == "collected"
+		-- When debug mode is active the override is suppressed so individual step states remain visible.
+		local entryDone = entry.stepsOverrideOnDone and not SecretChecklistDB.debugMode and SC.GetEntryStatus and (SC:GetEntryStatus(entry)) == "collected"
 		local doneCount = 0
 		for i = 1, MAX_STEPS do
 			local step = steps and steps[i]

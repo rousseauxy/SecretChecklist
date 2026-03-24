@@ -1,6 +1,7 @@
 -- Localize frequently-used globals for performance
 local type, pairs, ipairs = type, pairs, ipairs
 local math_min = math.min
+local select = select
 
 local FALLBACK_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
 
@@ -404,7 +405,17 @@ SlashCmdList.SECRETCHECKLIST = function(msg)
 		return
 	end
 	
-	if msg == "minimap" then
+	if msg == "debug" then
+		SecretChecklistDB.debugMode = not SecretChecklistDB.debugMode
+		if SecretChecklistDB.debugMode then
+			print("|cffffcc00SecretChecklist:|r Debug mode |cff00ff00enabled|r — stepsOverrideOnDone is suppressed. Type /secrets debug to disable.")
+		else
+			print("|cffffcc00SecretChecklist:|r Debug mode |cffff4444disabled|r.")
+		end
+		-- Refresh the guides panel so step colours update immediately
+		if SC.onFilterChange then SC.onFilterChange() end
+		return
+	elseif msg == "minimap" then
 		if SC.ToggleMinimapButton then
 			SC:ToggleMinimapButton()
 		end

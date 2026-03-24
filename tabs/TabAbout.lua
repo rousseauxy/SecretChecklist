@@ -24,7 +24,7 @@ function SC:BuildAboutPanel(frame, L)
 		"Version " .. (
 			C_AddOns and C_AddOns.GetAddOnMetadata
 			and C_AddOns.GetAddOnMetadata("SecretChecklist", "Version")
-			or "1.2.1"
+			or "1.8.1"
 		)
 	)
 

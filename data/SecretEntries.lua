@@ -622,15 +622,15 @@ SC.entries = {
 	    { label = "Orb 8 – Rats",           questID = 84837, note = "Karazhan Catacombs @ 60.0, 43.0 – deposit Warden's Mirror + Ancient Shaman Blood into Enigma Machine; kill all Rats; move statues onto plates to release 3 mechanisms",  waypoint = { mapID = 46,   x = 0.6000, y = 0.4300 } },
 	    { label = "Orb 9 – Cipher", achievementID = 40967,    note = "Azj-Kahet, Pillar-nest Vosh @ 55.03, 19.09 – Starry-Eyed Goggles + Relic of Crystal Connections; enter code 84847078 at console; loot Felcycle mount",     waypoint = { mapID = 2255, x = 0.5503, y = 0.1909 } },
 	    { label = "Orb 10 – Oddsight Focus", itemID = 260533, count = 1, note = "Waking Shores Hissing Grotto @ 19.4, 36.7 – die and loot Secret Fish as ghost for Bubblefilled Flounder; feed to Hek the Hungry Hornswog; place Duck Egg at Valdrakken duck family @ 40.0, 78.0; find stealthed To'no at Forbidden Reach", waypoint = { mapID = 2022, x = 0.1940, y = 0.3670 } },
-	    { label = "Orb 11 – Radiant Singer", achievementID = 61516, note = "Use Oddsight Focus for Gift of Oddsight (2 lucky numbers); interact with world orb matching 2nd number; get assigned emote; head to Divine Flame of Beledar in Hallowfall @ 33.4, 54.6; /bow to start Great Song; perform correct emotes in a raid group", waypoint = { mapID = 2215, x = 0.3340, y = 0.5460 } },
-	    { label = "Orb 12 – Footlocker",     note = "Karazhan Catacombs – visible only with Gift of Oddsight + Starry-Eyed Goggles buffs active; located near the 12th unlit pillar; requires Spare Key (item 262559) which has not yet been found", waypoint = { mapID = 46, x = 0.6500, y = 0.5000 } },
+	    { label = "Orb 11 – Radiant Singer - Undiscoverd", achievementID = 61516, note = "Use Oddsight Focus for Gift of Oddsight (2 lucky numbers); interact with world orb matching 2nd number; get assigned emote; head to Divine Flame of Beledar in Hallowfall @ 33.4, 54.6; /bow to start Great Song; perform correct emotes in a raid group. Details have not yet been found.", waypoint = { mapID = 2215, x = 0.3340, y = 0.5460 } },
+	    { label = "Orb 12 – Footlocker - Undiscoverd",     note = "Karazhan Catacombs – visible only with Gift of Oddsight + Starry-Eyed Goggles buffs active; located near the 12th unlit pillar; requires Spare Key (item 262559) which has not yet been found", waypoint = { mapID = 46, x = 0.6500, y = 0.5000 } },
 	  },
 	},
 
 	-- ------------------------------------------------
 	-- ACHIEVEMENTS (continued)
 	-- ------------------------------------------------
-	{ name = "A Most Violent Loa",                          kind = "achievement", achievementID = 62267, guideURL = "https://www.wowhead.com/achievement=62267/a-most-violent-loa",
+	{ name = "A Most Violent Loa",                          kind = "achievement", achievementID = 62267, stepsOverrideOnDone = true, guideURL = "https://www.wowhead.com/achievement=62267/a-most-violent-loa",
 	  steps = {
 	    { label = "Kill ~100 Kapara or Kapara Pups in Zul'Aman",
 	      note = "You do not need to be solo; kill credit is shared in a group but progress is individual. Progress is saved on logout. You must NOT be on a prey hunt when Filo spawns.\n\nPhase 1 (~25 kills): 'Your actions have caused an eye once closed to open...'\nPhase 2 (~50 kills): 'The eye that watches you now glares...'\nPhase 3 (~75 kills): 'Rage and darkness swell behind the glare which fixates on you...'\n\nFilo then spawns, grants the achievement, and hunts you.",

@@ -3,6 +3,7 @@ local type, pairs, ipairs = type, pairs, ipairs
 local math_max = math.max
 local math_cos, math_sin, math_atan2, math_deg, math_rad = math.cos, math.sin, math.atan2, math.deg, math.rad
 local tinsert = table.insert
+local table_sort = table.sort
 local string_format = string.format
 
 -- Kind sort order used by GetFilteredEntries; defined once at module level
@@ -110,7 +111,7 @@ local function GetFilteredEntries()
 	if sortBy == "name" then
 		local lowerName = {}
 		for _, e in ipairs(filtered) do lowerName[e] = SC:GetEntryName(e):lower() end
-		table.sort(filtered, function(a, b) return lowerName[a] < lowerName[b] end)
+		table_sort(filtered, function(a, b) return lowerName[a] < lowerName[b] end)
 	elseif sortBy == "status" then
 		local statusOrder = { missing=1, unknown=2, manual=3, collected=4 }
 		local lowerName, statusKey = {}, {}
@@ -118,7 +119,7 @@ local function GetFilteredEntries()
 			lowerName[e]  = SC:GetEntryName(e):lower()
 			statusKey[e]  = statusOrder[SC:GetEntryStatus(e)] or 2
 		end
-		table.sort(filtered, function(a, b)
+		table_sort(filtered, function(a, b)
 			if statusKey[a] ~= statusKey[b] then return statusKey[a] < statusKey[b] end
 			return lowerName[a] < lowerName[b]
 		end)
@@ -129,14 +130,14 @@ local function GetFilteredEntries()
 			lowerName[e]  = SC:GetEntryName(e):lower()
 			statusKey[e]  = statusOrder[SC:GetEntryStatus(e)] or 3
 		end
-		table.sort(filtered, function(a, b)
+		table_sort(filtered, function(a, b)
 			if statusKey[a] ~= statusKey[b] then return statusKey[a] < statusKey[b] end
 			return lowerName[a] < lowerName[b]
 		end)
 	else -- "type" (default)
 		local lowerName = {}
 		for _, e in ipairs(filtered) do lowerName[e] = SC:GetEntryName(e):lower() end
-		table.sort(filtered, function(a, b)
+		table_sort(filtered, function(a, b)
 			local ka = kindOrder[a.kind or "unknown"] or 99
 			local kb = kindOrder[b.kind or "unknown"] or 99
 			if ka ~= kb then return ka < kb end
@@ -338,9 +339,9 @@ end)
 
 function SC:OpenSecretsFrame()
 	if frame.SetTitle then
-		frame:SetTitle(L["WINDOW_TITLE"] or "Secrets Checklist")
+		frame:SetTitle(L["WINDOW_TITLE"] or "Secret Checklist")
 	elseif frame.TitleText then
-		frame.TitleText:SetText(L["WINDOW_TITLE"] or "Secrets Checklist")
+		frame.TitleText:SetText(L["WINDOW_TITLE"] or "Secret Checklist")
 	end
 	frame:Show()
 end
@@ -386,9 +387,9 @@ local function Initialize()
 
 	-- Set title using PortraitFrameTemplate method
 	if frame.SetTitle then
-		frame:SetTitle(L["WINDOW_TITLE"] or "Secrets Checklist")
+		frame:SetTitle(L["WINDOW_TITLE"] or "Secret Checklist")
 	elseif frame.TitleText then
-		frame.TitleText:SetText(L["WINDOW_TITLE"] or "Secrets Checklist")
+		frame.TitleText:SetText(L["WINDOW_TITLE"] or "Secret Checklist")
 	end
 	
 	-- Set portrait icon
@@ -644,7 +645,7 @@ local function CreateMinimapButton()
 	-- Tooltip
 	button:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-		GameTooltip:SetText(L["ADDON_NAME"] or "Secrets Checklist", 1, 1, 1)
+		GameTooltip:SetText(L["ADDON_NAME"] or "Secret Checklist", 1, 1, 1)
 		GameTooltip:AddLine(L["TOOLTIP_CLICK_TOGGLE"] or "Click to toggle window", 0.8, 0.8, 0.8)
 		GameTooltip:AddLine(L["TOOLTIP_RIGHT_CLICK_OPTIONS"] or "Right-click to open options", 0.8, 0.8, 0.8)
 		GameTooltip:AddLine(L["TOOLTIP_DRAG_MOVE"] or "Drag to move", 0.5, 0.5, 0.5)
@@ -919,6 +920,10 @@ do
 		SC:ApplyTheme(SecretChecklistDB.theme or "Default")
 		-- Restore saved Guides tab style (deferred to PLAYER_LOGIN so SavedVariables are committed)
 		if SC.ApplyGuideStyle then SC.ApplyGuideStyle(SecretChecklistDB.guidesStyle or "sidetabs") end
+		-- Notify player if debug mode was left enabled from a previous session
+		if SecretChecklistDB.debugMode then
+			print("|cffffcc00SecretChecklist:|r Debug mode is |cff00ff00enabled|r — stepsOverrideOnDone is suppressed. Type /secrets debug to disable.")
+		end
 		-- Initialise the secret-collected alert toast system
 		if SC.InitAlertSystem then SC:InitAlertSystem() end
 		-- Build the initial collection snapshot after a short delay so all
