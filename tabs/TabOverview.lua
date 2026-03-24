@@ -224,8 +224,7 @@ function SC:BuildOverviewPanel(frame, L)
 					end
 				end
 			elseif entry.kind == "quest" and entry.questID then
-				local entryName = SC.GetEntryName and SC:GetEntryName(entry) or (entry.name or L["UNKNOWN"] or "(unknown)")
-				GameTooltip:SetText(entryName, 1, 1, 1)
+				GameTooltip:SetText(SC:GetEntryName(entry), 1, 1, 1)
 				if C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
 					local completed = C_QuestLog.IsQuestFlaggedCompleted(entry.questID)
 					local statusText = completed and (L["TOOLTIP_COMPLETED"] or "Completed") or (L["TOOLTIP_NOT_COMPLETED"] or "Not completed")
@@ -235,8 +234,7 @@ function SC:BuildOverviewPanel(frame, L)
 			end
 
 			if not success then
-				local entryName = SC.GetEntryName and SC:GetEntryName(entry) or (entry.name or L["UNKNOWN"] or "(unknown)")
-				GameTooltip:SetText(entryName, 1, 1, 1)
+				GameTooltip:SetText(SC:GetEntryName(entry), 1, 1, 1)
 				if entry.note then
 					GameTooltip:AddLine(entry.note, 0.8, 0.8, 0.8, true)
 				end
@@ -301,13 +299,12 @@ function SC:BuildOverviewPanel(frame, L)
 			local button = GetButton(buttonIndex)
 
 			button.entry = entry
-			local icon = SC.GetEntryIcon and SC:GetEntryIcon(entry) or "Interface\\Icons\\INV_Misc_QuestionMark"
+			local icon = SC:GetEntryIcon(entry)
 			button.iconTexture:SetTexture(icon)
 			button.iconTextureUncollected:SetTexture(icon)
-			local entryName = SC.GetEntryName and SC:GetEntryName(entry) or (entry.name or L["UNKNOWN"] or "(unknown)")
-			button.name:SetText(entryName)
+			button.name:SetText(SC:GetEntryName(entry))
 
-			local status      = SC.GetEntryStatus and SC:GetEntryStatus(entry) or "unknown"
+			local status = SC:GetEntryStatus(entry) or "unknown"
 			local isCollected = status == "collected"
 			local isMissing   = status == "missing"
 
@@ -380,15 +377,18 @@ function SC:BuildOverviewPanel(frame, L)
 		local totalAll, collectedAll = 0, 0
 		local totalMS,  collectedMS  = 0, 0
 		for _, entry in ipairs(SC.entries or {}) do
-			if entry.kind ~= "manual" then
-				totalAll = totalAll + 1
-				local have = SC.CheckEntry and SC:CheckEntry(entry)
-				if have == true then collectedAll = collectedAll + 1 end
-			end
-			if entry.mindSeeker and not entry.linkedSecret then
-				totalMS = totalMS + 1
-				local have = SC.CheckEntry and SC:CheckEntry(entry)
-				if have == true then collectedMS = collectedMS + 1 end
+			local isNotManual  = entry.kind ~= "manual"
+			local isMindSeeker = entry.mindSeeker and not entry.linkedSecret
+			if isNotManual or isMindSeeker then
+				local collected = SC:CheckEntry(entry) == true
+				if isNotManual then
+					totalAll = totalAll + 1
+					if collected then collectedAll = collectedAll + 1 end
+				end
+				if isMindSeeker then
+					totalMS = totalMS + 1
+					if collected then collectedMS = collectedMS + 1 end
+				end
 			end
 		end
 		frame.ProgressBar.TotalText:SetText(

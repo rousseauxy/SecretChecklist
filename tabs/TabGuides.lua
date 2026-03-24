@@ -431,7 +431,7 @@ function SC:BuildGuidesPanel(frame, L)
 			GameTooltip:SetText(e.name or "?", 1, 0.82, 0)
 			local kindStr = e.kind and (e.kind:sub(1,1):upper()..e.kind:sub(2)) or ""
 			GameTooltip:AddLine(kindStr, kc[1], kc[2], kc[3])
-			local st = SC.GetEntryStatus and SC:GetEntryStatus(e) or "unknown"
+			local st = SC:GetEntryStatus(e) or "unknown"
 			if st == "collected" then
 				GameTooltip:AddLine(L["TOOLTIP_COLLECTED"] or "Collected", 0, 1, 0)
 			elseif st == "missing" then
@@ -585,7 +585,7 @@ function SC:BuildGuidesPanel(frame, L)
 			local steps = e.steps
 			if steps and #steps > maxFound then maxFound = #steps end
 		end
-		MAX_STEPS = math.max(maxFound, 1)
+		MAX_STEPS = math_max(maxFound, 1)
 	end
 
 	local MAX_SUBSTEPS
@@ -607,7 +607,7 @@ function SC:BuildGuidesPanel(frame, L)
 	local Guides_RelayoutSteps, Guides_UpdateDetailScroll
 	local STEP_NOTE_INDENT = 14   -- note panels are indented; step headers stay flush left
 	local STEP_NOTE_PAD    = 5    -- vertical padding inside note panel
-	local stepsCollapsed   = true -- steps start collapsed; toggled by clicking the header
+	local stepsCollapsed   = false -- expanded by default; auto-collapsed for collected entries
 
 	local stepRows = {}
 	for i = 1, MAX_STEPS do
@@ -835,16 +835,12 @@ function SC:BuildGuidesPanel(frame, L)
 	stepsHeader:SetScript("OnClick", function()
 		stepsCollapsed = not stepsCollapsed
 		if stepsCollapsed then
-			-- Collapse: hide all rows and their open note panels
 			for i = 1, currentNumSteps do
 				stepRows[i]:Hide()
 				stepRows[i].notePanel:Hide()
 			end
 		else
-			-- Expand: show all rows (note panels stay closed until individually clicked)
-			for i = 1, currentNumSteps do
-				stepRows[i]:Show()
-			end
+			for i = 1, currentNumSteps do stepRows[i]:Show() end
 		end
 		local label = stepsHeader.lbl:GetText() or ""
 		stepsHeader.lbl:SetText((stepsCollapsed and "+" or "-") .. label:sub(2))
@@ -930,13 +926,11 @@ function SC:BuildGuidesPanel(frame, L)
 	-- Returns the total pixel height consumed (for Guides_UpdateDetailScroll).
 	Guides_RelayoutSteps = function()
 		if currentNumSteps == 0 then return 0 end
-		-- Anchor the header below the last visible requirement row (or detailDesc if none)
 		stepsHeader:ClearAllPoints()
 		stepsHeader:SetPoint("TOPLEFT", reqLastWidget, "BOTTOMLEFT", 0, -12)
 		stepsHeader:SetPoint("RIGHT",   detailContent, "RIGHT",      0,    0)
 		local totalH = 12 + 20 + 4   -- pre-gap + header height + gap after header
 		if stepsCollapsed then
-			-- Hide all rows; only the header is shown
 			for i = 1, currentNumSteps do
 				stepRows[i]:Hide()
 				stepRows[i].notePanel:Hide()
@@ -949,6 +943,7 @@ function SC:BuildGuidesPanel(frame, L)
 		for i = 1, currentNumSteps do
 			local row = stepRows[i]
 			local np  = row.notePanel
+			row:Show()
 			-- Size label width first so GetStringHeight returns the correct wrapped height
 			row.lbl:SetWidth(lbl_avail)
 			local lblH = row.lbl:GetStringHeight()
@@ -1062,8 +1057,7 @@ function SC:BuildGuidesPanel(frame, L)
 		linkBtn.currentURL = entry.guideURL or ""
 		linkBtn:SetEnabled(linkBtn.currentURL ~= "")
 
-		local icon = SC.GetEntryIcon and SC:GetEntryIcon(entry) or "Interface\\Icons\\INV_Misc_QuestionMark"
-		detailIcon:SetTexture(icon)
+		detailIcon:SetTexture(SC:GetEntryIcon(entry))
 
 		local kindColors = {
 			mount       = { 0.6, 0.8, 1 },
@@ -1080,10 +1074,9 @@ function SC:BuildGuidesPanel(frame, L)
 		detailKind:SetText(kindStr)
 		detailKind:SetTextColor(kc[1], kc[2], kc[3])
 
-		local entryName = SC.GetEntryName and SC:GetEntryName(entry) or entry.name or "?"
-		detailName:SetText(entryName)
+		detailName:SetText(SC:GetEntryName(entry))
 
-		local status = SC.GetEntryStatus and SC:GetEntryStatus(entry) or "unknown"
+		local status = SC:GetEntryStatus(entry) or "unknown"
 		if status == "collected" then
 			detailName:SetTextColor(1, 0.82, 0)
 		else
@@ -1224,7 +1217,7 @@ function SC:BuildGuidesPanel(frame, L)
 				if step.substeps then
 					subsDone, subsTotal = SC:GetSubstepProgress(step)
 				end
-				local st = entryDone and "done" or (SC.GetStepStatus and SC:GetStepStatus(step) or "missing")
+				local st = entryDone and "done" or (SC:GetStepStatus(step) or "missing")
 				-- Status dot colour + label text colour
 				if st == "done" then
 					doneCount = doneCount + 1
@@ -1242,7 +1235,7 @@ function SC:BuildGuidesPanel(frame, L)
 					if step.mindseekerReq then
 						local count = 0
 						for _, e in ipairs(SC.entries or {}) do
-							if e.mindSeeker and SC.GetEntryStatus and SC:GetEntryStatus(e) == "collected" then
+							if e.mindSeeker and SC:GetEntryStatus(e) == "collected" then
 								count = count + 1
 							end
 						end
@@ -1306,7 +1299,7 @@ function SC:BuildGuidesPanel(frame, L)
 							local displayText = itemLink or sub.label
 							if sub.count and sub.count > 1 then
 								local have = C_Item.GetItemCount(sub.itemID, true)
-								displayText = displayText .. "  (" .. math.min(have, sub.count) .. " / " .. sub.count .. ")"
+								displayText = displayText .. "  (" .. math_min(have, sub.count) .. " / " .. sub.count .. ")"
 							end
 							sr.lbl:SetText(displayText)
 							sr.itemLink = itemLink
@@ -1422,8 +1415,10 @@ function SC:BuildGuidesPanel(frame, L)
 			end
 		end
 		if numSteps > 0 then
-			stepsCollapsed = true   -- always start collapsed when loading a new entry
-			stepsHeader.lbl:SetText("+  Progress  " .. doneCount .. " / " .. numSteps .. "  steps")
+			-- Collapse by default when the secret is already collected
+			stepsCollapsed = (SC:GetEntryStatus(entry) == "collected")
+			local prefix = stepsCollapsed and "+ " or "- "
+			stepsHeader.lbl:SetText(prefix .. "Progress  " .. doneCount .. " / " .. numSteps .. "  steps")
 			stepsHeader:Show()
 		else
 			stepsHeader:Hide()
@@ -1639,16 +1634,14 @@ function SC:BuildGuidesPanel(frame, L)
 			local row   = Guides_GetOrCreateRow(i)
 
 			if entry then
-				local icon = SC.GetEntryIcon and SC:GetEntryIcon(entry) or "Interface\\Icons\\INV_Misc_QuestionMark"
-				row.ico:SetTexture(icon)
+				row.ico:SetTexture(SC:GetEntryIcon(entry))
 
-				local status = SC.GetEntryStatus and SC:GetEntryStatus(entry) or "unknown"
+				local status = SC:GetEntryStatus(entry) or "unknown"
 				local isCol  = (status == "collected")
 				local isMis  = (status == "missing")
 				row.ico:SetDesaturated(not isCol)
 
-				local entryName = SC.GetEntryName and SC:GetEntryName(entry) or entry.name or "?"
-				row.lbl:SetText(entryName)
+				row.lbl:SetText(SC:GetEntryName(entry))
 				if isCol then
 					row.lbl:SetTextColor(1, 0.82, 0)
 				else

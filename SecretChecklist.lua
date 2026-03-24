@@ -1,5 +1,6 @@
 -- Localize frequently-used globals for performance
 local type, pairs, ipairs = type, pairs, ipairs
+local math_min = math.min
 
 local FALLBACK_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
 
@@ -406,7 +407,7 @@ function SC:GetSubstepProgress(step)
 				done = done + subTotal
 			elseif sub.itemID then
 				local have = C_Item.GetItemCount(sub.itemID, true)
-				done = done + math.min(have, subTotal)
+				done = done + math_min(have, subTotal)
 			end
 		end
 		return done, total

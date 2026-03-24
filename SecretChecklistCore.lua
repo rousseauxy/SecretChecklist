@@ -5,6 +5,9 @@ local math_cos, math_sin, math_atan2, math_deg, math_rad = math.cos, math.sin, m
 local tinsert = table.insert
 local string_format = string.format
 
+-- Kind sort order used by GetFilteredEntries; defined once at module level
+local kindOrder = { mount=1, pet=2, toy=3, achievement=4, transmog=5, quest=6, housing=7, mystery=8 }
+
 -- Localization accessor
 local L = _G.SecretChecklistLocale or {}
 
@@ -66,9 +69,6 @@ local function GetFilteredEntries()
 	local mindSeekerOnly   = f.mindSeekerOnly
 	local sortBy           = f.sortBy or "type"
 
-	-- Kind sort order for "type" sort
-	local kindOrder = { mount=1, pet=2, toy=3, achievement=4, transmog=5, quest=6, housing=7, mystery=8 }
-
 	-- Pre-compute whether any kind filter is active (invariant across entries)
 	local anyKindEnabled = false
 	for _, v in pairs(filterKinds) do if v then anyKindEnabled = true; break end end
@@ -90,7 +90,7 @@ local function GetFilteredEntries()
 
 		-- Filter by collection status (only when the two checkboxes differ)
 		if shouldInclude and showCollected ~= showMissing then
-			local status = SC.GetEntryStatus and SC:GetEntryStatus(entry) or "unknown"
+			local status = SC:GetEntryStatus(entry) or "unknown"
 			local isCollected = (status == "collected")
 			if showCollected and not isCollected then
 				shouldInclude = false
@@ -105,40 +105,42 @@ local function GetFilteredEntries()
 	end
 
 	-- Sort
+	-- Pre-compute sort keys once (O(N)) so the comparator closure does not
+	-- call GetEntryName / GetEntryStatus O(N log N) times during the sort.
 	if sortBy == "name" then
-		table.sort(filtered, function(a, b)
-			local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
-			local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
-			return na:lower() < nb:lower()
-		end)
+		local lowerName = {}
+		for _, e in ipairs(filtered) do lowerName[e] = SC:GetEntryName(e):lower() end
+		table.sort(filtered, function(a, b) return lowerName[a] < lowerName[b] end)
 	elseif sortBy == "status" then
 		local statusOrder = { missing=1, unknown=2, manual=3, collected=4 }
+		local lowerName, statusKey = {}, {}
+		for _, e in ipairs(filtered) do
+			lowerName[e]  = SC:GetEntryName(e):lower()
+			statusKey[e]  = statusOrder[SC:GetEntryStatus(e)] or 2
+		end
 		table.sort(filtered, function(a, b)
-			local sa = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(a) or "unknown"] or 2
-			local sb = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(b) or "unknown"] or 2
-			if sa ~= sb then return sa < sb end
-			local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
-			local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
-			return na:lower() < nb:lower()
+			if statusKey[a] ~= statusKey[b] then return statusKey[a] < statusKey[b] end
+			return lowerName[a] < lowerName[b]
 		end)
 	elseif sortBy == "status_col" then
 		local statusOrder = { collected=1, missing=2, unknown=3, manual=4 }
+		local lowerName, statusKey = {}, {}
+		for _, e in ipairs(filtered) do
+			lowerName[e]  = SC:GetEntryName(e):lower()
+			statusKey[e]  = statusOrder[SC:GetEntryStatus(e)] or 3
+		end
 		table.sort(filtered, function(a, b)
-			local sa = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(a) or "unknown"] or 3
-			local sb = statusOrder[SC.GetEntryStatus and SC:GetEntryStatus(b) or "unknown"] or 3
-			if sa ~= sb then return sa < sb end
-			local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
-			local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
-			return na:lower() < nb:lower()
+			if statusKey[a] ~= statusKey[b] then return statusKey[a] < statusKey[b] end
+			return lowerName[a] < lowerName[b]
 		end)
 	else -- "type" (default)
+		local lowerName = {}
+		for _, e in ipairs(filtered) do lowerName[e] = SC:GetEntryName(e):lower() end
 		table.sort(filtered, function(a, b)
 			local ka = kindOrder[a.kind or "unknown"] or 99
 			local kb = kindOrder[b.kind or "unknown"] or 99
 			if ka ~= kb then return ka < kb end
-			local na = SC.GetEntryName and SC:GetEntryName(a) or (a.name or "")
-			local nb = SC.GetEntryName and SC:GetEntryName(b) or (b.name or "")
-			return na:lower() < nb:lower()
+			return lowerName[a] < lowerName[b]
 		end)
 	end
 
@@ -881,6 +883,16 @@ do
 	housingFrame:SetScript("OnEvent", function()
 		ScheduleCollectionRefresh()
 		if SC.CheckHousingCollections then SC:CheckHousingCollections() end
+	end)
+
+	-- Refresh step/substep item counts when bag contents change or when the bank
+	-- is opened for the first time in a session (GetItemCount only returns bank
+	-- data after BANKFRAME_OPENED has fired at least once).
+	local bagFrame = CreateFrame("Frame")
+	bagFrame:RegisterEvent("BAG_UPDATE")
+	bagFrame:RegisterEvent("BANKFRAME_OPENED")
+	bagFrame:SetScript("OnEvent", function()
+		ScheduleCollectionRefresh()
 	end)
 end
 
