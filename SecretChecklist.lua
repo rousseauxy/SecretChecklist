@@ -11,7 +11,12 @@ _G.SecretChecklist = SC
 SecretChecklistDB = SecretChecklistDB or {}
 
 -- Globals required by AddonCompartmentFunc / Enter / Leave
-function SecretChecklist_OnAddonCompartmentClick(addonName, buttonName)
+-- When registered via RegisterAddon() (not TOC), the calling convention is:
+--   func(_, menuInputData, menu)  where menuInputData.buttonName = "LeftButton"/"RightButton"
+--   funcOnEnter(button, addonInfo)
+--   funcOnLeave(button, addonInfo)
+function SecretChecklist_OnAddonCompartmentClick(_, menuInputData, menu)
+	local buttonName = menuInputData and menuInputData.buttonName or "LeftButton"
 	if buttonName == "RightButton" then
 		if SC.OpenOptionsPanel then SC:OpenOptionsPanel() end
 	else
@@ -19,16 +24,16 @@ function SecretChecklist_OnAddonCompartmentClick(addonName, buttonName)
 	end
 end
 
-function SecretChecklist_OnAddonCompartmentEnter(addonName, self)
+function SecretChecklist_OnAddonCompartmentEnter(button, addonInfo)
 	local L = _G.SecretChecklistLocale or {}
-	GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-	GameTooltip:SetText(L["ADDON_NAME"] or "Secrets Checklist", 1, 1, 1)
+	GameTooltip:SetOwner(button, "ANCHOR_LEFT")
+	GameTooltip:SetText(L["ADDON_NAME"] or "Secret Checklist", 1, 1, 1)
 	GameTooltip:AddLine(L["TOOLTIP_CLICK_TOGGLE"] or "Click to toggle window", 0.8, 0.8, 0.8)
 	GameTooltip:AddLine(L["TOOLTIP_RIGHT_CLICK_OPTIONS"] or "Right-click to open options", 0.8, 0.8, 0.8)
 	GameTooltip:Show()
 end
 
-function SecretChecklist_OnAddonCompartmentLeave(addonName, self)
+function SecretChecklist_OnAddonCompartmentLeave(button, addonInfo)
 	GameTooltip:Hide()
 end
 
