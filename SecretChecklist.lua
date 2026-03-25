@@ -1,6 +1,7 @@
 -- Localize frequently-used globals for performance
 local type, pairs, ipairs = type, pairs, ipairs
 local math_min = math.min
+local select = select
 
 local FALLBACK_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
 
@@ -41,7 +42,7 @@ function SC:GetEntryIcon(entry)
 	if type(entry) ~= "table" then
 		return FALLBACK_ICON
 	end
-	
+
 	-- For mounts with mountID specified (e.g., Fathom Dweller)
 	if type(entry.mountID) == "number" then
 		if C_MountJournal and C_MountJournal.GetMountInfoByID then
@@ -51,7 +52,7 @@ function SC:GetEntryIcon(entry)
 			end
 		end
 	end
-	
+
 	-- For pets with speciesID (e.g., Jenafur)
 	if type(entry.speciesID) == "number" then
 		if C_PetJournal and C_PetJournal.GetPetInfoBySpeciesID then
@@ -61,7 +62,7 @@ function SC:GetEntryIcon(entry)
 			end
 		end
 	end
-	
+
 	if type(entry.itemID) == "number" then
 		if C_Item and C_Item.GetItemIconByID then
 			local icon = C_Item.GetItemIconByID(entry.itemID)
@@ -70,7 +71,7 @@ function SC:GetEntryIcon(entry)
 			end
 		end
 	end
-	
+
 	if type(entry.achievementID) == "number" then
 		local _, _, _, _, _, _, _, _, _, icon = GetAchievementInfo(entry.achievementID)
 		if icon then
@@ -88,7 +89,7 @@ function SC:GetEntryName(entry)
 	if type(entry) ~= "table" then
 		return "Unknown"
 	end
-	
+
 	-- Try to get localized name from game APIs
 	if entry.kind == "mount" and type(entry.mountID) == "number" then
 		if C_MountJournal and C_MountJournal.GetMountInfoByID then
@@ -98,7 +99,7 @@ function SC:GetEntryName(entry)
 			end
 		end
 	end
-	
+
 	if entry.kind == "pet" and type(entry.speciesID) == "number" then
 		if C_PetJournal and C_PetJournal.GetPetInfoBySpeciesID then
 			local name = C_PetJournal.GetPetInfoBySpeciesID(entry.speciesID)
@@ -107,7 +108,7 @@ function SC:GetEntryName(entry)
 			end
 		end
 	end
-	
+
 	if (entry.kind == "toy" or entry.kind == "transmog" or entry.kind == "housing") and type(entry.itemID) == "number" then
 		if C_Item and C_Item.GetItemInfo then
 			local name = C_Item.GetItemInfo(entry.itemID)
@@ -116,14 +117,14 @@ function SC:GetEntryName(entry)
 			end
 		end
 	end
-	
+
 	if entry.kind == "achievement" and type(entry.achievementID) == "number" then
 		local _, name = GetAchievementInfo(entry.achievementID)
 		if name and name ~= "" then
 			return name
 		end
 	end
-	
+
 	if entry.kind == "quest" and type(entry.questID) == "number" then
 		if C_QuestLog and C_QuestLog.GetTitleForQuestID then
 			local title = C_QuestLog.GetTitleForQuestID(entry.questID)
@@ -132,12 +133,12 @@ function SC:GetEntryName(entry)
 			end
 		end
 	end
-	
+
 	-- Fall back to hardcoded name in data file
 	if type(entry.name) == "string" and entry.name ~= "" then
 		return entry.name
 	end
-	
+
 	return "Unknown"
 end
 
@@ -166,9 +167,9 @@ end
 function SC:EnsureCollectionsLoaded()
 	-- Rely on collection APIs directly (some clients don't ship Blizzard_Collections as a loadable addon).
 	local apis = {
-		{C_ToyBox, "ForceToyRefilter"},
-		{C_MountJournal, "SetDefaultFilters"},
-		{C_PetJournal, "SetDefaultFilters"}
+		{ C_ToyBox,       "ForceToyRefilter" },
+		{ C_MountJournal, "SetDefaultFilters" },
+		{ C_PetJournal,   "SetDefaultFilters" }
 	}
 	for _, api in ipairs(apis) do
 		if api[1] and api[1][api[2]] then
@@ -291,25 +292,25 @@ function SC:CheckEntry(entry)
 			return nil, "Housing catalog data not loaded yet."
 		end
 		-- Prefer explicit boolean ownership fields (most reliable)
-		if type(info.isOwned)     == "boolean" then return info.isOwned,     "housing" end
-		if type(info.isCollected) == "boolean" then return info.isCollected,  "housing" end
+		if type(info.isOwned) == "boolean" then return info.isOwned, "housing" end
+		if type(info.isCollected) == "boolean" then return info.isCollected, "housing" end
 		-- GetCatalogEntryInfoByRecordID gives a more authoritative read (used by HousingCompanion / HomeDecor)
 		if info.entryID and C_HousingCatalog.GetCatalogEntryInfoByRecordID then
 			local ok, full = pcall(C_HousingCatalog.GetCatalogEntryInfoByRecordID,
 				info.entryID.entryType, info.entryID.recordID, true)
 			if ok and full then
-				if type(full.isOwned)     == "boolean" then return full.isOwned,    "housing" end
+				if type(full.isOwned) == "boolean" then return full.isOwned, "housing" end
 				if type(full.isCollected) == "boolean" then return full.isCollected, "housing" end
-				local qty    = (full.quantity            or 0)
+				local qty    = (full.quantity or 0)
 				local redeem = (full.remainingRedeemable or 0)
-				local placed = (full.numPlaced           or 0)
+				local placed = (full.numPlaced or 0)
 				if qty + redeem + placed > 0 then return true, "housing" end
 			end
 		end
 		-- Fallback: quantity-based check from base info
-		local qty    = (info.quantity            or 0)
+		local qty    = (info.quantity or 0)
 		local redeem = (info.remainingRedeemable or 0)
-		local placed = (info.numPlaced           or 0)
+		local placed = (info.numPlaced or 0)
 		if qty + redeem + placed > 0 then return true, "housing" end
 		return false, "housing"
 	end
@@ -355,7 +356,8 @@ function SC:GetStepStatus(step)
 		return "missing"
 	end
 	if step.repReq then
-		local data = C_Reputation and C_Reputation.GetFactionDataByID and C_Reputation.GetFactionDataByID(step.repReq.factionID)
+		local data = C_Reputation and C_Reputation.GetFactionDataByID and
+		C_Reputation.GetFactionDataByID(step.repReq.factionID)
 		local standingID = data and data.reaction or 0
 		if standingID >= step.repReq.standingID then return "done" end
 		return "missing"
@@ -372,7 +374,7 @@ function SC:GetStepStatus(step)
 		return "missing"
 	end
 	if step.itemID then
-		local have = C_Item.GetItemCount(step.itemID, true)  -- true = include bank
+		local have = C_Item.GetItemCount(step.itemID, true) -- true = include bank
 		if have >= (step.count or 1) then
 			-- No questID means having the item IS completion (e.g. ring drops, climb rewards).
 			-- With a questID, the item is a prerequisite you're holding but haven't used yet → yellow.
@@ -425,8 +427,19 @@ SlashCmdList.SECRETCHECKLIST = function(msg)
 		end
 		return
 	end
-	
-	if msg == "minimap" then
+
+	if msg == "debug" then
+		SecretChecklistDB.debugMode = not SecretChecklistDB.debugMode
+		if SecretChecklistDB.debugMode then
+			print(
+			"|cffffcc00SecretChecklist:|r Debug mode |cff00ff00enabled|r — stepsOverrideOnDone is suppressed. Type /secrets debug to disable.")
+		else
+			print("|cffffcc00SecretChecklist:|r Debug mode |cffff4444disabled|r.")
+		end
+		-- Refresh the guides panel so step colours update immediately
+		if SC.onFilterChange then SC.onFilterChange() end
+		return
+	elseif msg == "minimap" then
 		if SC.ToggleMinimapButton then
 			SC:ToggleMinimapButton()
 		end

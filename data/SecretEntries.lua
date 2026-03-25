@@ -234,7 +234,7 @@ SC.entries = {
 	    { label = "Page 6 (page 1127) – Well of Eternity", questID = 47211, note = "Well of Eternity dungeon (Caverns of Time) – Page 1127 found inside the instance",                                   waypoint = { mapID = 773,  x = 0.5000, y = 0.5000 } },
 	    { label = "Page 7 (page 2351) – Kun-Lai Summit", questID = 47212, note = "Kun-Lai Summit @ 34.6, 50.9 – Page 2351 at the base of the statue near Shado-Pan Monastery",                           waypoint = { mapID = 379,  x = 0.3460, y = 0.5090 } },
 	    { label = "Page 8 (page 5555) – Uldum",          questID = 47213, note = "Cataclysm Uldum @ 76.4, 53.6 – Page 5555 at the base of the statue; speak with Zidormi in Ramkahen to enter the old version", waypoint = { mapID = 249, x = 0.7640, y = 0.5360 } },
-	    { label = "Loot Gift of the Mind-Seekers",        questID = 47213, note = "Westfall @ 30.5, 28.0 – west coast; loot the Gift of the Mind-Seekers chest to receive the mount",                    waypoint = { mapID = 52,   x = 0.3050, y = 0.2800 } },
+	    { label = "Loot Gift of the Mind-Seekers",        questID = 47214, note = "Westfall @ 30.5, 28.0 – west coast; loot the Gift of the Mind-Seekers chest to receive the mount",                    waypoint = { mapID = 52,   x = 0.3050, y = 0.2800 } },
 	  },
 	},
 	{ name = "Slime Serpent",                                kind = "mount", mindSeeker = true, mountID = 1445, stepsOverrideOnDone = true, guideURL = "https://warcraft-secrets.com/guides/slime-serpent",
@@ -348,7 +348,7 @@ SC.entries = {
 	    { label = "Guardian of the Smallest — slay Great Mua'kin & claim Glimr's Cracked Egg", questID = 60620, note = "Grizzly Hills @ 8.8, 91.1 — defeat the elite makrura Great Mua'kin (106k HP, Spiked Carapace). Return to Oracle; egg hatches > receive Glimr's Cracked Egg!", waypoint = { mapID = 116, x = 0.088, y = 0.911 } },
 	  },
 	},
-	{ name = "Gurgl",                                        kind = "pet",   mindSeeker = true, speciesID = 3107, guideURL = "https://www.wowhead.com/guide/gurgl-secret-blue-murloc-battle-pet",
+	{ name = "Gurgl",                                        kind = "pet",   speciesID = 3107, guideURL = "https://www.wowhead.com/guide/gurgl-secret-blue-murloc-battle-pet",
 	  steps = {
 	    { label = "Pets Detective — speak with Breanni",      questID = 64167, note = "Dalaran (Broken Isles) pet shop — talk to Breanni to start the questline investigating lost supplies and the Violetsail Pirates.", waypoint = { mapID = 627, x = 0.414, y = 0.278 } },
 	    { label = "Pet Up — find and wake Zantini",           questID = 64196, note = "Eye of Azshara — locate Breanni's supplier Zantini and his two pets.", waypoint = { mapID = 634, x = 0.500, y = 0.500 } },
@@ -359,9 +359,15 @@ SC.entries = {
 	},
 	{ name = "Jenafur",                                      kind = "pet",   mindSeeker = true, speciesID = 2795, stepsOverrideOnDone = true, guideURL = "https://www.wowhead.com/guide/jenafur-secret-cat-battle-pet",
 	  steps = {
-	    { label = "Speak with Amara Lunastar",    note = "Ashenvale @ 17.4, 49.3 — speak with Amara to start the quest chain and unlock the Karazhan changes.",                                                                               waypoint = { mapID = 63,  x = 0.174, y = 0.493 } },
-	    { label = "Interact with the Empty Dish", note = "Elwynn Forest @ 44.2, 53.1 — Donni Anthania's house (Crazy Cat Lady). If the dish isn't visible, return to Amara and speak with her again.",                                        waypoint = { mapID = 37,  x = 0.442, y = 0.531 } },
-	    { label = "Collect food in Karazhan",     note = "Return to Karazhan (Legion dungeon). Collect from The Banquet Hall & Guest Chambers: 2× Juicy Drumstick, 2× Marbled Steak, 2× Fishy Bits, 1× Meaty Morsel, 1× Slathered Rib. Items despawn after 5 min — work quickly!" },
+	    { label = "Speak with Amara Lunastar", questID = 58076, note = "Ashenvale @ 17.4, 49.3 — speak with Amara to start the quest chain and unlock the Karazhan changes.",                                                                               waypoint = { mapID = 63,  x = 0.174, y = 0.493 } },
+	    { label = "Interact with the Empty Dish", questID = 58098, note = "Elwynn Forest @ 44.2, 53.1 — Donni Anthania's house (Crazy Cat Lady). If the dish isn't visible, return to Amara and speak with her again.",                                        waypoint = { mapID = 37,  x = 0.442, y = 0.531 } },
+    { label = "Collect food in Karazhan", questID = 58099, note = "The Banquet Hall & Guest Chambers. Items despawn after 5 min — work quickly!", waypoint = { mapID = 42, x = 0.4671, y = 0.7022 }, substeps = {
+      { label = "Slathered Rib",   itemID = 173777 },
+      { label = "Meaty Morsel",    itemID = 173779 },
+      { label = "Marbled Steak",   itemID = 173780, count = 2 },
+      { label = "Juicy Drumstick", itemID = 173783, count = 2 },
+      { label = "Fishy Bits",      itemID = 173787, count = 2 },
+    } },
 	    { label = "Place food on Opera Hall tiles & claim Jenafur", note = "Place the 8 food items on the correct tiles in the Opera Hall (matching the solution image on warcraft-secrets.com). Amara's Wish plays > Jenafur spawns. Interact with her to add her to your collection!" },
 	  },
 	},
@@ -622,15 +628,15 @@ SC.entries = {
 	    { label = "Orb 8 – Rats",           questID = 84837, note = "Karazhan Catacombs @ 60.0, 43.0 – deposit Warden's Mirror + Ancient Shaman Blood into Enigma Machine; kill all Rats; move statues onto plates to release 3 mechanisms",  waypoint = { mapID = 46,   x = 0.6000, y = 0.4300 } },
 	    { label = "Orb 9 – Cipher", achievementID = 40967,    note = "Azj-Kahet, Pillar-nest Vosh @ 55.03, 19.09 – Starry-Eyed Goggles + Relic of Crystal Connections; enter code 84847078 at console; loot Felcycle mount",     waypoint = { mapID = 2255, x = 0.5503, y = 0.1909 } },
 	    { label = "Orb 10 – Oddsight Focus", itemID = 260533, count = 1, note = "Waking Shores Hissing Grotto @ 19.4, 36.7 – die and loot Secret Fish as ghost for Bubblefilled Flounder; feed to Hek the Hungry Hornswog; place Duck Egg at Valdrakken duck family @ 40.0, 78.0; find stealthed To'no at Forbidden Reach", waypoint = { mapID = 2022, x = 0.1940, y = 0.3670 } },
-	    { label = "Orb 11 – Radiant Singer", achievementID = 61516, note = "Use Oddsight Focus for Gift of Oddsight (2 lucky numbers); interact with world orb matching 2nd number; get assigned emote; head to Divine Flame of Beledar in Hallowfall @ 33.4, 54.6; /bow to start Great Song; perform correct emotes in a raid group", waypoint = { mapID = 2215, x = 0.3340, y = 0.5460 } },
-	    { label = "Orb 12 – Footlocker",     note = "Karazhan Catacombs – visible only with Gift of Oddsight + Starry-Eyed Goggles buffs active; located near the 12th unlit pillar; requires Spare Key (item 262559) which has not yet been found", waypoint = { mapID = 46, x = 0.6500, y = 0.5000 } },
+	    { label = "Orb 11 – Radiant Singer - Undiscoverd", achievementID = 61516, note = "Use Oddsight Focus for Gift of Oddsight (2 lucky numbers); interact with world orb matching 2nd number; get assigned emote; head to Divine Flame of Beledar in Hallowfall @ 33.4, 54.6; /bow to start Great Song; perform correct emotes in a raid group. Details have not yet been found.", waypoint = { mapID = 2215, x = 0.3340, y = 0.5460 } },
+	    { label = "Orb 12 – Footlocker - Undiscoverd",     note = "Karazhan Catacombs – visible only with Gift of Oddsight + Starry-Eyed Goggles buffs active; located near the 12th unlit pillar; requires Spare Key (item 262559) which has not yet been found", waypoint = { mapID = 46, x = 0.6500, y = 0.5000 } },
 	  },
 	},
 
 	-- ------------------------------------------------
 	-- ACHIEVEMENTS (continued)
 	-- ------------------------------------------------
-	{ name = "A Most Violent Loa",                          kind = "achievement", achievementID = 62267, guideURL = "https://www.wowhead.com/achievement=62267/a-most-violent-loa",
+	{ name = "A Most Violent Loa",                          kind = "achievement", achievementID = 62267, stepsOverrideOnDone = true, guideURL = "https://www.wowhead.com/achievement=62267/a-most-violent-loa",
 	  steps = {
 	    { label = "Kill ~100 Kapara or Kapara Pups in Zul'Aman",
 	      note = "You do not need to be solo; kill credit is shared in a group but progress is individual. Progress is saved on logout. You must NOT be on a prey hunt when Filo spawns.\n\nPhase 1 (~25 kills): 'Your actions have caused an eye once closed to open...'\nPhase 2 (~50 kills): 'The eye that watches you now glares...'\nPhase 3 (~75 kills): 'Rage and darkness swell behind the glare which fixates on you...'\n\nFilo then spawns, grants the achievement, and hunts you.",

@@ -3,10 +3,11 @@ local type, pairs, ipairs = type, pairs, ipairs
 local math_max = math.max
 local math_cos, math_sin, math_atan2, math_deg, math_rad = math.cos, math.sin, math.atan2, math.deg, math.rad
 local tinsert = table.insert
+local table_sort = table.sort
 local string_format = string.format
 
 -- Kind sort order used by GetFilteredEntries; defined once at module level
-local kindOrder = { mount=1, pet=2, toy=3, achievement=4, transmog=5, quest=6, housing=7, mystery=8 }
+local kindOrder = { mount = 1, pet = 2, toy = 3, achievement = 4, transmog = 5, quest = 6, housing = 7, mystery = 8 }
 
 -- Localization accessor
 local L = _G.SecretChecklistLocale or {}
@@ -28,10 +29,10 @@ SC.tabButtons_list = {}
 -- SC.guidesListPane and SC.onFilterChange are set by BuildGuidesPanel
 
 -- Filter state per tab (local; exposed via accessors so tab panel files can read them)
-local defaultKinds = { mount=true, pet=true, toy=true, achievement=true, quest=true, transmog=true, housing=true, mystery=true }
-local tabFilters = {
-	overview = { showCollected=true,  showMissing=true,  kinds = { mount=true, pet=true, toy=true, achievement=true, quest=true, transmog=true, housing=true, mystery=true }, mindSeekerOnly = false, sortBy = "type" },
-	guides   = { showCollected=true,  showMissing=true,  kinds = { mount=true, pet=true, toy=true, achievement=true, quest=true, transmog=true, housing=true, mystery=true }, mindSeekerOnly = false, sortBy = "status" },
+local defaultKinds = { mount = true, pet = true, toy = true, achievement = true, quest = true, transmog = true, housing = true, mystery = true }
+local tabFilters   = {
+	overview = { showCollected = true, showMissing = true, kinds = { mount = true, pet = true, toy = true, achievement = true, quest = true, transmog = true, housing = true, mystery = true }, mindSeekerOnly = false, sortBy = "type" },
+	guides   = { showCollected = true, showMissing = true, kinds = { mount = true, pet = true, toy = true, achievement = true, quest = true, transmog = true, housing = true, mystery = true }, mindSeekerOnly = false, sortBy = "status" },
 }
 
 -- Read-only accessors: return filters for the currently active tab
@@ -39,18 +40,22 @@ function SC:GetShowCollected()
 	local f = tabFilters[SC.currentTab]
 	return f == nil or f.showCollected ~= false
 end
+
 function SC:GetShowMissing()
 	local f = tabFilters[SC.currentTab]
 	return f == nil or f.showMissing ~= false
 end
+
 function SC:GetFilterKinds()
 	local f = tabFilters[SC.currentTab]
 	return f and f.kinds or defaultKinds
 end
+
 function SC:GetFilterMindSeekerOnly()
 	local f = tabFilters[SC.currentTab]
 	return f and f.mindSeekerOnly or false
 end
+
 function SC:GetSortBy()
 	local f = tabFilters[SC.currentTab]
 	return f and f.sortBy or "type"
@@ -61,17 +66,19 @@ end
 -- ==============================================
 
 local function GetFilteredEntries()
-	local entries = SC.entries or {}
-	local f = tabFilters[SC.currentTab] or tabFilters.overview
-	local showCollected    = f.showCollected ~= false
-	local showMissing      = f.showMissing  ~= false
-	local filterKinds      = f.kinds
-	local mindSeekerOnly   = f.mindSeekerOnly
-	local sortBy           = f.sortBy or "type"
+	local entries        = SC.entries or {}
+	local f              = tabFilters[SC.currentTab] or tabFilters.overview
+	local showCollected  = f.showCollected ~= false
+	local showMissing    = f.showMissing ~= false
+	local filterKinds    = f.kinds
+	local mindSeekerOnly = f.mindSeekerOnly
+	local sortBy         = f.sortBy or "type"
 
 	-- Pre-compute whether any kind filter is active (invariant across entries)
 	local anyKindEnabled = false
-	for _, v in pairs(filterKinds) do if v then anyKindEnabled = true; break end end
+	for _, v in pairs(filterKinds) do if v then
+			anyKindEnabled = true; break
+		end end
 
 	local filtered = {}
 	for _, entry in ipairs(entries) do
@@ -110,33 +117,33 @@ local function GetFilteredEntries()
 	if sortBy == "name" then
 		local lowerName = {}
 		for _, e in ipairs(filtered) do lowerName[e] = SC:GetEntryName(e):lower() end
-		table.sort(filtered, function(a, b) return lowerName[a] < lowerName[b] end)
+		table_sort(filtered, function(a, b) return lowerName[a] < lowerName[b] end)
 	elseif sortBy == "status" then
-		local statusOrder = { missing=1, unknown=2, manual=3, collected=4 }
+		local statusOrder = { missing = 1, unknown = 2, manual = 3, collected = 4 }
 		local lowerName, statusKey = {}, {}
 		for _, e in ipairs(filtered) do
-			lowerName[e]  = SC:GetEntryName(e):lower()
-			statusKey[e]  = statusOrder[SC:GetEntryStatus(e)] or 2
+			lowerName[e] = SC:GetEntryName(e):lower()
+			statusKey[e] = statusOrder[SC:GetEntryStatus(e)] or 2
 		end
-		table.sort(filtered, function(a, b)
+		table_sort(filtered, function(a, b)
 			if statusKey[a] ~= statusKey[b] then return statusKey[a] < statusKey[b] end
 			return lowerName[a] < lowerName[b]
 		end)
 	elseif sortBy == "status_col" then
-		local statusOrder = { collected=1, missing=2, unknown=3, manual=4 }
+		local statusOrder = { collected = 1, missing = 2, unknown = 3, manual = 4 }
 		local lowerName, statusKey = {}, {}
 		for _, e in ipairs(filtered) do
-			lowerName[e]  = SC:GetEntryName(e):lower()
-			statusKey[e]  = statusOrder[SC:GetEntryStatus(e)] or 3
+			lowerName[e] = SC:GetEntryName(e):lower()
+			statusKey[e] = statusOrder[SC:GetEntryStatus(e)] or 3
 		end
-		table.sort(filtered, function(a, b)
+		table_sort(filtered, function(a, b)
 			if statusKey[a] ~= statusKey[b] then return statusKey[a] < statusKey[b] end
 			return lowerName[a] < lowerName[b]
 		end)
 	else -- "type" (default)
 		local lowerName = {}
 		for _, e in ipairs(filtered) do lowerName[e] = SC:GetEntryName(e):lower() end
-		table.sort(filtered, function(a, b)
+		table_sort(filtered, function(a, b)
 			local ka = kindOrder[a.kind or "unknown"] or 99
 			local kb = kindOrder[b.kind or "unknown"] or 99
 			if ka ~= kb then return ka < kb end
@@ -151,15 +158,16 @@ local function UpdateFilterButtonText()
 	if not frame.FilterDropdown or not frame.FilterDropdown.Text then return end
 	local f = tabFilters[SC.currentTab]
 	if not f then return end
-	local count = 0
+	local count         = 0
 	local showCollected = f.showCollected ~= false
-	local showMissing   = f.showMissing   ~= false
+	local showMissing   = f.showMissing ~= false
 	if showCollected ~= showMissing then count = count + 1 end
 	for _, enabled in pairs(f.kinds) do
 		if not enabled then count = count + 1 end
 	end
 	if f.mindSeekerOnly then count = count + 1 end
-	frame.FilterDropdown.Text:SetText(count > 0 and string_format(L["FILTER_WITH_COUNT"] or "Filter (%d)", count) or L["FILTER"] or "Filter")
+	frame.FilterDropdown.Text:SetText(count > 0 and string_format(L["FILTER_WITH_COUNT"] or "Filter (%d)", count) or
+	L["FILTER"] or "Filter")
 end
 
 -- Expose filtered entries to tab panel files
@@ -255,7 +263,7 @@ local function CreateTabButton(tabID, label)
 end
 
 SwitchTab = function(tabID)
-	SC.currentTab = tabID
+	SC.currentTab    = tabID
 	local isOverview = (tabID == "overview")
 	local isGuides   = (tabID == "guides")
 
@@ -274,7 +282,7 @@ SwitchTab = function(tabID)
 
 	-- Show/hide content panels
 	if SC.guidesPanel then SC.guidesPanel:SetShown(isGuides) end
-	if SC.aboutPanel  then SC.aboutPanel:SetShown(tabID == "about") end
+	if SC.aboutPanel then SC.aboutPanel:SetShown(tabID == "about") end
 
 	if isOverview then
 		if SC.updateOverviewPage then SC.updateOverviewPage(frame.currentPage) end
@@ -338,9 +346,9 @@ end)
 
 function SC:OpenSecretsFrame()
 	if frame.SetTitle then
-		frame:SetTitle(L["WINDOW_TITLE"] or "Secrets Checklist")
+		frame:SetTitle(L["WINDOW_TITLE"] or "Secret Checklist")
 	elseif frame.TitleText then
-		frame.TitleText:SetText(L["WINDOW_TITLE"] or "Secrets Checklist")
+		frame.TitleText:SetText(L["WINDOW_TITLE"] or "Secret Checklist")
 	end
 	frame:Show()
 end
@@ -373,7 +381,7 @@ local function Initialize()
 		inset:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -6, 4)
 		frame.Inset = inset
 	end
-	
+
 	-- Add background to Inset for visibility
 	if not frame.Inset.bg then
 		local bg = frame.Inset:CreateTexture(nil, "BACKGROUND")
@@ -386,11 +394,11 @@ local function Initialize()
 
 	-- Set title using PortraitFrameTemplate method
 	if frame.SetTitle then
-		frame:SetTitle(L["WINDOW_TITLE"] or "Secrets Checklist")
+		frame:SetTitle(L["WINDOW_TITLE"] or "Secret Checklist")
 	elseif frame.TitleText then
-		frame.TitleText:SetText(L["WINDOW_TITLE"] or "Secrets Checklist")
+		frame.TitleText:SetText(L["WINDOW_TITLE"] or "Secret Checklist")
 	end
-	
+
 	-- Set portrait icon
 	local iconTexture = 454046
 	if frame.PortraitContainer and frame.PortraitContainer.portrait then
@@ -399,19 +407,19 @@ local function Initialize()
 	elseif frame.SetPortraitToAsset then
 		frame:SetPortraitToAsset(iconTexture)
 	end
-	
+
 	-- Setup dragging (PortraitFrameTemplate provides this)
 	frame:SetMovable(true)
 	frame:SetClampedToScreen(true)
 	frame:RegisterForDrag("LeftButton")
 	frame:SetScript("OnDragStart", frame.StartMoving)
 	frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
-	
+
 	-- Hide attic for cleaner look (if function exists)
 	if ButtonFrameTemplate_HideAttic then
 		ButtonFrameTemplate_HideAttic(frame)
 	end
-	
+
 	-- Set proper font size for page text
 	local fontPath, _, fontFlags = frame.PagingFrame.PageText:GetFont()
 	frame.PagingFrame.PageText:SetFont(fontPath, 12, fontFlags)
@@ -431,8 +439,8 @@ local function Initialize()
 			for tab, f in pairs(SecretChecklistDB.tabFilters) do
 				if tabFilters[tab] then
 					if f.showCollected ~= nil then tabFilters[tab].showCollected = f.showCollected end
-					if f.showMissing   ~= nil then tabFilters[tab].showMissing   = f.showMissing   end
-					if f.sortBy        ~= nil then tabFilters[tab].sortBy        = f.sortBy        end
+					if f.showMissing ~= nil then tabFilters[tab].showMissing = f.showMissing end
+					if f.sortBy ~= nil then tabFilters[tab].sortBy = f.sortBy end
 					if f.mindSeekerOnly ~= nil then tabFilters[tab].mindSeekerOnly = f.mindSeekerOnly end
 					if f.kinds then
 						for kind, enabled in pairs(f.kinds) do
@@ -442,7 +450,7 @@ local function Initialize()
 				end
 			end
 		end
-		
+
 		-- Helper to save state and refresh
 		local function OnFilterChanged()
 			SecretChecklistDB.tabFilters = {}
@@ -462,50 +470,73 @@ local function Initialize()
 				if SC.updateOverviewPage then SC.updateOverviewPage(1) end
 			elseif SC.currentTab == "guides" and SC.onFilterChange then
 				SC.onFilterChange()
-
 			end
 			UpdateFilterButtonText()
 		end
-		
+
 		frame.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
 			-- Root level: quick toggles (HC-style)
 			rootDescription:CreateCheckbox(
 				L["FILTER_COLLECTED"] or "Collected",
-				function() local f = tabFilters[SC.currentTab]; return f == nil or f.showCollected ~= false end,
-				function() local f = tabFilters[SC.currentTab]; if f then f.showCollected = not (f.showCollected ~= false); OnFilterChanged() end end)
+				function()
+					local f = tabFilters[SC.currentTab]; return f == nil or f.showCollected ~= false
+				end,
+				function()
+					local f = tabFilters[SC.currentTab]; if f then
+						f.showCollected = not (f.showCollected ~= false); OnFilterChanged()
+					end
+				end)
 			rootDescription:CreateCheckbox(
 				L["FILTER_NOT_COLLECTED"] or "Not Collected",
-				function() local f = tabFilters[SC.currentTab]; return f == nil or f.showMissing ~= false end,
-				function() local f = tabFilters[SC.currentTab]; if f then f.showMissing = not (f.showMissing ~= false); OnFilterChanged() end end)
+				function()
+					local f = tabFilters[SC.currentTab]; return f == nil or f.showMissing ~= false
+				end,
+				function()
+					local f = tabFilters[SC.currentTab]; if f then
+						f.showMissing = not (f.showMissing ~= false); OnFilterChanged()
+					end
+				end)
 			rootDescription:CreateCheckbox(
 				L["FILTER_MIND_SEEKER_ONLY"] or "Mind-Seeker only",
-				function() local f = tabFilters[SC.currentTab]; return f and f.mindSeekerOnly == true end,
-				function() local f = tabFilters[SC.currentTab]; if f then f.mindSeekerOnly = not f.mindSeekerOnly; OnFilterChanged() end end)
+				function()
+					local f = tabFilters[SC.currentTab]; return f and f.mindSeekerOnly == true
+				end,
+				function()
+					local f = tabFilters[SC.currentTab]; if f then
+						f.mindSeekerOnly = not f.mindSeekerOnly; OnFilterChanged()
+					end
+				end)
 
 			-- Sort by submenu
 			local sortSubmenu = rootDescription:CreateButton(L["SORT_BY"] or "Sort by")
 			local sortOptions = {
-				{label = L["SORT_TYPE"]       or "Type",             value = "type"},
-				{label = L["SORT_NAME"]       or "Name",             value = "name"},
-				{label = L["SORT_STATUS_INC"] or "Incomplete first", value = "status"},
-				{label = L["SORT_STATUS_COL"] or "Collected first",  value = "status_col"},
+				{ label = L["SORT_TYPE"] or "Type",                   value = "type" },
+				{ label = L["SORT_NAME"] or "Name",                   value = "name" },
+				{ label = L["SORT_STATUS_INC"] or "Incomplete first", value = "status" },
+				{ label = L["SORT_STATUS_COL"] or "Collected first",  value = "status_col" },
 			}
 			for _, opt in ipairs(sortOptions) do
 				sortSubmenu:CreateRadio(opt.label,
-					function() local f = tabFilters[SC.currentTab]; return f and f.sortBy == opt.value end,
-					function() local f = tabFilters[SC.currentTab]; if f then f.sortBy = opt.value; OnFilterChanged() end end)
+					function()
+						local f = tabFilters[SC.currentTab]; return f and f.sortBy == opt.value
+					end,
+					function()
+						local f = tabFilters[SC.currentTab]; if f then
+							f.sortBy = opt.value; OnFilterChanged()
+						end
+					end)
 			end
 
 			-- Type submenu
 			local typeOptions = {
-				{label = L["KIND_MOUNTS"]       or "Mounts",       kind = "mount"},
-				{label = L["KIND_PETS"]         or "Pets",         kind = "pet"},
-				{label = L["KIND_TOYS"]         or "Toys",         kind = "toy"},
-				{label = L["KIND_ACHIEVEMENTS"] or "Achievements", kind = "achievement"},
-				{label = L["KIND_QUESTS"]       or "Quests",       kind = "quest"},
-				{label = L["KIND_TRANSMOGS"]    or "Transmog",     kind = "transmog"},
-				{label = L["KIND_HOUSINGS"]     or "Housing",      kind = "housing"},
-				{label = L["KIND_MYSTERIES"]    or "Mystery",      kind = "mystery"},
+				{ label = L["KIND_MOUNTS"] or "Mounts",             kind = "mount" },
+				{ label = L["KIND_PETS"] or "Pets",                 kind = "pet" },
+				{ label = L["KIND_TOYS"] or "Toys",                 kind = "toy" },
+				{ label = L["KIND_ACHIEVEMENTS"] or "Achievements", kind = "achievement" },
+				{ label = L["KIND_QUESTS"] or "Quests",             kind = "quest" },
+				{ label = L["KIND_TRANSMOGS"] or "Transmog",        kind = "transmog" },
+				{ label = L["KIND_HOUSINGS"] or "Housing",          kind = "housing" },
+				{ label = L["KIND_MYSTERIES"] or "Mystery",         kind = "mystery" },
 			}
 			local typeSubmenu = rootDescription:CreateButton(L["FILTER_BY_TYPE"] or "Type")
 			typeSubmenu:CreateCheckbox(L["FILTER_SELECT_ALL"] or "Select All",
@@ -533,38 +564,43 @@ local function Initialize()
 			typeSubmenu:CreateDivider()
 			for _, opt in ipairs(typeOptions) do
 				typeSubmenu:CreateCheckbox(opt.label,
-					function() local f = tabFilters[SC.currentTab]; return f and f.kinds[opt.kind] == true end,
-					function() local f = tabFilters[SC.currentTab]; if f then f.kinds[opt.kind] = not f.kinds[opt.kind]; OnFilterChanged() end end)
+					function()
+						local f = tabFilters[SC.currentTab]; return f and f.kinds[opt.kind] == true
+					end,
+					function()
+						local f = tabFilters[SC.currentTab]; if f then
+							f.kinds[opt.kind] = not f.kinds[opt.kind]; OnFilterChanged()
+						end
+					end)
 			end
-
 		end)
 
-	-- Reset button callbacks
-	frame.FilterDropdown:SetIsDefaultCallback(function()
-		local f = tabFilters[SC.currentTab]
-		if not f then return true end
-		if f.showCollected == false or f.showMissing == false then return false end
-		if f.mindSeekerOnly then return false end
-		if (f.sortBy or "type") ~= "type" then return false end
-		for _, enabled in pairs(f.kinds) do
-			if not enabled then return false end
-		end
-		return true
-	end)
+		-- Reset button callbacks
+		frame.FilterDropdown:SetIsDefaultCallback(function()
+			local f = tabFilters[SC.currentTab]
+			if not f then return true end
+			if f.showCollected == false or f.showMissing == false then return false end
+			if f.mindSeekerOnly then return false end
+			if (f.sortBy or "type") ~= "type" then return false end
+			for _, enabled in pairs(f.kinds) do
+				if not enabled then return false end
+			end
+			return true
+		end)
 
-	frame.FilterDropdown:SetDefaultCallback(function()
-		local f = tabFilters[SC.currentTab]
-		if not f then return end
-		f.showCollected  = true
-		f.showMissing    = true
-		f.mindSeekerOnly = false
-		f.sortBy         = "type"
-		for kind in pairs(f.kinds) do f.kinds[kind] = true end
-		OnFilterChanged()
-	end)
+		frame.FilterDropdown:SetDefaultCallback(function()
+			local f = tabFilters[SC.currentTab]
+			if not f then return end
+			f.showCollected  = true
+			f.showMissing    = true
+			f.mindSeekerOnly = false
+			f.sortBy         = "type"
+			for kind in pairs(f.kinds) do f.kinds[kind] = true end
+			OnFilterChanged()
+		end)
 
-	UpdateFilterButtonText()
-end
+		UpdateFilterButtonText()
+	end
 
 	SC:BuildOverviewPanel(frame, L)
 	SC:BuildGuidesPanel(frame, L)
@@ -573,8 +609,8 @@ end
 	-- Create tab buttons
 	local tabDefs = {
 		{ id = "overview", label = L["TAB_OVERVIEW"] or "Overview" },
-		{ id = "guides",   label = L["TAB_GUIDES"]   or "Guides"   },
-		{ id = "about",    label = L["TAB_ABOUT"]    or "About"    },
+		{ id = "guides",   label = L["TAB_GUIDES"] or "Guides" },
+		{ id = "about",    label = L["TAB_ABOUT"] or "About" },
 	}
 	local prevBtn = nil
 	for i, def in ipairs(tabDefs) do
@@ -594,8 +630,6 @@ end
 
 	-- Register frame for ESC key to close
 	tinsert(UISpecialFrames, "SecretChecklistFrame")
-
-
 end
 
 -- ==============================================
@@ -612,27 +646,27 @@ local function CreateMinimapButton()
 	button:EnableMouse(true)
 	button:RegisterForDrag("LeftButton")
 	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-	
+
 	-- Icon
 	local icon = button:CreateTexture(nil, "ARTWORK")
 	icon:SetSize(20, 20)
 	icon:SetPoint("CENTER", 0, 1)
 	icon:SetTexture(454046)
 	button.icon = icon
-	
+
 	-- Border
 	local overlay = button:CreateTexture(nil, "OVERLAY")
 	overlay:SetSize(53, 53)
 	overlay:SetPoint("TOPLEFT")
 	overlay:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-	
+
 	-- Highlight
 	local highlight = button:CreateTexture(nil, "HIGHLIGHT")
 	highlight:SetSize(20, 20)
 	highlight:SetPoint("CENTER", 0, 1)
 	highlight:SetTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
 	highlight:SetBlendMode("ADD")
-	
+
 	-- Position (default to top-left of minimap)
 	-- Radius 85 places the button just outside the decorative minimap ring.
 	local minimapRadius = (Minimap:GetWidth() / 2) + 5
@@ -640,33 +674,33 @@ local function CreateMinimapButton()
 	local x = minimapRadius * math_cos(math_rad(angle))
 	local y = minimapRadius * math_sin(math_rad(angle))
 	button:SetPoint("CENTER", Minimap, "CENTER", x, y)
-	
+
 	-- Tooltip
 	button:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-		GameTooltip:SetText(L["ADDON_NAME"] or "Secrets Checklist", 1, 1, 1)
+		GameTooltip:SetText(L["ADDON_NAME"] or "Secret Checklist", 1, 1, 1)
 		GameTooltip:AddLine(L["TOOLTIP_CLICK_TOGGLE"] or "Click to toggle window", 0.8, 0.8, 0.8)
 		GameTooltip:AddLine(L["TOOLTIP_RIGHT_CLICK_OPTIONS"] or "Right-click to open options", 0.8, 0.8, 0.8)
 		GameTooltip:AddLine(L["TOOLTIP_DRAG_MOVE"] or "Drag to move", 0.5, 0.5, 0.5)
 		GameTooltip:Show()
 	end)
-	
+
 	button:SetScript("OnLeave", function()
 		GameTooltip:Hide()
 	end)
-	
--- Click handler (left = toggle window, right = options, alt+left = About)
-        button:SetScript("OnClick", function(self, mouseButton)
-                if mouseButton == "RightButton" then
-                        if SC.OpenOptionsPanel then SC:OpenOptionsPanel() end
-                elseif IsAltKeyDown() then
-                        SC:OpenSecretsFrame()
-                        SwitchTab("about")
+
+	-- Click handler (left = toggle window, right = options, alt+left = About)
+	button:SetScript("OnClick", function(self, mouseButton)
+		if mouseButton == "RightButton" then
+			if SC.OpenOptionsPanel then SC:OpenOptionsPanel() end
+		elseif IsAltKeyDown() then
+			SC:OpenSecretsFrame()
+			SwitchTab("about")
 		else
 			SC:ToggleSecretsFrame()
 		end
 	end)
-	
+
 	-- Drag handler
 	button:SetScript("OnDragStart", function(self)
 		self:LockHighlight()
@@ -675,7 +709,7 @@ local function CreateMinimapButton()
 			local px, py = GetCursorPosition()
 			local scale = Minimap:GetEffectiveScale()
 			px, py = px / scale, py / scale
-			
+
 			local angle = math_deg(math_atan2(py - my, px - mx))
 			SecretChecklistDB.minimapAngle = angle
 
@@ -686,12 +720,12 @@ local function CreateMinimapButton()
 			self:SetPoint("CENTER", Minimap, "CENTER", x, y)
 		end)
 	end)
-	
+
 	button:SetScript("OnDragStop", function(self)
 		self:UnlockHighlight()
 		self:SetScript("OnUpdate", nil)
 	end)
-	
+
 	return button
 end
 
@@ -744,10 +778,11 @@ local function CreateOptionsPanel()
 		GetMinimapValue,
 		SetMinimapValue
 	)
-	Settings.CreateCheckbox(category, minimapSetting, L["SETTINGS_MINIMAP_BUTTON_DESC"] or "Show or hide the SecretChecklist minimap button.")
+	Settings.CreateCheckbox(category, minimapSetting,
+		L["SETTINGS_MINIMAP_BUTTON_DESC"] or "Show or hide the SecretChecklist minimap button.")
 
 	local function GetAlertsValue()
-		return SecretChecklistDB.alertsEnabled ~= false  -- default true
+		return SecretChecklistDB.alertsEnabled ~= false -- default true
 	end
 	local function SetAlertsValue(value)
 		SecretChecklistDB.alertsEnabled = value
@@ -761,7 +796,8 @@ local function CreateOptionsPanel()
 		GetAlertsValue,
 		SetAlertsValue
 	)
-	Settings.CreateCheckbox(category, alertsSetting, L["SETTINGS_ALERTS_DESC"] or "Show a toast notification when a tracked secret is newly collected.")
+	Settings.CreateCheckbox(category, alertsSetting,
+		L["SETTINGS_ALERTS_DESC"] or "Show a toast notification when a tracked secret is newly collected.")
 
 	-- Theme selection dropdown
 	if Settings.CreateDropdown and Settings.CreateControlTextContainer then
@@ -779,7 +815,7 @@ local function CreateOptionsPanel()
 		local function GetThemeOptions()
 			local container = Settings.CreateControlTextContainer()
 			-- Add Default first, then any other available themes
-			for _, key in ipairs({"Default", "ElvUI"}) do
+			for _, key in ipairs({ "Default", "ElvUI" }) do
 				local theme = SC.themes and SC.themes[key]
 				if theme and theme.Available then
 					container:Add(key, theme.Name, theme.Description)
@@ -793,7 +829,8 @@ local function CreateOptionsPanel()
 			end
 			return container:GetData()
 		end
-		Settings.CreateDropdown(category, themeSetting, GetThemeOptions, L["SETTINGS_THEME_DESC"] or "Select a visual theme for SecretChecklist.")
+		Settings.CreateDropdown(category, themeSetting, GetThemeOptions,
+			L["SETTINGS_THEME_DESC"] or "Select a visual theme for SecretChecklist.")
 
 		-- Guides tab style dropdown
 		local function GetTabStyle() return SecretChecklistDB.guidesStyle or "sidetabs" end
@@ -811,11 +848,12 @@ local function CreateOptionsPanel()
 		)
 		local function GetTabStyleOptions()
 			local container = Settings.CreateControlTextContainer()
-			container:Add("sidetabs",   "Default", "SpellBook-style side tabs on the right edge of the detail pane.")
-			container:Add("horizontal", "Modern",  "Classic horizontal Info / Model tab bar inside the detail pane.")
+			container:Add("sidetabs", "Default", "SpellBook-style side tabs on the right edge of the detail pane.")
+			container:Add("horizontal", "Modern", "Classic horizontal Info / Model tab bar inside the detail pane.")
 			return container:GetData()
 		end
-		Settings.CreateDropdown(category, tabStyleSetting, GetTabStyleOptions, "Choose how the Info and Model tabs are shown in the Guides panel.")
+		Settings.CreateDropdown(category, tabStyleSetting, GetTabStyleOptions,
+			"Choose how the Info and Model tabs are shown in the Guides panel.")
 	end
 end
 
@@ -919,6 +957,11 @@ do
 		SC:ApplyTheme(SecretChecklistDB.theme or "Default")
 		-- Restore saved Guides tab style (deferred to PLAYER_LOGIN so SavedVariables are committed)
 		if SC.ApplyGuideStyle then SC.ApplyGuideStyle(SecretChecklistDB.guidesStyle or "sidetabs") end
+		-- Notify player if debug mode was left enabled from a previous session
+		if SecretChecklistDB.debugMode then
+			print(
+			"|cffffcc00SecretChecklist:|r Debug mode is |cff00ff00enabled|r — stepsOverrideOnDone is suppressed. Type /secrets debug to disable.")
+		end
 		-- Initialise the secret-collected alert toast system
 		if SC.InitAlertSystem then SC:InitAlertSystem() end
 		-- Build the initial collection snapshot after a short delay so all
