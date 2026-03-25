@@ -73,6 +73,7 @@ Your filter preferences and minimap button position are automatically saved to S
 
 ## Version History
 
+- **1.8.4**: Fixed AddonCompartment hover crash ("Wrong object type") caused by incorrect handler signatures when using `RegisterAddon`; corrected function signatures to match `RegisterAddon` calling convention (`funcOnEnter`/`funcOnLeave` receive `(button, addonInfo)`, `func` receives `(_, menuInputData, menu)`); added settings to show/hide the minimap addon compartment button independently
 - **1.8.3**: Added AddonCompartment support — Secret Checklist now appears in the minimap addon compartment dropdown; left-click toggles the window, hovering shows a tooltip, right-click gracefully noops (reserved for future options panel)
 - **1.8.2**: Fixed substep anchor cascading indent (each substep row was indented 14px more than the previous); corrected Riddler's Mind-Worm quest ID for "Loot Gift of the Mind-Seekers" (47213 → 47214); added missing `questID = 58099` to Jenafur's "Collect food in Karazhan" step
 - **1.8.1**: Fixed addon title typo ("Secrets Checklist" → "Secret Checklist"); added *A Most Violent Loa* achievement (Filo / Kapara kills in Zul'Aman); added substeps for multi-item collection tracking within a single step (Sargle's Fortunes); progress steps now auto-expand for uncollected secrets and auto-collapse for collected ones; fixed item-based step tracking not updating when moving items to/from the bank
