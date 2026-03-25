@@ -749,6 +749,27 @@ function SC:ToggleMinimapButton()
 	self:SetMinimapButtonHidden(not SecretChecklistDB.hideMinimapButton)
 end
 
+-- Centralized addon compartment visibility setter used by settings UI.
+function SC:SetAddonCompartmentHidden(hidden)
+	hidden = hidden == true
+	SecretChecklistDB.hideAddonCompartment = hidden
+
+	if AddonCompartmentFrame then
+		if hidden then
+			AddonCompartmentFrame:UnregisterAddon("SecretChecklist")
+		else
+			AddonCompartmentFrame:RegisterAddon({
+				text        = "SecretChecklist",
+				icon        = 454046,
+				notCheckable = true,
+				func        = SecretChecklist_OnAddonCompartmentClick,
+				funcOnEnter = SecretChecklist_OnAddonCompartmentEnter,
+				funcOnLeave = SecretChecklist_OnAddonCompartmentLeave,
+			})
+		end
+	end
+end
+
 local function CreateOptionsPanel()
 	if not (Settings and Settings.RegisterVerticalLayoutCategory and Settings.RegisterAddOnCategory and Settings.RegisterProxySetting and Settings.CreateCheckbox) then
 		return
@@ -780,6 +801,24 @@ local function CreateOptionsPanel()
 	)
 	Settings.CreateCheckbox(category, minimapSetting,
 		L["SETTINGS_MINIMAP_BUTTON_DESC"] or "Show or hide the SecretChecklist minimap button.")
+
+	local function GetCompartmentValue()
+		return SecretChecklistDB.hideAddonCompartment ~= true
+	end
+	local function SetCompartmentValue(value)
+		SC:SetAddonCompartmentHidden(not value)
+	end
+	local compartmentSetting = Settings.RegisterProxySetting(
+		category,
+		"SECRETCHECKLIST_ADDON_COMPARTMENT",
+		Settings.VarType.Boolean,
+		L["SETTINGS_ADDON_COMPARTMENT"] or "Show Addon Compartment Button",
+		Settings.Default.True,
+		GetCompartmentValue,
+		SetCompartmentValue
+	)
+	Settings.CreateCheckbox(category, compartmentSetting,
+		L["SETTINGS_ADDON_COMPARTMENT_DESC"] or "Show or hide the SecretChecklist button in the minimap addon compartment.")
 
 	local function GetAlertsValue()
 		return SecretChecklistDB.alertsEnabled ~= false -- default true
@@ -949,6 +988,7 @@ do
 			r * math_sin(math_rad(angle)))
 		-- Restore saved visibility
 		SC:SetMinimapButtonHidden(SecretChecklistDB.hideMinimapButton == true)
+		SC:SetAddonCompartmentHidden(SecretChecklistDB.hideAddonCompartment == true)
 		-- Apply saved theme (deferred to PLAYER_LOGIN so SavedVariables are committed)
 		-- Auto-select ElvUI theme on first load if ElvUI is present and no theme has been saved yet
 		if not SecretChecklistDB.theme and ElvUI then
