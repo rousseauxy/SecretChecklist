@@ -749,25 +749,56 @@ function SC:ToggleMinimapButton()
 	self:SetMinimapButtonHidden(not SecretChecklistDB.hideMinimapButton)
 end
 
+-- Stored reference to our compartment entry (used for removal).
+local compartmentData = nil
+
 -- Centralized addon compartment visibility setter used by settings UI.
 function SC:SetAddonCompartmentHidden(hidden)
 	hidden = hidden == true
 	SecretChecklistDB.hideAddonCompartment = hidden
 
-	if AddonCompartmentFrame then
-		if hidden then
-			AddonCompartmentFrame:UnregisterAddon("SecretChecklist")
-		else
-			AddonCompartmentFrame:RegisterAddon({
-				text        = "SecretChecklist",
+	if not AddonCompartmentFrame then return end
+
+	if hidden then
+		-- Find and remove our entry by reference (Blizzard has no UnregisterAddon API).
+		if compartmentData then
+			local list = AddonCompartmentFrame.registeredAddons
+			for i = 1, #list do
+				if list[i] == compartmentData then
+					table.remove(list, i)
+					AddonCompartmentFrame:UpdateDisplay()
+					break
+				end
+			end
+			compartmentData = nil
+		end
+	else
+		if not compartmentData then
+			compartmentData = {
+				text        = "Secret Checklist",
 				icon        = 454046,
 				notCheckable = true,
 				func        = SecretChecklist_OnAddonCompartmentClick,
 				funcOnEnter = SecretChecklist_OnAddonCompartmentEnter,
 				funcOnLeave = SecretChecklist_OnAddonCompartmentLeave,
-			})
+			}
+			AddonCompartmentFrame:RegisterAddon(compartmentData)
 		end
 	end
+end
+
+-- Register in the addon compartment on first load (called from PLAYER_LOGIN).
+local function RegisterAddonCompartment()
+	if not AddonCompartmentFrame then return end
+	compartmentData = {
+		text        = "Secret Checklist",
+		icon        = 454046,
+		notCheckable = true,
+		func        = SecretChecklist_OnAddonCompartmentClick,
+		funcOnEnter = SecretChecklist_OnAddonCompartmentEnter,
+		funcOnLeave = SecretChecklist_OnAddonCompartmentLeave,
+	}
+	AddonCompartmentFrame:RegisterAddon(compartmentData)
 end
 
 local function CreateOptionsPanel()
@@ -988,11 +1019,10 @@ do
 			r * math_sin(math_rad(angle)))
 		-- Restore saved visibility
 		SC:SetMinimapButtonHidden(SecretChecklistDB.hideMinimapButton == true)
-		-- Only unregister the compartment button if the setting says hidden.
-		-- The TOC AddonCompartmentFunc directives handle the initial registration,
-		-- so calling SetAddonCompartmentHidden(false) here would create a duplicate.
-		if SecretChecklistDB.hideAddonCompartment == true then
-			SC:SetAddonCompartmentHidden(true)
+		-- Register the addon compartment entry (we manage this ourselves; no TOC directives).
+		-- If the setting says hidden, skip registration entirely.
+		if SecretChecklistDB.hideAddonCompartment ~= true then
+			RegisterAddonCompartment()
 		end
 		-- Apply saved theme (deferred to PLAYER_LOGIN so SavedVariables are committed)
 		-- Auto-select ElvUI theme on first load if ElvUI is present and no theme has been saved yet
