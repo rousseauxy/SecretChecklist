@@ -988,7 +988,12 @@ do
 			r * math_sin(math_rad(angle)))
 		-- Restore saved visibility
 		SC:SetMinimapButtonHidden(SecretChecklistDB.hideMinimapButton == true)
-		SC:SetAddonCompartmentHidden(SecretChecklistDB.hideAddonCompartment == true)
+		-- Only unregister the compartment button if the setting says hidden.
+		-- The TOC AddonCompartmentFunc directives handle the initial registration,
+		-- so calling SetAddonCompartmentHidden(false) here would create a duplicate.
+		if SecretChecklistDB.hideAddonCompartment == true then
+			SC:SetAddonCompartmentHidden(true)
+		end
 		-- Apply saved theme (deferred to PLAYER_LOGIN so SavedVariables are committed)
 		-- Auto-select ElvUI theme on first load if ElvUI is present and no theme has been saved yet
 		if not SecretChecklistDB.theme and ElvUI then
