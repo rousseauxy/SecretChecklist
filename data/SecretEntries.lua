@@ -555,7 +555,7 @@ SC.entries = {
   },
 	{ name = "Azeroth's Greatest Detective",                 kind = "achievement", achievementID = 40870, partOf = "Keys to Incognitro, the Indecipherable Felcycle", guideURL = "https://www.wowhead.com/achievement=40870/azeroths-greatest-detective" },
 	{ name = "Ratts' Revenge",                               kind = "achievement", achievementID = 40967, linkedSecret = true, partOf = "Keys to Incognitro, the Indecipherable Felcycle", guideURL = "https://www.wowhead.com/achievement=40967/ratts-revenge" },
-	{ name = "Radiant Singer",                               kind = "achievement", achievementID = 61516, linkedSecret = true, partOf = "12 Orb Mystery",              guideURL = "https://www.wowhead.com/achievement=61516/radiant-singer",
+	{ name = "Radiant Singer",                               kind = "achievement", achievementID = 61516, linkedSecret = true, stepsOverrideOnDone = true, partOf = "12 Orb Mystery",              guideURL = "https://www.wowhead.com/achievement=61516/radiant-singer",
 	  steps = {
 	    { label = "Assemble 40-player raid",    note = "Divine Flame of Beledar, Hallowfall @ 33.4, 54.6 – everyone must install the Beledar Orchestra Addon (addons.wago.io/addons/beledarorchestra)", waypoint = { mapID = 2215, x = 0.3340, y = 0.5460 } },
 	    { label = "Perform the Great Song",     note = "Raid leader: /bow once to start; /conductor to open orchestration frame. For each of 25 measures: select measure, send a countdown, all players perform their assigned emotes, raid leader /bow to conclude. Total: 175 harmony notes. Fail conditions: 3 mistakes in same measure OR 15 cumulative discord.", waypoint = { mapID = 2215, x = 0.3340, y = 0.5460 } },
@@ -566,9 +566,9 @@ SC.entries = {
 	-- ------------------------------------------------
 	-- TRANSMOG
 	-- ------------------------------------------------
-	{ name = "Ensemble: Fashion of the Fanatic Felcyclist", kind = "transmog", linkedSecret = true, partOf = "12 Orb Mystery", itemID = 246973, guideURL = "https://warcraft-secrets.com/guides/incognitro-the-indecipherable-felcycle#Puzzle_12_Dusk_Lily",
+	{ name = "Ensemble: Fashion of the Fanatic Felcyclist", kind = "transmog", linkedSecret = true, stepsOverrideOnDone = true,  partOf = "12 Orb Mystery", itemID = 246973, guideURL = "https://warcraft-secrets.com/guides/incognitro-the-indecipherable-felcycle#Puzzle_12_Dusk_Lily",
 	  steps = {
-	    { label = "Find the suramar ghost",    note = "Form a group with Torch of Pyrreth active; the ghost patrols Suramar @ 83.6, 69.6 – use the extra action button to reveal it when you are nearby", waypoint = { mapID = 680, x = 0.8360, y = 0.6960 } },
+	    { label = "Find the suramar ghost",    note = "Form a group with Torch of Pyrreth active; the ghost patrols Suramar @ 83.6, 69.6 - use the extra action button to reveal it when you are nearby", waypoint = { mapID = 680, x = 0.8360, y = 0.6960 } },
 	    { label = "Free the Dusk Lily",        note = "Interact with the Web of Shadows near the revealed ghost to free the Dusk Lily; the player who interacts gains the Dusk Lily buff" },
 	    { label = "Escort to Golk the Rumble", note = "Escort the buff-holder to Golk the Rumble in Azsuna @ 57.6, 42.8 – buff-holder must NOT touch water or take damage from creatures; group defeats Writhing Corruptions that spawn along the way", waypoint = { mapID = 630, x = 0.5760, y = 0.4280 } },
 	    { label = "Loot Weathered Lockbox",    note = "Upon reaching Golk the Rumble, everyone in the group receives a Spare Key and a Weathered Lockbox containing the ensemble. The Spare Key is also used to open the Hidden Footlocker (Orb 12)" },
@@ -641,8 +641,8 @@ SC.entries = {
 	    { label = "Orb 8 – Rats",           questID = 84837, note = "Karazhan Catacombs @ 60.0, 43.0 – deposit Warden's Mirror + Ancient Shaman Blood into Enigma Machine; kill all Rats; move statues onto plates to release 3 mechanisms",  waypoint = { mapID = 46,   x = 0.6000, y = 0.4300 } },
 	    { label = "Orb 9 – Cipher", achievementID = 40967,    note = "Azj-Kahet, Pillar-nest Vosh @ 55.03, 19.09 – Starry-Eyed Goggles + Relic of Crystal Connections; enter code 84847078 at console; loot Felcycle mount",     waypoint = { mapID = 2255, x = 0.5503, y = 0.1909 } },
 	    { label = "Orb 10 – Oddsight Focus", itemID = 260533, count = 1, note = "Waking Shores Hissing Grotto @ 19.4, 36.7 – die and loot Secret Fish as ghost for Bubblefilled Flounder; feed to Hek the Hungry Hornswog; place Duck Egg at Valdrakken duck family @ 40.0, 78.0; find stealthed To'no at Forbidden Reach", waypoint = { mapID = 2022, x = 0.1940, y = 0.3670 } },
-	    { label = "Orb 11 – Radiant Singer", achievementID = 61516, note = "See Radiant Singer entry – Divine Flame of Beledar, Hallowfall @ 33.4, 54.6", waypoint = { mapID = 2215, x = 0.3340, y = 0.5460 } },
-	    { label = "Orb 12 – Footlocker",                   note = "See Ensemble: Fashion of the Fanatic Felcyclist entry – Dusk Lily escort (Suramar → Golk the Rumble, Azsuna) for Spare Key; then open Hidden Footlocker near 12th pillar in Karazhan Catacombs with Gift of Oddsight + Starry-Eyed Goggles", waypoint = { mapID = 46, x = 0.6500, y = 0.5000 } },
+	    { label = "Orb 11 – Radiant Singer", questID = 93764, note = "See Radiant Singer entry – Divine Flame of Beledar, Hallowfall @ 33.4, 54.6", waypoint = { mapID = 2215, x = 0.3340, y = 0.5460 } },
+	    { label = "Orb 12 – Footlocker", questID = 93765, note = "See Ensemble: Fashion of the Fanatic Felcyclist entry – Dusk Lily escort (Suramar -> Golk the Rumble, Azsuna) for Spare Key; then open Hidden Footlocker near 12th pillar in Karazhan Catacombs with Gift of Oddsight + Starry-Eyed Goggles", waypoint = { mapID = 46, x = 0.6500, y = 0.5000 } },
 	  },
 	},
 
