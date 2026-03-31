@@ -561,12 +561,27 @@ SC.entries = {
 	    { label = "Perform the Great Song",     note = "Raid leader: /bow once to start; /conductor to open orchestration frame. For each of 25 measures: select measure, send a countdown, all players perform their assigned emotes, raid leader /bow to conclude. Total: 175 harmony notes. Fail conditions: 3 mistakes in same measure OR 15 cumulative discord.", waypoint = { mapID = 2215, x = 0.3340, y = 0.5460 } },
 	  },
 	},
+	{ name = "A Most Violent Loa",                          kind = "achievement", achievementID = 62267, stepsOverrideOnDone = true, guideURL = "https://www.wowhead.com/achievement=62267/a-most-violent-loa",
+	  steps = {
+	    { label = "Kill ~100 Kapara or Kapara Pups in Zul'Aman",
+	      note = "You do not need to be solo; kill credit is shared in a group but progress is individual. Progress is saved on logout. You must NOT be on a prey hunt when Filo spawns.\n\nPhase 1 (~25 kills): 'Your actions have caused an eye once closed to open...'\nPhase 2 (~50 kills): 'The eye that watches you now glares...'\nPhase 3 (~75 kills): 'Rage and darkness swell behind the glare which fixates on you...'\n\nFilo then spawns, grants the achievement, and hunts you.",
+	      waypoints = {
+	        { mapID = 2437, x = 0.351, y = 0.631, label = "Round River Kapara" },
+	        { mapID = 2437, x = 0.321, y = 0.226, label = "Hot Springs Kapara" },
+	        { mapID = 2437, x = 0.308, y = 0.453, label = "Lake Kapara" },
+	        { mapID = 2437, x = 0.323, y = 0.224, label = "Feevra Kapara" },
+	        { mapID = 2437, x = 0.360, y = 0.407, label = "Waterfall Kapara" },
+	        { mapID = 2437, x = 0.356, y = 0.463, label = "River Kapara" },
+	      },
+	    },
+	  },
+	},
 	-- ------------------------------------------------
 	
 	-- ------------------------------------------------
 	-- TRANSMOG
 	-- ------------------------------------------------
-	{ name = "Ensemble: Fashion of the Fanatic Felcyclist", kind = "transmog", linkedSecret = true, stepsOverrideOnDone = true,  partOf = "12 Orb Mystery", itemID = 246973, guideURL = "https://warcraft-secrets.com/guides/incognitro-the-indecipherable-felcycle#Puzzle_12_Dusk_Lily",
+	{ name = "Ensemble: Fashion of the Fanatic Felcyclist", kind = "transmog", linkedSecret = true, questID = 93765, stepsOverrideOnDone = true,  partOf = "12 Orb Mystery", itemID = 246973, guideURL = "https://warcraft-secrets.com/guides/incognitro-the-indecipherable-felcycle#Puzzle_12_Dusk_Lily",
 	  steps = {
 	    { label = "Find the suramar ghost",    note = "Form a group with Torch of Pyrreth active; the ghost patrols Suramar @ 83.6, 69.6 - use the extra action button to reveal it when you are nearby", waypoint = { mapID = 680, x = 0.8360, y = 0.6960 } },
 	    { label = "Free the Dusk Lily",        note = "Interact with the Web of Shadows near the revealed ghost to free the Dusk Lily; the player who interacts gains the Dusk Lily buff" },
@@ -643,25 +658,6 @@ SC.entries = {
 	    { label = "Orb 10 – Oddsight Focus", itemID = 260533, count = 1, note = "Waking Shores Hissing Grotto @ 19.4, 36.7 – die and loot Secret Fish as ghost for Bubblefilled Flounder; feed to Hek the Hungry Hornswog; place Duck Egg at Valdrakken duck family @ 40.0, 78.0; find stealthed To'no at Forbidden Reach", waypoint = { mapID = 2022, x = 0.1940, y = 0.3670 } },
 	    { label = "Orb 11 – Radiant Singer", questID = 93764, note = "See Radiant Singer entry – Divine Flame of Beledar, Hallowfall @ 33.4, 54.6", waypoint = { mapID = 2215, x = 0.3340, y = 0.5460 } },
 	    { label = "Orb 12 – Footlocker", questID = 93765, note = "See Ensemble: Fashion of the Fanatic Felcyclist entry – Dusk Lily escort (Suramar -> Golk the Rumble, Azsuna) for Spare Key; then open Hidden Footlocker near 12th pillar in Karazhan Catacombs with Gift of Oddsight + Starry-Eyed Goggles", waypoint = { mapID = 46, x = 0.6500, y = 0.5000 } },
-	  },
-	},
-
-	-- ------------------------------------------------
-	-- ACHIEVEMENTS (continued)
-	-- ------------------------------------------------
-	{ name = "A Most Violent Loa",                          kind = "achievement", achievementID = 62267, stepsOverrideOnDone = true, guideURL = "https://www.wowhead.com/achievement=62267/a-most-violent-loa",
-	  steps = {
-	    { label = "Kill ~100 Kapara or Kapara Pups in Zul'Aman",
-	      note = "You do not need to be solo; kill credit is shared in a group but progress is individual. Progress is saved on logout. You must NOT be on a prey hunt when Filo spawns.\n\nPhase 1 (~25 kills): 'Your actions have caused an eye once closed to open...'\nPhase 2 (~50 kills): 'The eye that watches you now glares...'\nPhase 3 (~75 kills): 'Rage and darkness swell behind the glare which fixates on you...'\n\nFilo then spawns, grants the achievement, and hunts you.",
-	      waypoints = {
-	        { mapID = 2437, x = 0.351, y = 0.631, label = "Round River Kapara" },
-	        { mapID = 2437, x = 0.321, y = 0.226, label = "Hot Springs Kapara" },
-	        { mapID = 2437, x = 0.308, y = 0.453, label = "Lake Kapara" },
-	        { mapID = 2437, x = 0.323, y = 0.224, label = "Feevra Kapara" },
-	        { mapID = 2437, x = 0.360, y = 0.407, label = "Waterfall Kapara" },
-	        { mapID = 2437, x = 0.356, y = 0.463, label = "River Kapara" },
-	      },
-	    },
 	  },
 	},
 
