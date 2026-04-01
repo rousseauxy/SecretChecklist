@@ -225,8 +225,8 @@ function SC:BuildOverviewPanel(frame, L)
 				end
 			elseif entry.kind == "quest" and entry.questID then
 				GameTooltip:SetText(SC:GetEntryName(entry), 1, 1, 1)
-				if C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
-					local completed = C_QuestLog.IsQuestFlaggedCompleted(entry.questID)
+				if C_QuestLog and C_QuestLog.IsQuestFlaggedCompletedOnAccount then
+					local completed = C_QuestLog.IsQuestFlaggedCompletedOnAccount(entry.questID)
 					local statusText = completed and (L["TOOLTIP_COMPLETED"] or "Completed") or (L["TOOLTIP_NOT_COMPLETED"] or "Not completed")
 					GameTooltip:AddLine(statusText, completed and 0 or 1, completed and 1 or 0, 0)
 				end

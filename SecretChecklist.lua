@@ -186,8 +186,8 @@ end
 function SC:CheckEntry(entry)
 	-- Always check questID first — most secrets flag a hidden quest on completion,
 	-- and this is more reliable than API-specific checks (e.g. ensemble transmog items).
-	if type(entry.questID) == "number" and C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
-		if C_QuestLog.IsQuestFlaggedCompleted(entry.questID) == true then
+	if type(entry.questID) == "number" and C_QuestLog and C_QuestLog.IsQuestFlaggedCompletedOnAccount then
+		if C_QuestLog.IsQuestFlaggedCompletedOnAccount(entry.questID) == true then
 			return true, "quest"
 		end
 	end
@@ -265,8 +265,8 @@ function SC:CheckEntry(entry)
 	end
 
 	if entry.kind == "quest" then
-		if C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
-			return C_QuestLog.IsQuestFlaggedCompleted(entry.questID) == true, "quest"
+		if C_QuestLog and C_QuestLog.IsQuestFlaggedCompletedOnAccount then
+			return C_QuestLog.IsQuestFlaggedCompletedOnAccount(entry.questID) == true, "quest"
 		end
 		return nil, "Quest API unavailable."
 	end
@@ -344,8 +344,8 @@ end
 --   "ready"   – quest not done, but item(s) are in bags/bank
 --   "missing" – quest not done and item(s) not found
 function SC:GetStepStatus(step)
-	if step.questID and C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
-		if C_QuestLog.IsQuestFlaggedCompleted(step.questID) then
+	if step.questID and C_QuestLog and C_QuestLog.IsQuestFlaggedCompletedOnAccount then
+		if C_QuestLog.IsQuestFlaggedCompletedOnAccount(step.questID) then
 			return "done"
 		end
 	end
@@ -417,8 +417,8 @@ function SC:GetSubstepProgress(step)
 		for _, sub in ipairs(step.substeps) do
 			local subTotal = sub.count or 1
 			total = total + subTotal
-			if sub.questID and C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted
-					and C_QuestLog.IsQuestFlaggedCompleted(sub.questID) then
+			if sub.questID and C_QuestLog and C_QuestLog.IsQuestFlaggedCompletedOnAccount
+					and C_QuestLog.IsQuestFlaggedCompletedOnAccount(sub.questID) then
 				done = done + subTotal
 			elseif sub.itemID then
 				local have = C_Item.GetItemCount(sub.itemID, true)
