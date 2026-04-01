@@ -1287,8 +1287,8 @@ function SC:BuildGuidesPanel(frame, L)
 								end
 							end
 						else
-							if sub.questID and C_QuestLog and C_QuestLog.IsQuestFlaggedCompletedOnAccount then
-								srDone = C_QuestLog.IsQuestFlaggedCompletedOnAccount(sub.questID)
+							if sub.questID and C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
+								srDone = C_QuestLog.IsQuestFlaggedCompleted(sub.questID)
 							elseif sub.itemID then
 								local have = C_Item.GetItemCount(sub.itemID, true)
 								if sub.count then
