@@ -1212,10 +1212,10 @@ function SC:BuildGuidesPanel(frame, L)
 		local steps = stepsEntry.steps
 		local numSteps = steps and #steps or 0
 		currentNumSteps = numSteps
-		-- If the entry opts into stepsOverrideOnDone, force all steps green once the entry itself is complete.
-		-- Only use this for entries whose steps have no questIDs and get consumed on completion (e.g. Shu'halo fortunes).
+		-- Force all steps green once the entry itself is complete (default behaviour for all entries).
+		-- Set stepsOverrideOnDone = false on a specific entry to opt out of this behaviour.
 		-- When debug mode is active the override is suppressed so individual step states remain visible.
-		local entryDone = entry.stepsOverrideOnDone and not SecretChecklistDB.debugMode and SC.GetEntryStatus and
+		local entryDone = (entry.stepsOverrideOnDone ~= false) and not SecretChecklistDB.debugMode and SC.GetEntryStatus and
 		(SC:GetEntryStatus(entry)) == "collected"
 		local doneCount = 0
 		for i = 1, MAX_STEPS do

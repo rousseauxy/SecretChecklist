@@ -118,7 +118,7 @@ SC.entries = {
 	    { label = "Orb 12 – Footlocker",                      note = "See Ensemble: Fashion of the Fanatic Felcyclist entry – Dusk Lily escort (Suramar → Golk the Rumble, Azsuna) for Spare Key; then open Hidden Footlocker near 12th pillar in Karazhan Catacombs with Gift of Oddsight + Starry-Eyed Goggles", waypoint = { mapID = 46, x = 0.6500, y = 0.5000 } },
 	  },
 	},
-	{ name = "Long-Forgotten Hippogryph",                    kind = "mount", mindSeeker = true, itemID = 138258, stepsOverrideOnDone = true, guideURL = "https://warcraft-secrets.com/guides/long-forgotten-hippogryph",
+	{ name = "Long-Forgotten Hippogryph",                    kind = "mount", mindSeeker = true, itemID = 138258, guideURL = "https://warcraft-secrets.com/guides/long-forgotten-hippogryph",
 	  steps = {
 	    { label = "Fly to Azsuna and search for 5 Ephemeral Crystals", note = "Crystals spawn at many locations across Azsuna and respawn 2–8 hours after the last set is claimed (zone-wide chat message). Best time: a few hours after weekly reset. War Mode ON and OFF are separate phases — switch to double chances." },
 	    { label = "Click Crystal #1 — receive invisible 8-hour Crystal Dummy Aura buff", note = "Do NOT die — dying removes the buff and all progress. Use HandyNotes + HandyNotes: Long-Forgotten Hippogryph addon to see all possible spawn locations." },
@@ -140,7 +140,7 @@ SC.entries = {
 	    { label = "Note #7 – Forgotten Crypt",   questID = 47885, note = "Karazhan Catacombs – Pit of Criminals; loot the chest on the pile of bones to receive the Lucid Nightmare mount",                                           waypoint = { mapID = 46,  x = 0.4100, y = 0.9000 } },
 	  },
 	},
-	{ name = "Mimiron's Jumpjets",                           kind = "mount", mindSeeker = true, itemID = 210022, requires = {"Torch of Pyrreth"}, stepsOverrideOnDone = true, guideURL = "https://warcraft-secrets.com/guides/secrets-of-azeroth-world-event",
+	{ name = "Mimiron's Jumpjets",                           kind = "mount", mindSeeker = true, itemID = 210022, requires = {"Torch of Pyrreth"}, guideURL = "https://warcraft-secrets.com/guides/secrets-of-azeroth-world-event",
 	  steps = {
 	    { label = "First Booster Part — Jaguero Isle (3 players needed)",           itemID = 208984, note = "Cap of Stranglethorn @ 59.4, 79.0 – use Torch of Pyrreth to light 3 braziers around the isle, then defeat the Enigma Ward and loot the first part.",                                                                                     waypoint = { mapID = 210, x = 0.5940, y = 0.7900 } },
 	    { label = "Second Booster Part — Irontree Woods, Felwood (4 players needed)", itemID = 209781, note = "Felwood, Irontree Woods @ 50.0, 26.4 – interact with Mimiron's Booster Part to enter the Enigmamental elemental; one player uses Envelope to absorb 3 others; when all 4 are inside the elemental explodes, leaving the second part on the ground.", waypoint = { mapID = 77,   x = 0.5000, y = 0.2640 } },
@@ -237,7 +237,7 @@ SC.entries = {
 	    { label = "Loot Gift of the Mind-Seekers",        questID = 47214, note = "Westfall @ 30.5, 28.0 – west coast; loot the Gift of the Mind-Seekers chest to receive the mount",                    waypoint = { mapID = 52,   x = 0.3050, y = 0.2800 } },
 	  },
 	},
-	{ name = "Slime Serpent",                                kind = "mount", mindSeeker = true, mountID = 1445, stepsOverrideOnDone = true, guideURL = "https://warcraft-secrets.com/guides/slime-serpent",
+	{ name = "Slime Serpent",                                kind = "mount", mindSeeker = true, mountID = 1445, guideURL = "https://warcraft-secrets.com/guides/slime-serpent",
 	  steps = {
 	    { label = "Enter Plaguefall solo on Heroic or Mythic difficulty", note = "Maldraxxus dungeon entrance.", waypoint = { mapID = 1536, x = 0.5933, y = 0.6495 } },
 	    { label = "Defeat Globgrog" },
@@ -330,7 +330,7 @@ SC.entries = {
 	    { label = "Seek Knowledge",      questID = 52829, note = "Summon Baa'l anywhere – he speaks words with hidden capitalized letters spelling SEEK KNOWLEDGE" },
 	  },
 	},
-	{ name = "Courage",                                      kind = "pet",   mindSeeker = true, speciesID = 3065, itemID = 184400, stepsOverrideOnDone = true,  guideURL = "https://www.wowhead.com/news/secret-battle-pet-courage-found-321354",
+	{ name = "Courage",                                      kind = "pet",   mindSeeker = true, speciesID = 3065, itemID = 184400,  guideURL = "https://www.wowhead.com/news/secret-battle-pet-courage-found-321354",
 	  steps = {
 	    { label = "Go to Nemea's Retreat — interact with 5+ Larion Cubs simultaneously", itemID = 184400, note = "Bastion @ ~57, 40 (mapID 1533). GROUP: need at least 3 players (5 recommended). Coordinate a countdown and all interact with at least 5 of the 9 Larion Cubs within 10 seconds. Courage spawns near Nemea — interact within 30 seconds!", waypoint = { mapID = 1533, x = 0.5733, y = 0.3936 } },
 	  },
@@ -357,7 +357,7 @@ SC.entries = {
 	    { label = "Gurgl and the Bandit — defeat Iris Greedsway & claim Gurgl", questID = 64237, note = "Eye of Azshara — find Violetsail Pirates leader Iris Greedsway and beat her in a pet battle. Return Gurgl to Breanni; she lets you keep him!" },
 	  },
 	},
-	{ name = "Jenafur",                                      kind = "pet",   mindSeeker = true, speciesID = 2795, stepsOverrideOnDone = true, guideURL = "https://www.wowhead.com/guide/jenafur-secret-cat-battle-pet",
+	{ name = "Jenafur",                                      kind = "pet",   mindSeeker = true, speciesID = 2795, guideURL = "https://www.wowhead.com/guide/jenafur-secret-cat-battle-pet",
 	  steps = {
 	    { label = "Speak with Amara Lunastar", questID = 58076, note = "Ashenvale @ 17.4, 49.3 — speak with Amara to start the quest chain and unlock the Karazhan changes.",                                                                               waypoint = { mapID = 63,  x = 0.174, y = 0.493 } },
 	    { label = "Interact with the Empty Dish", questID = 58098, note = "Elwynn Forest @ 44.2, 53.1 — Donni Anthania's house (Crazy Cat Lady). If the dish isn't visible, return to Amara and speak with her again.",                                        waypoint = { mapID = 37,  x = 0.442, y = 0.531 } },
@@ -371,7 +371,7 @@ SC.entries = {
 	    { label = "Place food on Opera Hall tiles & claim Jenafur", note = "Place the 8 food items on the correct tiles in the Opera Hall (matching the solution image on warcraft-secrets.com). Amara's Wish plays > Jenafur spawns. Interact with her to add her to your collection!" },
 	  },
 	},
-	{ name = "Phoenix Wishwing",                             kind = "pet",   mindSeeker = true, speciesID = 3292, itemID = 193373, stepsOverrideOnDone = true,  guideURL = "https://www.wowhead.com/news/new-secret-discovered-phoenix-wishwing-battle-pet-332187#news-post-332187",
+	{ name = "Phoenix Wishwing",                             kind = "pet",   mindSeeker = true, speciesID = 3292, itemID = 193373,  guideURL = "https://www.wowhead.com/news/new-secret-discovered-phoenix-wishwing-battle-pet-332187#news-post-332187",
 	  steps = {
 	    { label = "Loot Glittering Phoenix Ember (×1)",   itemID = 199099, note = "Firelands raid — drops from Alysrazor during Cataclysm Timewalking event only." },
 	    { label = "Farm Inert Phoenix Ash (×20)",         itemID = 199092, note = "Un'Goro Crater — loot from Scorching Elementals and Living Blaze. Low drop rate; mobs respawn ~5 min." },
@@ -434,7 +434,7 @@ SC.entries = {
 	    { label = "World Tour 8: Temple of Karabor",         questID = 50147, note = "Shadowmoon Valley (Draenor) @ 70.6, 46.5 – Temple of Karabor; completes storyline",              waypoint = { mapID = 539, x = 0.7060, y = 0.4650 } },
 	  },
 	},
-	{ name = "Wicker Pup (Spooky Bundle of Sticks)",         kind = "pet",   mindSeeker = true, speciesID = 2411, itemID = 163497, stepsOverrideOnDone = true,  guideURL = "https://warcraft-secrets.com/guides/mrrls-secret-stash",
+	{ name = "Wicker Pup (Spooky Bundle of Sticks)",         kind = "pet",   mindSeeker = true, speciesID = 2411, itemID = 163497,  guideURL = "https://warcraft-secrets.com/guides/mrrls-secret-stash",
 	  steps = {
 	    { label = "Loot Bundle of Wicker Sticks from Hexed Chest",      itemID = 163709, note = "Drustvar @ 18.5, 51.3", waypoint = { mapID = 896, x = 0.185, y = 0.513 } },
 	    { label = "Loot Miniature Stag Skull from Ensorcelled Chest",   itemID = 163710, note = "Drustvar @ 67.6, 73.6", waypoint = { mapID = 896, x = 0.676, y = 0.736 } },
@@ -443,7 +443,7 @@ SC.entries = {
 	    { label = "Combine all 4 items — claim Wicker Pup",             itemID = 163497, note = "Combine Bundle of Wicker Sticks + Miniature Stag Skull + Wolf Pup Spine + Spooky Incantation to create the Spooky Bundle of Sticks and unlock Wicker Pup!" },
 	  },
 	},
-	{ name = "Sun Darter Hatchling",                         kind = "pet",   speciesID = 382, itemID = 142223, stepsOverrideOnDone = true, guideURL = "https://www.wowhead.com/guide/sun-darter-hatchling-secret-pet",
+	{ name = "Sun Darter Hatchling",                         kind = "pet",   speciesID = 382, itemID = 142223, guideURL = "https://www.wowhead.com/guide/sun-darter-hatchling-secret-pet",
 	  steps = {
 	    -- No questIDs exist; itemIDs show yellow "ready" when the item is in bags
 	    { label = "1. Fire Gate – Major Fire Protection Potion",   itemID = 22841, note = "Winterspring, Caverns of Consumption @ 57.2, 13.9 – enter cave; drink Major Fire Protection Potion to pass Fire Barrier; drink all 5 other Major Protection Potions (Arcane/Frost/Holy/Nature/Shadow) to pass the Chaos Barrier", waypoint = { mapID = 12, x = 0.5720, y = 0.1390 } },
@@ -456,14 +456,14 @@ SC.entries = {
 	    { label = "8. Loot Oddly-Colored Egg",                     itemID = 955,   note = "With both Sign of the First and Sign of the Second active, go downstairs through the final gate; read Tarnished Plaque; remove Winterfall Firewater buff, then use Scroll of Intellect (smallest intellect buff); loot the Oddly-Colored Egg" },
 	  },
 	},
-	{ name = "Terky",                                        kind = "pet",   speciesID = 1073, itemID = 22780, stepsOverrideOnDone = true, guideURL = "https://warcraft-secrets.com/guides/terky",
+	{ name = "Terky",                                        kind = "pet",   speciesID = 1073, itemID = 22780, guideURL = "https://warcraft-secrets.com/guides/terky",
 	  steps = {
 	    { label = "Find the underwater cave",  note = "Fly to Riplash Ruins, southern Borean Tundra. Dive into the water and enter the cave entrance. Swim across and then upward into a small hidden room.",  waypoint = { mapID = 114, x = 0.5580, y = 0.8810 } },
 	    { label = "Loot White Murloc Egg",     itemID = 22780, note = "Behind the large pearl in the crustacean corpse inside the cave.",                                                                       waypoint = { mapID = 114, x = 0.5460, y = 0.8940 } },
 	  },
 	},
 	{ name = "Hungering Claw (Kosumoth)",                    kind = "pet",   speciesID = 1926, itemID = 140261, linkedSecret = true,  partOf = "Fathom Dweller (Kosumoth)",  stepsRef = "Fathom Dweller (Kosumoth)",  guideURL = "https://www.wowhead.com/guide/kosumoth-the-hungering-secret-mount-pet" },
-	{ name = "Gortham",                                      kind = "pet",   speciesID = 4967, itemID = 262774, stepsOverrideOnDone = true, guideURL = "https://warcraft-secrets.com/guides/gortham",
+	{ name = "Gortham",                                      kind = "pet",   speciesID = 4967, itemID = 262774, guideURL = "https://warcraft-secrets.com/guides/gortham",
 	  steps = {
 	    { label = "Enter Nexus-Point Xenas with a group of 5", note = "Requires a level 90 character. Enter the dungeon on any difficulty and clear trash up to Chief Corewright Kasreth. Locate the 5 Corespark Conduits around the area and assign one player to each." },
 	    { label = "All 5 players step onto their conduits simultaneously", note = "Coordinate via countdown. If successful, two emotes appear and a Netherstorm Structural Cage spawns on top of a nearby pipe. Interact with it to receive Gortham and the You Conduit! achievement." },
@@ -538,7 +538,7 @@ SC.entries = {
 	    { label = "Leaders of Scholomance",              achievementID = 18558, note = "Inside Memory of Scholomance – defeat Darkmaster Gandling (clear all 6 rooms first) and Kirtonos the Herald (summon with Blood of Innocents on Brazier of the Herald in Chamber of Summoning)" },
 	  },
 	},
-	{ name = "Mind-Seeker",                                  kind = "achievement", mindSeeker = true, achievementID = 62189, requiredFor = {"12 Orb Mystery"}, stepsOverrideOnDone = true, guideURL = "https://warcraft-secrets.com/guides/mind-seeker",
+	{ name = "Mind-Seeker",                                  kind = "achievement", mindSeeker = true, achievementID = 62189, requiredFor = {"12 Orb Mystery"}, guideURL = "https://warcraft-secrets.com/guides/mind-seeker",
 	  steps = {
 	    { label = "Get water breathing — recommended: Atomized Salien Slime",    itemID = 223287, note = "Crafted or bought from Al'kubian in Azj-Kahet @ 60.0, 66.2 (after a short questline). Also boosts swim speed from 135% to 152%, making the descent significantly easier.", waypoint = { mapID = 2255, x = 0.6000, y = 0.6620 } },
 	    { label = "Travel to Vash'jir — reach the safe location near the Pearl",              note = "Abyssal Depths @ ~27.8, 73.4 – equip an aquatic mount (Battle Turtle, Ottuk, Seahorse, or Tidestallion) and position at the safe location above the Pearl.",                           waypoint = { mapID = 205,  x = 0.2780, y = 0.7340 } },
@@ -547,7 +547,7 @@ SC.entries = {
 	    { label = "Speak with Anakron — join the Mind-Seekers",         achievementID = 62189, note = "Teleported to an alternate Seat of Knowledge in Pandaria. Pedestals around the room represent secrets you've solved. Speak with Anakron and choose 'I am ready' to earn the Mind-Seeker Feat of Strength and title. If <17 secrets, speak with Jeremy Feasel to set your Hearthstone to this phase." },
 	  },
 	},
-	{ name = "You Conduit!",                                 kind = "achievement", mindSeeker = true, achievementID = 61585, stepsOverrideOnDone = true, guideURL = "https://warcraft-secrets.com/guides/gortham",
+	{ name = "You Conduit!",                                 kind = "achievement", mindSeeker = true, achievementID = 61585, guideURL = "https://warcraft-secrets.com/guides/gortham",
 	  stepsRef = "Gortham",
 	},
   { name = "Whodunnit?",                                  kind = "achievement", achievementID = 18646, guideURL = "https://www.wowhead.com/guide/world-events/secrets-of-azeroth",
@@ -555,13 +555,13 @@ SC.entries = {
   },
 	{ name = "Azeroth's Greatest Detective",                 kind = "achievement", achievementID = 40870, partOf = "Keys to Incognitro, the Indecipherable Felcycle", guideURL = "https://www.wowhead.com/achievement=40870/azeroths-greatest-detective" },
 	{ name = "Ratts' Revenge",                               kind = "achievement", achievementID = 40967, linkedSecret = true, partOf = "Keys to Incognitro, the Indecipherable Felcycle", guideURL = "https://www.wowhead.com/achievement=40967/ratts-revenge" },
-	{ name = "Radiant Singer",                               kind = "achievement", achievementID = 61516, linkedSecret = true, stepsOverrideOnDone = true, partOf = "12 Orb Mystery",              guideURL = "https://www.wowhead.com/achievement=61516/radiant-singer",
+	{ name = "Radiant Singer",                               kind = "achievement", achievementID = 61516, linkedSecret = true, partOf = "12 Orb Mystery",              guideURL = "https://www.wowhead.com/achievement=61516/radiant-singer",
 	  steps = {
 	    { label = "Assemble 40-player raid",    note = "Divine Flame of Beledar, Hallowfall @ 33.4, 54.6 – everyone must install the Beledar Orchestra Addon (addons.wago.io/addons/beledarorchestra)", waypoint = { mapID = 2215, x = 0.3340, y = 0.5460 } },
 	    { label = "Perform the Great Song",     note = "Raid leader: /bow once to start; /conductor to open orchestration frame. For each of 25 measures: select measure, send a countdown, all players perform their assigned emotes, raid leader /bow to conclude. Total: 175 harmony notes. Fail conditions: 3 mistakes in same measure OR 15 cumulative discord.", waypoint = { mapID = 2215, x = 0.3340, y = 0.5460 } },
 	  },
 	},
-	{ name = "A Most Violent Loa",                          kind = "achievement", achievementID = 62267, stepsOverrideOnDone = true, guideURL = "https://www.wowhead.com/achievement=62267/a-most-violent-loa",
+	{ name = "A Most Violent Loa",                          kind = "achievement", achievementID = 62267, guideURL = "https://www.wowhead.com/achievement=62267/a-most-violent-loa",
 	  steps = {
 	    { label = "Kill ~100 Kapara or Kapara Pups in Zul'Aman",
 	      note = "You do not need to be solo; kill credit is shared in a group but progress is individual. Progress is saved on logout. You must NOT be on a prey hunt when Filo spawns.\n\nPhase 1 (~25 kills): 'Your actions have caused an eye once closed to open...'\nPhase 2 (~50 kills): 'The eye that watches you now glares...'\nPhase 3 (~75 kills): 'Rage and darkness swell behind the glare which fixates on you...'\n\nFilo then spawns, grants the achievement, and hunts you.",
@@ -581,7 +581,7 @@ SC.entries = {
 	-- ------------------------------------------------
 	-- TRANSMOG
 	-- ------------------------------------------------
-	{ name = "Ensemble: Fashion of the Fanatic Felcyclist", kind = "transmog", linkedSecret = true, itemID = 246973, questID = 91636, stepsOverrideOnDone = true,  partOf = "12 Orb Mystery", guideURL = "https://warcraft-secrets.com/guides/incognitro-the-indecipherable-felcycle#Puzzle_12_Dusk_Lily",
+	{ name = "Ensemble: Fashion of the Fanatic Felcyclist", kind = "transmog", linkedSecret = true, itemID = 246973, questID = 91636,  partOf = "12 Orb Mystery", guideURL = "https://warcraft-secrets.com/guides/incognitro-the-indecipherable-felcycle#Puzzle_12_Dusk_Lily",
 	  steps = {
 	    { label = "Find the suramar ghost",    note = "Form a group with Torch of Pyrreth active; the ghost patrols Suramar @ 83.6, 69.6 - use the extra action button to reveal it when you are nearby", waypoint = { mapID = 680, x = 0.8360, y = 0.6960 } },
 	    { label = "Free the Dusk Lily",        note = "Interact with the Web of Shadows near the revealed ghost to free the Dusk Lily; the player who interacts gains the Dusk Lily buff" },
@@ -665,7 +665,7 @@ SC.entries = {
 	-- ------------------------------------------------
 	-- HOUSING
 	-- ------------------------------------------------
-	{ name = "Shu'halo Perspective Painting",            kind = "housing", itemID = 246857, stepsOverrideOnDone = true, guideURL = "https://www.wowhead.com/news/how-to-buy-the-shuhalo-perspective-painting-for-less-than-gold-cap-380630",
+	{ name = "Shu'halo Perspective Painting",            kind = "housing", itemID = 246857, guideURL = "https://www.wowhead.com/news/how-to-buy-the-shuhalo-perspective-painting-for-less-than-gold-cap-380630",
 	  steps = {
 	    -- Soothsayer Sargle is at the dungeon entrance (before first boss). One fortune per run. Have all 13 in bags when buying from Cravitz Lorent.
 	    { label = "Collect all 13 Sargle's Fortunes",
