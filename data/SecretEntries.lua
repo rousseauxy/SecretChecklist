@@ -633,7 +633,8 @@ SC.entries = {
 	-- ------------------------------------------------
 	{ name = "Wan'be's Buried Goods",                        kind = "quest",  mindSeeker = true, questID = 52192,  icon = 133644, guideURL = "https://www.wowhead.com/object=296454/wanbes-buried-goods#comments:id=6275341",
 	  steps = {
-	    { label = "Get Ghostly Explorer's Skull",       itemID = 163213, note = "Buy Ghostly Explorer's Skull from Hoarder Jena, the Voldunai emissary vendor in Vol'dun" },
+	    { label = "Reach Revered with the Voldunai",    repReq = { factionID = 2158, standingID = 7, standingName = "Revered" }, note = "Required to purchase Ghostly Explorer's Skull from Hoarder Jena, the Voldunai emissary chest vendor in Vol'dun" },
+	    { label = "Get Ghostly Explorer's Skull",       itemID = 163213, note = "Buy from Hoarder Jena in Vol'dun (requires Voldunai Revered)" },
 	    { label = "Step 1 – Sabers in the snow",        itemID = 163213, note = "Winterspring – Frostsaber Rock (northernmost area); place skull on floor and speak with Wan'be",                                     waypoint = { mapID = 12,  x = 0.5500, y = 0.0800 } },
 	    { label = "Step 2 – Biggest reptile of all time", itemID = 163213, note = "Caverns of Time – place skull on the floor in front of Zaladormu (not on his platform) and speak with Wan'be",                   waypoint = { mapID = 777, x = 0.5000, y = 0.5000 } },
 	    { label = "Step 3 – Flooded desert racing track", itemID = 163213, note = "Thousand Needles @ 78.8, 77.0 – place skull underwater at the Raceway Ruins beneath Fizzle and Pozzik's Speedbarge; speak with Wan'be", waypoint = { mapID = 64,  x = 0.7880, y = 0.7700 } },
