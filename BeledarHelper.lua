@@ -499,6 +499,15 @@ local function BH_HandleMessage(message)
             BH_UpdatePopup()
         end
 
+    elseif action == "PING" then
+        -- Respond to leader version checks so SC users show as "SC-x.x.x" in
+        -- BeledarOrchestra's version grid rather than "?" (no addon).
+        if IsInGroup() then
+            local channel = IsInRaid() and "RAID" or "PARTY"
+            local ver = C_AddOns.GetAddOnMetadata("SecretChecklist", "Version") or "?"
+            C_ChatInfo.SendAddonMessage(BH_PREFIX, "PONG:SC-" .. ver, channel)
+        end
+
     elseif action == "START" then
         local m   = tonumber(parts[2])
         local dur = tonumber(parts[3]) or 10
