@@ -270,6 +270,14 @@ function SC:CheckEntry(entry)
 		if type(entry.itemID) ~= "number" then
 			return nil, "Transmog missing itemID."
 		end
+		-- For ensemble items PlayerHasTransmog returns false (not nil), so check
+		-- questID first when present — it is flagged on learning the ensemble.
+		if type(entry.questID) == "number" and C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
+			local done = C_QuestLog.IsQuestFlaggedCompleted(entry.questID)
+			if done == true then
+				return true, "transmog"
+			end
+		end
 		-- Check if player knows this appearance
 		if C_TransmogCollection.PlayerHasTransmog then
 			local hasTransmog = C_TransmogCollection.PlayerHasTransmog(entry.itemID)
@@ -281,14 +289,6 @@ function SC:CheckEntry(entry)
 		local _, _, _, _, isCollected = C_TransmogCollection.GetItemInfo(entry.itemID)
 		if isCollected ~= nil then
 			return isCollected == true, "transmog"
-		end
-		-- Final fallback for ensembles: PlayerHasTransmog/GetItemInfo don't work on
-		-- ensemble container items — check a flagged quest if one is provided.
-		if type(entry.questID) == "number" and C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
-			local done = C_QuestLog.IsQuestFlaggedCompleted(entry.questID)
-			if done ~= nil then
-				return done == true, "transmog"
-			end
 		end
 		return nil, "Transmog data not loaded yet. Open Collections → Appearances once."
 	end
