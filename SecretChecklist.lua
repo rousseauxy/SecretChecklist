@@ -184,6 +184,14 @@ function SC:EnsureCollectionsLoaded()
 end
 
 function SC:CheckEntry(entry)
+	-- Always check questID first — most secrets flag a hidden quest on completion,
+	-- and this is more reliable than API-specific checks (e.g. ensemble transmog items).
+	if type(entry.questID) == "number" and C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
+		if C_QuestLog.IsQuestFlaggedCompleted(entry.questID) == true then
+			return true, "quest"
+		end
+	end
+
 	if entry.kind == "toy" then
 		if type(entry.itemID) ~= "number" then
 			return nil, "Toy missing itemID."
@@ -269,14 +277,6 @@ function SC:CheckEntry(entry)
 		end
 		if type(entry.itemID) ~= "number" then
 			return nil, "Transmog missing itemID."
-		end
-		-- For ensemble items PlayerHasTransmog returns false (not nil), so check
-		-- questID first when present — it is flagged on learning the ensemble.
-		if type(entry.questID) == "number" and C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
-			local done = C_QuestLog.IsQuestFlaggedCompleted(entry.questID)
-			if done == true then
-				return true, "transmog"
-			end
 		end
 		-- Check if player knows this appearance
 		if C_TransmogCollection.PlayerHasTransmog then
