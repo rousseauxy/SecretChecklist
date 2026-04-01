@@ -581,7 +581,7 @@ SC.entries = {
 	-- ------------------------------------------------
 	-- TRANSMOG
 	-- ------------------------------------------------
-	{ name = "Ensemble: Fashion of the Fanatic Felcyclist", kind = "transmog", linkedSecret = true, questID = 93765, stepsOverrideOnDone = true,  partOf = "12 Orb Mystery", itemID = 246973, guideURL = "https://warcraft-secrets.com/guides/incognitro-the-indecipherable-felcycle#Puzzle_12_Dusk_Lily",
+	{ name = "Ensemble: Fashion of the Fanatic Felcyclist", kind = "transmog", linkedSecret = true, itemID = 246973, questID = 91636, stepsOverrideOnDone = true,  partOf = "12 Orb Mystery", guideURL = "https://warcraft-secrets.com/guides/incognitro-the-indecipherable-felcycle#Puzzle_12_Dusk_Lily",
 	  steps = {
 	    { label = "Find the suramar ghost",    note = "Form a group with Torch of Pyrreth active; the ghost patrols Suramar @ 83.6, 69.6 - use the extra action button to reveal it when you are nearby", waypoint = { mapID = 680, x = 0.8360, y = 0.6960 } },
 	    { label = "Free the Dusk Lily",        note = "Interact with the Web of Shadows near the revealed ghost to free the Dusk Lily; the player who interacts gains the Dusk Lily buff" },
