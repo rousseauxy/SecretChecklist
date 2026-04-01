@@ -631,7 +631,7 @@ SC.entries = {
 	-- ------------------------------------------------
 	-- QUESTS
 	-- ------------------------------------------------
-	{ name = "Wan'be's Buried Goods",                        kind = "quest",  mindSeeker = true, questID = 52192,  icon = 133644, guideURL = "https://www.wowhead.com/object=296454/wanbes-buried-goods#comments:id=6275341",
+	{ name = "Wan'be's Buried Goods",                        kind = "quest",  mindSeeker = true, questID = 000,  icon = 133644, guideURL = "https://www.wowhead.com/object=296454/wanbes-buried-goods#comments:id=6275341",
 	  steps = {
 	    { label = "Reach Revered with the Voldunai",    repReq = { factionID = 2158, standingID = 7, standingName = "Revered" }, note = "Required to purchase Ghostly Explorer's Skull from Hoarder Jena, the Voldunai emissary chest vendor in Vol'dun" },
 	    { label = "Get Ghostly Explorer's Skull",       itemID = 163213, note = "Buy from Hoarder Jena in Vol'dun (requires Voldunai Revered)" },
