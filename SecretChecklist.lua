@@ -282,6 +282,14 @@ function SC:CheckEntry(entry)
 		if isCollected ~= nil then
 			return isCollected == true, "transmog"
 		end
+		-- Final fallback for ensembles: PlayerHasTransmog/GetItemInfo don't work on
+		-- ensemble container items — check a flagged quest if one is provided.
+		if type(entry.questID) == "number" and C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
+			local done = C_QuestLog.IsQuestFlaggedCompleted(entry.questID)
+			if done ~= nil then
+				return done == true, "transmog"
+			end
+		end
 		return nil, "Transmog data not loaded yet. Open Collections → Appearances once."
 	end
 
