@@ -585,8 +585,9 @@ SC.entries = {
 	  steps = {
 	    { label = "Find the suramar ghost",    note = "Form a group with Torch of Pyrreth active; the ghost patrols Suramar @ 83.6, 69.6 - use the extra action button to reveal it when you are nearby", waypoint = { mapID = 680, x = 0.8360, y = 0.6960 } },
 	    { label = "Free the Dusk Lily",        note = "Interact with the Web of Shadows near the revealed ghost to free the Dusk Lily; the player who interacts gains the Dusk Lily buff" },
-	    { label = "Escort to Golk the Rumble", note = "Escort the buff-holder to Golk the Rumble in Azsuna @ 57.6, 42.8 – buff-holder must NOT touch water or take damage from creatures; group defeats Writhing Corruptions that spawn along the way", waypoint = { mapID = 630, x = 0.5760, y = 0.4280 } },
+	    { label = "Escort to Golk the Rumble", note = "Escort the buff-holder to Golk the Rumble in Azsuna @ 57.6, 42.8 – orb carrier must NOT touch water, take damage or jump; group defeats Writhing Corruptions that spawn along the way", waypoint = { mapID = 630, x = 0.5760, y = 0.4280 } },
 	    { label = "Loot Weathered Lockbox",    note = "Upon reaching Golk the Rumble, everyone in the group receives a Spare Key and a Weathered Lockbox containing the ensemble. The Spare Key is also used to open the Hidden Footlocker (Orb 12)" },
+	    { label = "Open Hidden Footlocker",    note = "Karazhan Catacombs near the 12th unlit pillar – requires both Gift of Oddsight (from Oddsight Focus) and Starry-Eyed Goggles buffs active to see the chest; use your Spare Key to open it and loot Ratts' Journal, Page 317", waypoint = { mapID = 42, x = 0.4670, y = 0.6910 } },
 	  },
 	},
 	{ name = "Waist of Time",                                kind = "transmog", mindSeeker = true, itemID = 162690, requires = {"Baa'ls Darksign"}, guideURL = "https://www.wowhead.com/guide/waist-of-time-secret-belt-transmog",
