@@ -1290,7 +1290,7 @@ function SC:BuildGuidesPanel(frame, L)
 							if sub.questID and C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted then
 								srDone = C_QuestLog.IsQuestFlaggedCompleted(sub.questID)
 							elseif sub.itemID then
-								local have = C_Item.GetItemCount(sub.itemID, true)
+								local have = C_Item.GetItemCount(sub.itemID, true, nil, nil, true)
 								if sub.count then
 									srDone = have >= sub.count
 								else
@@ -1312,7 +1312,7 @@ function SC:BuildGuidesPanel(frame, L)
 							local _, itemLink = C_Item.GetItemInfo(sub.itemID)
 							local displayText = itemLink or sub.label
 							if sub.count and sub.count > 1 then
-								local have = C_Item.GetItemCount(sub.itemID, true)
+								local have = C_Item.GetItemCount(sub.itemID, true, nil, nil, true)
 								displayText = displayText .. "  (" .. math_min(have, sub.count) .. " / " .. sub.count .. ")"
 							end
 							sr.lbl:SetText(displayText)
@@ -1357,8 +1357,12 @@ function SC:BuildGuidesPanel(frame, L)
 				np.numSubstepsShown = numSubstepsShown
 				-- Item hyperlink (only when item is cached; returns nil otherwise)
 				local itemBtn = np.itemBtn
-				if step.itemID then
-					local _, itemLink = C_Item.GetItemInfo(step.itemID)
+				local displayItemID = step.itemID
+				if not displayItemID and step.itemIDs then
+					displayItemID = step.itemIDs[#step.itemIDs] -- show the final/filled item
+				end
+				if displayItemID then
+					local _, itemLink = C_Item.GetItemInfo(displayItemID)
 					if itemLink then
 						local display = itemLink
 						if step.count and step.count > 1 then

@@ -988,6 +988,8 @@ do
 	-- alerts directly on acquisition events.
 	local housingFrame = CreateFrame("Frame")
 	housingFrame:RegisterEvent("HOUSE_DECOR_ADDED_TO_CHEST")
+	housingFrame:RegisterEvent("HOUSING_CATALOG_CATEGORY_UPDATED") -- fires per-category as catalog loads asynchronously
+	housingFrame:RegisterEvent("HOUSING_STORAGE_UPDATED")           -- fires when ownership data changes
 	housingFrame:SetScript("OnEvent", function()
 		ScheduleCollectionRefresh()
 		if SC.CheckHousingCollections then SC:CheckHousingCollections() end
@@ -999,6 +1001,7 @@ do
 	local bagFrame = CreateFrame("Frame")
 	bagFrame:RegisterEvent("BAG_UPDATE")
 	bagFrame:RegisterEvent("BANKFRAME_OPENED")
+	bagFrame:RegisterEvent("PLAYER_ACCOUNT_BANK_TAB_SLOTS_CHANGED")
 	bagFrame:SetScript("OnEvent", function()
 		ScheduleCollectionRefresh()
 	end)

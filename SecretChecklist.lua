@@ -329,6 +329,18 @@ function SC:CheckEntry(entry)
 	end
 
 	if entry.kind == "mystery" then
+		if entry.steps and #entry.steps > 0 then
+			local allDone = true
+			for _, step in ipairs(entry.steps) do
+				if SC:GetStepStatus(step) ~= "done" then
+					allDone = false
+					break
+				end
+			end
+			if allDone then
+				return true, "mystery"
+			end
+		end
 		return nil, "Reward unknown – in active investigation"
 	end
 
@@ -337,6 +349,20 @@ function SC:CheckEntry(entry)
 	end
 
 	return nil, "Unknown kind"
+end
+
+-- Returns the total count across step.itemID or any ID in step.itemIDs (whichever is set).
+local function StepItemCount(step)
+	if step.itemIDs then
+		local total = 0
+		for _, id in ipairs(step.itemIDs) do
+			total = total + C_Item.GetItemCount(id, true, nil, nil, true)
+		end
+		return total
+	elseif step.itemID then
+		return C_Item.GetItemCount(step.itemID, true, nil, nil, true)
+	end
+	return 0
 end
 
 -- Returns the status of a single progress step:
@@ -378,23 +404,23 @@ function SC:GetStepStatus(step)
 	if step.substeps then
 		-- If the parent item is already in bags, it's done regardless of substep state
 		-- (substep items may be consumed on combine, e.g. Quartered Ancient Rings)
-		if step.itemID and C_Item.GetItemCount(step.itemID, true) >= (step.count or 1) then return "done" end
+		if (step.itemID or step.itemIDs) and StepItemCount(step) >= (step.count or 1) then return "done" end
 		-- If a final item is required but not yet obtained, stay red — substep rows show per-key progress
-		if step.itemID then return "missing" end
+		if step.itemID or step.itemIDs then return "missing" end
 		-- No final item: derive status purely from substep completion
 		local done, total = SC:GetSubstepProgress(step)
 		if done >= total then return "done" end
 		return "missing"
 	end
-	if step.itemID then
-		local have = C_Item.GetItemCount(step.itemID, true) -- true = include bank
+	if step.itemID or step.itemIDs then
+		local have = StepItemCount(step)
 		if have >= (step.count or 1) then
 			-- No questID means having the item IS completion (e.g. ring drops, climb rewards).
 			-- With a questID, the item is a prerequisite you're holding but haven't used yet → yellow.
 			if not step.questID then return "done" end
 			return "ready"
 		end
-		if PlayerHasToy and PlayerHasToy(step.itemID) then return "done" end
+		if step.itemID and PlayerHasToy and PlayerHasToy(step.itemID) then return "done" end
 	end
 	return "missing"
 end
@@ -407,7 +433,7 @@ function SC:GetSubstepProgress(step)
 		local total = #step.substeps
 		local highestHeld = 0
 		for idx, sub in ipairs(step.substeps) do
-			if sub.itemID and C_Item.GetItemCount(sub.itemID, true) >= 1 then
+			if sub.itemID and C_Item.GetItemCount(sub.itemID, true, nil, nil, true) >= 1 then
 				highestHeld = idx
 			end
 		end
@@ -421,7 +447,7 @@ function SC:GetSubstepProgress(step)
 					and C_QuestLog.IsQuestFlaggedCompleted(sub.questID) then
 				done = done + subTotal
 			elseif sub.itemID then
-				local have = C_Item.GetItemCount(sub.itemID, true)
+				local have = C_Item.GetItemCount(sub.itemID, true, nil, nil, true)
 				done = done + math_min(have, subTotal)
 			end
 		end

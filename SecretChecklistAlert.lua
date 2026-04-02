@@ -199,8 +199,8 @@ function SC:BuildAlertSnapshot()
 			-- "unknown" intentionally left as nil
 		end
 		-- housing entries are excluded here; their snapshots are managed by
-		-- CheckHousingCollections, triggered by HOUSING_CATALOG_UPDATED and
-		-- HOUSING_DECOR_ITEM_LEARNED / HOUSING_DECOR_UNLOCKED events.
+		-- CheckHousingCollections, triggered by HOUSING_CATALOG_CATEGORY_UPDATED
+		-- and HOUSING_STORAGE_UPDATED events.
 	end
 	SC._alertReady = true
 end
@@ -231,8 +231,8 @@ function SC:CheckForNewCollections()
 	end
 end
 
--- Called when HOUSING_CATALOG_UPDATED fires (catalog data now reliable) and
--- when HOUSING_DECOR_ITEM_LEARNED / HOUSING_DECOR_UNLOCKED fires (new acquisition).
+-- Called when HOUSING_CATALOG_CATEGORY_UPDATED fires (catalog data now reliable)
+-- or HOUSING_STORAGE_UPDATED fires (ownership changed).
 -- Silently sets the housing snapshot on catalog load; fires alert on transitions.
 function SC:CheckHousingCollections()
 	if not SC._alertSnapshot then return end
