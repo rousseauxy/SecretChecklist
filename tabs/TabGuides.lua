@@ -1278,7 +1278,9 @@ function SC:BuildGuidesPanel(frame, L)
 						if j > numSubstepsCap then break end
 						local sr = substepRows[j]
 						local srDone, srReady = false, false
-						if step.chain then
+						if st == "done" then
+							srDone = true
+						elseif step.chain then
 							if subsDone > 0 then
 								if j < subsDone then
 									srDone = true

@@ -373,10 +373,13 @@ SC.entries = {
 	},
 	{ name = "Phoenix Wishwing",                             kind = "pet",   mindSeeker = true, speciesID = 3292, itemID = 193373,  guideURL = "https://www.wowhead.com/news/new-secret-discovered-phoenix-wishwing-battle-pet-332187#news-post-332187",
 	  steps = {
-	    { label = "Loot Glittering Phoenix Ember (×1)",   itemID = 199099, note = "Firelands raid — drops from Alysrazor during Cataclysm Timewalking event only." },
-	    { label = "Farm Inert Phoenix Ash (×20)",         itemID = 199092, note = "Un'Goro Crater — loot from Scorching Elementals and Living Blaze. Low drop rate; mobs respawn ~5 min." },
-	    { label = "Farm Sacred Phoenix Ash (×10)",        itemID = 199097, note = "Spires of Arak — loot from Small Pile of Ash in cooking pots (~10 spots across the zone). Respawn ~15 min. First pot @ 37.9, 18.0.", waypoint = { mapID = 542, x = 0.379, y = 0.180 } },
-	    { label = "Get Phoenix Ash Talisman from Zektar", itemID = 199203, note = "Spires of Arak @ 52.1, 50.5 — trade 1× Glittering Phoenix Ember + 20× Inert Phoenix Ash + 10× Sacred Phoenix Ash to Zektar. (If Zektar is absent, complete Spires of Arak story up to 'The High Ravenspeaker'.)", waypoint = { mapID = 542, x = 0.521, y = 0.505 } },
+	    { label = "Get Phoenix Ash Talisman from Zektar", itemID = 199203, note = "Spires of Arak @ 52.1, 50.5 — trade 1× Glittering Phoenix Ember + 20× Inert Phoenix Ash + 10× Sacred Phoenix Ash to Zektar. (If Zektar is absent, complete Spires of Arak story up to 'The High Ravenspeaker'.)", waypoint = { mapID = 542, x = 0.521, y = 0.505 },
+	      substeps = {
+	        { label = "Loot Glittering Phoenix Ember (×1)",   itemID = 199099, note = "Firelands raid — drops from Alysrazor during Cataclysm Timewalking event only." },
+	        { label = "Farm Inert Phoenix Ash (×20)",         itemID = 199092, note = "Un'Goro Crater — loot from Scorching Elementals and Living Blaze. Low drop rate; mobs respawn ~5 min." },
+	        { label = "Farm Sacred Phoenix Ash (×10)",        itemID = 199097, note = "Spires of Arak — loot from Small Pile of Ash in cooking pots (~10 spots across the zone). Respawn ~15 min. First pot @ 37.9, 18.0.", waypoint = { mapID = 542, x = 0.379, y = 0.180 } },
+	      },
+	    },
 	    { label = "Farm Smoldering Phoenix Ash (×15)",    itemID = 199080, note = "Dragon Isles — drops from phoenix. Best farmed in Neltharus dungeon: clear the two rooms right of entrance leading to Chargath, then reset. Tip: list in LFG then leave to get auto-kicked after 60s.", count = 15 },
 	    { label = "Buy Ash Feather Amulet from Griftah",  itemID = 199177, note = "Waking Shores @ 25.6, 54.3 — buy from Griftah and use it; feathers spawn on the ground every 15s within 30 yards for the buff duration. Best spot: platform above Obsidian Throne @ 23.8, 55.1.", waypoint = { mapID = 2022, x = 0.256, y = 0.543 } },
 	    { label = "Collect Ash Feathers (×20)",           itemID = 202062, note = "While Ash Feather Amulet buff is active, pick up feathers spawning around you. Platform above Obsidian Throne (Waking Shores @ 23.8, 55.1) is most efficient.", count = 20, waypoint = { mapID = 2022, x = 0.238, y = 0.551 } },

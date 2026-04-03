@@ -73,6 +73,7 @@ Your filter preferences and minimap button position are automatically saved to S
 
 ## Version History
 
+- **1.9.6**: Phoenix Wishwing — steps 1–3 (Glittering Phoenix Ember, Inert Phoenix Ash, Sacred Phoenix Ash) are now substeps of step 4 (Get Phoenix Ash Talisman from Zektar); substep rows now automatically render as completed (green/dimmed) when their parent step is already marked done
 - **1.9.5**: Fixed Wan'be's Buried Goods quest IDs — updated entry-level `questID` from placeholder `000` to `53657`; added per-step `questID`s for steps 1–4 (`53653`–`53656` sourced from AllTheThings); corrected step 5 `questID` from `52192` to `53657`
 - **1.9.4**: Warbank item detection — pass `includeAccountBank` flag to all `C_Item.GetItemCount` calls and register `PLAYER_ACCOUNT_BANK_TAB_SLOTS_CHANGED` to refresh counts when the warbank opens; added `itemIDs` any-of support on steps so owning any listed item marks the step active; Blanchy Day 4 now merges Empty Bucket + Bucket of Clean Water into one step via `itemIDs`; fixed `elsif` typo in StepItemCount helper
 - **1.9.3**: Added BeledarHelper — a lightweight BeledarOrchestra player client built into SecretChecklist; shows a popup with your assigned emote when targeting the Divine Flame of Beledar in Hallowfall; receives the leader's measure table and overrides via the `BO_DATASYNC` / `BeledarOrch` addon message protocol so only the raid leader needs BeledarOrchestra installed; responds to BO version checks (`PING`) reporting as `SC-x.x.x`; automatically disables itself if BeledarOrchestra is loaded
