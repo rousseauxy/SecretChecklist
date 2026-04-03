@@ -631,15 +631,15 @@ SC.entries = {
 	-- ------------------------------------------------
 	-- QUESTS
 	-- ------------------------------------------------
-	{ name = "Wan'be's Buried Goods",                        kind = "quest",  mindSeeker = true, questID = 000,  icon = 133644, guideURL = "https://www.wowhead.com/object=296454/wanbes-buried-goods#comments:id=6275341",
+	{ name = "Wan'be's Buried Goods",                        kind = "quest",  mindSeeker = true, questID = 53657, icon = 133644, guideURL = "https://www.wowhead.com/object=296454/wanbes-buried-goods#comments:id=6275341",
 	  steps = {
 	    { label = "Reach Revered with the Voldunai",    repReq = { factionID = 2158, standingID = 7, standingName = "Revered" }, note = "Required to purchase Ghostly Explorer's Skull from Hoarder Jena, the Voldunai emissary chest vendor in Vol'dun" },
 	    { label = "Get Ghostly Explorer's Skull",       itemID = 163213, note = "Buy from Hoarder Jena in Vol'dun (requires Voldunai Revered)" },
-	    { label = "Step 1 – Sabers in the snow",        itemID = 163213, note = "Winterspring – Frostsaber Rock (northernmost area); place skull on floor and speak with Wan'be",                                     waypoint = { mapID = 12,  x = 0.5500, y = 0.0800 } },
-	    { label = "Step 2 – Biggest reptile of all time", itemID = 163213, note = "Caverns of Time – place skull on the floor in front of Zaladormu (not on his platform) and speak with Wan'be",                   waypoint = { mapID = 777, x = 0.5000, y = 0.5000 } },
-	    { label = "Step 3 – Flooded desert racing track", itemID = 163213, note = "Thousand Needles @ 78.8, 77.0 – place skull underwater at the Raceway Ruins beneath Fizzle and Pozzik's Speedbarge; speak with Wan'be", waypoint = { mapID = 64,  x = 0.7880, y = 0.7700 } },
-	    { label = "Step 4 – Living in a volcano",       itemID = 163213, note = "Blackrock Mountain – place skull inside Blackrock Mountain and speak with Wan'be",                                                  waypoint = { mapID = 33,  x = 0.4300, y = 0.4800 } },
-	    { label = "Step 5 – Loot Wan'be's Buried Goods", questID = 52192, note = "Zuldazar @ 63.6, 9.8 – near the river border with Nazmir, at the foot of the tower just off the Rootway; loot the buried goods",  waypoint = { mapID = 862, x = 0.6360, y = 0.0980 } },
+	    { label = "Step 1 – Sabers in the snow",        questID = 53653, itemID = 163213, note = "Winterspring – Frostsaber Rock (northernmost area); place skull on floor and speak with Wan'be",                                     waypoint = { mapID = 12,  x = 0.5500, y = 0.0800 } },
+	    { label = "Step 2 – Biggest reptile of all time", questID = 53654, itemID = 163213, note = "Caverns of Time – place skull on the floor in front of Zaladormu (not on his platform) and speak with Wan'be",                   waypoint = { mapID = 777, x = 0.5000, y = 0.5000 } },
+	    { label = "Step 3 – Flooded desert racing track", questID = 53655, itemID = 163213, note = "Thousand Needles @ 78.8, 77.0 – place skull underwater at the Raceway Ruins beneath Fizzle and Pozzik's Speedbarge; speak with Wan'be", waypoint = { mapID = 64,  x = 0.7880, y = 0.7700 } },
+	    { label = "Step 4 – Living in a volcano",       questID = 53656, itemID = 163213, note = "Blackrock Mountain – place skull inside Blackrock Mountain and speak with Wan'be",                                                  waypoint = { mapID = 33,  x = 0.4300, y = 0.4800 } },
+	    { label = "Step 5 – Loot Wan'be's Buried Goods", questID = 53657, note = "Zuldazar @ 63.6, 9.8 – near the river border with Nazmir, at the foot of the tower just off the Rootway; loot the buried goods",  waypoint = { mapID = 862, x = 0.6360, y = 0.0980 } },
 	  },
 	},
 
