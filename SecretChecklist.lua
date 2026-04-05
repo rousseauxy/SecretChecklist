@@ -304,28 +304,15 @@ function SC:CheckEntry(entry)
 		if not info then
 			return nil, "Housing catalog data not loaded yet."
 		end
-		-- Prefer explicit boolean ownership fields (most reliable)
-		if type(info.isOwned) == "boolean" then return info.isOwned, "housing" end
-		if type(info.isCollected) == "boolean" then return info.isCollected, "housing" end
-		-- GetCatalogEntryInfoByRecordID gives a more authoritative read (used by HousingCompanion / HomeDecor)
-		if info.entryID and C_HousingCatalog.GetCatalogEntryInfoByRecordID then
-			local ok, full = pcall(C_HousingCatalog.GetCatalogEntryInfoByRecordID,
-				info.entryID.entryType, info.entryID.recordID, true)
-			if ok and full then
-				if type(full.isOwned) == "boolean" then return full.isOwned, "housing" end
-				if type(full.isCollected) == "boolean" then return full.isCollected, "housing" end
-				local qty    = (full.quantity or 0)
-				local redeem = (full.remainingRedeemable or 0)
-				local placed = (full.numPlaced or 0)
-				if qty + redeem + placed > 0 then return true, "housing" end
-			end
+		-- Use entrySubtype as the authoritative ownership signal.
+		-- Enum.HousingCatalogEntrySubtype: 0=Invalid, 1=Unowned, 2=OwnedModifiedStack, 3=OwnedUnmodifiedStack
+		-- subtype 0 or nil means the ownership layer hasn't merged yet — return nil so
+		-- the alert system treats this as "unknown" and won't snapshot it as missing.
+		local subtype = info.entryID and info.entryID.entrySubtype
+		if not subtype or subtype == 0 then
+			return nil, "Housing catalog data not loaded yet."
 		end
-		-- Fallback: quantity-based check from base info
-		local qty    = (info.quantity or 0)
-		local redeem = (info.remainingRedeemable or 0)
-		local placed = (info.numPlaced or 0)
-		if qty + redeem + placed > 0 then return true, "housing" end
-		return false, "housing"
+		return (subtype ~= 1), "housing"
 	end
 
 	if entry.kind == "mystery" then
