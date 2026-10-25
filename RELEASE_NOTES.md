@@ -1,16 +1,8 @@
-# 2.1.0
+# 2.1.1
 
-### The guides are now fully available in Russian
-
-Every one of the 815 step instructions, notes and descriptions is translated —
-the walkthroughs, not just the buttons and menus. On a Russian client the whole
-addon now reads in Russian.
-
-That is months of work by **ZamestoTV**, who also translated the interface and
-reported most of the gaps that got fixed along the way. Thank you.
-
-If you play in another language and fancy doing the same, the guide content is a
-single file and a partial translation is genuinely useful — anything unfinished
-simply falls back to English. See the README.
+- **SecretChecklist is now fully translated into Russian** — every button,
+  setting and message as well as every guide. The last three strings were the
+  ones shown at a merchant in Nazjatar, about whether the Crimson Tidestallion
+  is in stock. Thanks again to ZamestoTV.
 
 Full history: https://github.com/rousseauxy/SecretChecklist/blob/main/CHANGELOG.md
