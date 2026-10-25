@@ -145,8 +145,8 @@ L["GUIDES_STYLE_HORIZONTAL_DESC"] = "Классическая горизонта
 -- back to the English shown after it.
 --
 -- Vendor watch (2.0.7). Shown when a merchant in a watched zone is open.
--- L["VENDOR_AVAILABLE_NOW"]  = ""   -- "is for sale here right now."  (follows an item link)
--- L["VENDOR_NEEDS_EQUIPPED"] = ""   -- "Equip %s to see whether %s is stocked here."
--- L["VENDOR_NOT_STOCKED"]    = ""   -- "%s is not stocked here today."
+L["VENDOR_AVAILABLE_NOW"]  = "сейчас продается здесь."   -- "is for sale here right now."  (follows an item link)
+L["VENDOR_NEEDS_EQUIPPED"] = "Наденьте %s, чтобы проверить, продается ли здесь %s."   -- "Equip %s to see whether %s is stocked here."
+L["VENDOR_NOT_STOCKED"]    = "Сегодня %s здесь не продается."   -- "%s is not stocked here today."
 
 _G.SecretChecklistLocale = L
