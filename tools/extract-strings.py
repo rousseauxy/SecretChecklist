@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extract translatable strings from data/SecretEntries.lua.
+"""Extract translatable strings from the data files (retail and WoW: Forever).
 
 The data file's English text doubles as its own translation key (the gettext
 model), so translators need a list of those strings rather than a set of ids to
@@ -20,7 +20,12 @@ import sys
 
 BS = chr(92)
 HERE = os.path.dirname(os.path.abspath(__file__))
-DATA = os.path.join(HERE, os.pardir, "data", "SecretEntries.lua")
+# Both clients' data share one locale file per language: SC:T looks strings up by
+# their English text, so it does not matter which data file a string came from.
+DATA_FILES = [
+    os.path.join(HERE, os.pardir, "data", "SecretEntries.lua"),
+    os.path.join(HERE, os.pardir, "data", "ForeverEntries.lua"),
+]
 
 # Fields whose value is shown to the player. `name` is included because it is the
 # display name for kinds the game has no localised name for (mystery, manual) --
@@ -42,9 +47,11 @@ def lua_strings(text, field):
         yield match.group(1)
 
 
-def collect(path):
-    with open(path, encoding="utf-8") as handle:
-        source = handle.read()
+def collect(paths):
+    source = ""
+    for path in paths:
+        with open(path, encoding="utf-8") as handle:
+            source += handle.read() + "\n"
 
     seen = []
     unique = set()
@@ -68,11 +75,20 @@ def existing_translations(path):
     with open(path, encoding="utf-8") as handle:
         source = handle.read()
     pattern = re.compile(r'T\[\s*' + QUOTED + r'\s*\]\s*=\s*' + QUOTED)
-    return {m.group(1): m.group(2) for m in pattern.finditer(source)}
+    return {unescape_legacy(m.group(1)): unescape_legacy(m.group(2))
+            for m in pattern.finditer(source)}
 
 
-def escape(value):
-    return value.replace(BS, BS * 2).replace('"', BS + '"')
+# Strings are carried as Lua source text from end to end: lua_strings returns
+# the body of the literal exactly as written, escapes included, and it is
+# written back the same way. This used to escape it a second time, so a data
+# string containing \n was keyed as \\n -- a literal backslash-n, which never
+# matched the newline the data file actually holds, and the next run could not
+# match its own key either and dropped the translation.
+#
+# Undoes that double escaping in locale files written before the fix.
+def unescape_legacy(value):
+    return value.replace(BS * 2 + "n", BS + "n").replace(BS * 3 + '"', BS + '"')
 
 
 def main():
@@ -81,7 +97,7 @@ def main():
     parser.add_argument("-o", "--output")
     args = parser.parse_args()
 
-    strings = collect(DATA)
+    strings = collect(DATA_FILES)
     out_path = args.output or os.path.join(
         HERE, os.pardir, "localisation", "data", "%s.lua" % args.locale)
     known = existing_translations(out_path)
@@ -107,7 +123,7 @@ def main():
         translation = known.get(value, "")
         if translation:
             filled += 1
-        lines.append('T["%s"] = "%s"' % (escape(value), escape(translation)))
+        lines.append('T["%s"] = "%s"' % (value, translation))
 
     lines += ["", "_G.SecretChecklistDataLocale = T", ""]
 
