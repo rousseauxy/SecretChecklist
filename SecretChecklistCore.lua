@@ -498,6 +498,13 @@ local function Initialize()
 					f.showMissing = (f.showMissing == false); OnFilterChanged()
 					end
 				end)
+			-- Only offered when the data has Mind-Seeker entries (retail); on
+			-- Forever it would filter the list down to nothing.
+			local hasMindSeeker = false
+			for _, e in ipairs(SC.entries or {}) do
+				if e.mindSeeker then hasMindSeeker = true; break end
+			end
+			if hasMindSeeker then
 			rootDescription:CreateCheckbox(
 				L["FILTER_MIND_SEEKER_ONLY"] or "Mind-Seeker only",
 				function()
@@ -508,6 +515,7 @@ local function Initialize()
 						f.mindSeekerOnly = not f.mindSeekerOnly; OnFilterChanged()
 					end
 				end)
+			end
 
 			-- Sort by submenu
 			local sortSubmenu = rootDescription:CreateButton(L["SORT_BY"] or "Sort by")
