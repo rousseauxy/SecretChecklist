@@ -2,6 +2,8 @@
 
 A World of Warcraft addon that helps you track and check your progress on secret collectibles including mounts, pets, toys, achievements, transmog, quests, housing items, and other hidden content.
 
+Works in both retail and **WoW: Forever** from the same download. Each game shows only its own secrets.
+
 ![Overview tab](https://github.com/user-attachments/assets/e752b2e7-075d-41ef-b74a-14d1027a32e8)
 ![Guides tab](https://github.com/user-attachments/assets/8808e138-7a3d-4de9-ac0e-2846abf0217d)
 ![EllesmereUI theme](https://github.com/user-attachments/assets/74a6cb6d-c402-470c-aabb-885791f35136)
@@ -19,7 +21,7 @@ A World of Warcraft addon that helps you track and check your progress on secret
 - **Advanced Filtering**: Filter by status (All/Collected/Missing) and type (Mounts, Pets, Toys, Achievements, Quests, Transmog, Housing, Mysteries)
 - **Bulk Filter Controls**: Select All / Deselect All buttons for quick filter management; menu stays open while selecting
 - **Visual Feedback**: Icons are colored when collected, greyed out when missing
-- **Progress Counters**: Live "collected / total" counts for all secrets and for Mind-Seeker secrets
+- **Progress Counters**: Live "collected / total" counts for all secrets and, in retail, for Mind-Seeker secrets
 - **Guides Tab**: Detailed view of each secret with description, wowhead guide link, and an interactive 3D model viewer
 - **Search**: Find any secret by name, zone, or anything mentioned in its steps — searching "Kosumoth" or "Tazavesh" works as well as searching the item name
 - **Progress Steps**: Step-by-step walkthrough per secret with click-to-waypoint support (via TomTom or built-in arrow)
@@ -27,13 +29,13 @@ A World of Warcraft addon that helps you track and check your progress on secret
 - **Click-to-Navigate**: Click any icon in the Overview to jump directly to its Guides entry; Shift+Click (or Ctrl+Click) inserts an item or achievement link into your active chat box
 - **Mystery Category**: Track community secrets still being investigated (e.g. active discoveries from the Secret Finding Discord)
 - **Custom Lists**: Easily edit the list to track the secrets you want
-- **Pre-Configured**: Comes with 54 secrets ready to track
+- **Pre-Configured**: Comes with 54 retail secrets and 4 WoW: Forever secrets ready to track
 - **Live Requirement Checks**: Step progress automatically checks renown level, faction reputation, and Mind-Seeker secret count from the game API — shown inline as e.g. `(5 / 8)` when not yet complete
 - **Themes**: Default, ElvUI, and EllesmereUI looks, matching whichever UI you run
 - **Accessible Status Icons**: Collected and missing are marked with a checkmark and a cross, not colour alone
 - **Collection Toasts**: A toast pops up the moment a tracked secret is collected, so you know it registered
 - **Remembers Its Place**: Window position, filters, theme and minimap button all persist across sessions and characters
-- **Beledar Orchestra Helper**: Built-in raid client for the Radiant Singer secret — see [Beledar Orchestra Helper](#beledar-orchestra-helper)
+- **Beledar Orchestra Helper** (retail): Built-in raid client for the Radiant Singer secret — see [Beledar Orchestra Helper](#beledar-orchestra-helper)
 - **Translatable**: Both the interface and the guide content itself can be translated — see [Translating](#translating)
 - **About Tab**: Always-visible About tab with addon credits and community links
 
@@ -41,6 +43,7 @@ A World of Warcraft addon that helps you track and check your progress on secret
 
 1. Download the latest release or clone this repository
 2. Extract the `SecretChecklist` folder to `World of Warcraft\_retail_\Interface\AddOns\`
+   (for WoW: Forever, `World of Warcraft\_forever_\Interface\AddOns\`)
 3. Restart World of Warcraft or reload your UI with `/reload`
 
 ## How to Use
@@ -85,6 +88,17 @@ login, on every character:
 
 Comes pre-configured with **54 secret collectibles** across mounts, pets, toys, achievements, transmog, quests, housing, and mysteries — with more being added regularly.
 
+### WoW: Forever
+
+Forever is a separate client (internally called "Camelot"), so it has its own
+secrets in `data/ForeverEntries.lua`. `SecretChecklist_Camelot.toc` loads that
+file instead of `data/SecretEntries.lua`, and leaves out the retail-only Beledar
+helper. Everything else (the window, guides, waypoints and toasts) is shared.
+
+It starts with the Alcaz Operative Insignia, the Cozy Sleeping Bag chain, and
+two chains the community is still solving: Dawn Waker and the manual scavenger
+hunt. Your saved settings are kept separately per game.
+
 ## Beledar Orchestra Helper
 
 The Radiant Singer secret needs a 40-player raid performing a set sequence of
@@ -104,9 +118,9 @@ addon** — everyone else can just have SecretChecklist.
 
 ## Translating
 
-The interface ships in 11 languages. Guide content is a newer addition — deDE
-and ruRU files exist but are still empty, so every language currently falls back
-to English there. Help very much wanted.
+The interface ships in 11 languages. Guide content is translated into Russian
+(apart from the newest WoW: Forever lines); the German file exists but is still
+empty, and every other language falls back to English. Help very much wanted.
 
 Two separate files, because they are two different jobs:
 
@@ -125,8 +139,9 @@ To start a new language, or to pick up strings added since the last pass:
 python tools/extract-strings.py --locale frFR
 ```
 
-It writes `localisation/data/frFR.lua` with every string listed and preserves
-any translations already there, so it is safe to re-run. Add the new file to
+It writes `localisation/data/frFR.lua` with every string from both the retail
+and the WoW: Forever data listed, and preserves any translations already there,
+so it is safe to re-run. Add the new file to
 `localisation/locale.xml` alongside the others.
 
 Notes for translators:
@@ -183,7 +198,7 @@ This addon was created with the assistance of GitHub Copilot and Claude AI. The 
 - **Continuously Checked**: Every push runs luacheck, an XML well-formedness check and a packager dry-run in CI
 - **Audited**: Code has been reviewed using Ketho's WoW API extension to ensure quality standards
 
-`/secrets validate` checks the secret data against the live game — schema, cross-references between entries, and whether each waypoint's map actually accepts one. Useful if you keep your own edits to `data/SecretEntries.lua`.
+`/secrets validate` checks the secret data against the live game — schema, cross-references between entries, and whether each waypoint's map actually accepts one. Useful if you keep your own edits to `data/SecretEntries.lua` or `data/ForeverEntries.lua`; run it in the client the file belongs to.
 
 ## Author
 

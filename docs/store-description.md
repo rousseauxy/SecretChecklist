@@ -7,13 +7,15 @@
 
 WoW is full of secrets the game never tells you about. SecretChecklist helps you track and check your progress on secret collectibles including mounts, pets, toys, achievements, transmog, quests, housing items, and other hidden content — and knows what you've already collected the moment you log in.
 
+**Works in WoW: Forever too.** The same download runs in both games, and each one shows only its own secrets.
+
 ![Overview tab](https://github.com/user-attachments/assets/e752b2e7-075d-41ef-b74a-14d1027a32e8)
 ![Guides tab](https://github.com/user-attachments/assets/8808e138-7a3d-4de9-ac0e-2846abf0217d)
 ![EllesmereUI theme](https://github.com/user-attachments/assets/74a6cb6d-c402-470c-aabb-885791f35136)
 
 ## What it does
 
-**Shows you where you stand.** Every secret in one Collections-style window, coloured when you have it, greyed when you don't, with live counters for your overall progress and for the Mind-Seeker set.
+**Shows you where you stand.** Every secret in one Collections-style window, coloured when you have it, greyed when you don't, with live counters for your overall progress and, in retail, for the Mind-Seeker set.
 
 **Walks you through the ones you're missing.** Every secret has a step-by-step guide, and steps tick themselves off as you go. Click a step with a location and it drops a map pin — using TomTom if you have it, Blizzard's own waypoints if you don't.
 
@@ -41,7 +43,7 @@ Click the minimap button, or type `/secrets`.
 - **Filter** by status and by type — the menu stays open while you tick things
 - Your filters, window position, theme and minimap button are remembered between sessions and across characters
 
-## Beledar Orchestra helper
+## Beledar Orchestra helper (retail)
 
 The Radiant Singer secret needs a 40-player raid performing a set sequence of emotes at the Divine Flame of Beledar in Hallowfall. SecretChecklist includes a player-side client for it, so **only the raid leader needs the [BeledarOrchestra](https://www.curseforge.com/wow/addons/beledarorchestra) addon** — everyone else can just have SecretChecklist.
 
