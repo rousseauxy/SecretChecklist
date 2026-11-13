@@ -293,8 +293,8 @@ function SC:BuildOverviewPanel(frame, L)
 				end
 			elseif entry.kind == "quest" and entry.questID then
 				GameTooltip:SetText(SC:GetEntryName(entry), 1, 1, 1)
-				if C_QuestLog and C_QuestLog.IsQuestFlaggedCompletedOnAccount then
-					local completed = C_QuestLog.IsQuestFlaggedCompletedOnAccount(entry.questID)
+				local completed = SC:IsQuestDone(entry.questID)
+				if completed ~= nil then
 					local statusText = completed and (L["TOOLTIP_COMPLETED"] or "Completed") or (L["TOOLTIP_NOT_COMPLETED"] or "Not completed")
 					GameTooltip:AddLine(statusText, completed and 0 or 1, completed and 1 or 0, 0)
 				end
@@ -451,6 +451,9 @@ function SC:BuildOverviewPanel(frame, L)
 		end
 		frame.ProgressBar.TotalText:SetText(
 			string_format("|cffffffff%d|r / %d %s", collectedAll, totalAll, L["SECRETS"] or "Secrets"))
+		-- Mind-Seeker is a retail achievement; Forever's data has no such entries,
+		-- and a permanent "0 / 0" would only read as broken.
+		frame.ProgressBar.MindSeekerText:SetShown(totalMS > 0)
 		frame.ProgressBar.MindSeekerText:SetText(
 			string_format("%s: |cffffffff%d|r / %d", L["MIND_SEEKER"] or "Mind-Seeker", collectedMS, totalMS))
 	end

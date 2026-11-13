@@ -8,6 +8,13 @@ local FALLBACK_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
 local SC = {}
 _G.SecretChecklist = SC
 
+-- WoW: Forever is a separate client with its own AddOns folder, SavedVariables
+-- and secrets. Internally it is called "Camelot": SecretChecklist_Camelot.toc
+-- loads there and data/ForeverEntries.lua replaces data/SecretEntries.lua.
+-- 18 is the project id other Forever addons fall back to on clients that do
+-- not define the constant.
+SC.IS_FOREVER = WOW_PROJECT_ID ~= nil and WOW_PROJECT_ID == (WOW_PROJECT_CAMELOT or 18)
+
 -- ==============================================
 -- SAVED VARIABLES
 -- ==============================================
@@ -418,10 +425,28 @@ end
 -- Each takes an entry and returns (collected, detail), where collected is
 -- true / false / nil, nil meaning "cannot tell yet".
 local checkers = {}
+
+-- True when the quest is flagged complete. Retail answers account-wide, which
+-- is what a secret means there; a client without the warband API (Forever)
+-- falls back to the character's own flag. nil when no quest API exists.
+function SC:IsQuestDone(questID)
+	if not C_QuestLog then return nil end
+	if C_QuestLog.IsQuestFlaggedCompletedOnAccount then
+		return C_QuestLog.IsQuestFlaggedCompletedOnAccount(questID) == true
+	end
+	if C_QuestLog.IsQuestFlaggedCompleted then
+		return C_QuestLog.IsQuestFlaggedCompleted(questID) == true
+	end
+	return nil
+end
+
 do
 	checkers.toy = function(entry)
 		if type(entry.itemID) ~= "number" then
 			return nil, "Toy missing itemID."
+		end
+		if not PlayerHasToy then
+			return nil, "Toy API unavailable."
 		end
 		local hasToy = PlayerHasToy(entry.itemID)
 		if hasToy == true then
@@ -490,10 +515,11 @@ do
 		if type(entry.questID) ~= "number" then
 			return nil, "Quest entry missing questID."
 		end
-		if C_QuestLog and C_QuestLog.IsQuestFlaggedCompletedOnAccount then
-			return C_QuestLog.IsQuestFlaggedCompletedOnAccount(entry.questID) == true, "quest"
+		local done = SC:IsQuestDone(entry.questID)
+		if done == nil then
+			return nil, "Quest API unavailable."
 		end
-		return nil, "Quest API unavailable."
+		return done, "quest"
 	end
 
 	checkers.transmog = function(entry)
@@ -592,10 +618,8 @@ function SC:CheckEntry(entry)
 	-- and this is more reliable than API-specific checks (e.g. ensemble transmog
 	-- items). Hoisted out of the chain so it reads as the rule it is rather than
 	-- as the first of nine branches.
-	if type(entry.questID) == "number" and C_QuestLog and C_QuestLog.IsQuestFlaggedCompletedOnAccount then
-		if C_QuestLog.IsQuestFlaggedCompletedOnAccount(entry.questID) == true then
-			return true, "quest"
-		end
+	if type(entry.questID) == "number" and SC:IsQuestDone(entry.questID) then
+		return true, "quest"
 	end
 
 	local checker = checkers[entry.kind]

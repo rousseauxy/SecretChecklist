@@ -102,6 +102,8 @@ read_globals = {
 	"GetAddOnMetadata",
 	"IsEquippedItem", -- deprecated global; used only as a fallback for C_Item.IsEquippedItem
 	"PlayerHasToy",
+	"WOW_PROJECT_CAMELOT", -- WoW: Forever; nil on retail
+	"WOW_PROJECT_ID",
 
 	-- Units, group and player state
 	"DoEmote",
