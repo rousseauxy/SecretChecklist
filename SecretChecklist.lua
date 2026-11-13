@@ -307,7 +307,11 @@ function SC:GetEntryName(entry)
 		end
 	end
 
-	if (entry.kind == "toy" or entry.kind == "transmog" or entry.kind == "housing") and type(entry.itemID) == "number" then
+	-- A quest entry that names its reward item is shown as that item: the
+	-- quest title is usually the last step's ("This Must Be The Place"), not
+	-- the name players know the secret by.
+	if (entry.kind == "toy" or entry.kind == "transmog" or entry.kind == "housing" or entry.kind == "quest")
+			and type(entry.itemID) == "number" then
 		if C_Item and C_Item.GetItemInfo then
 			local name = C_Item.GetItemInfo(entry.itemID)
 			if name and name ~= "" then
