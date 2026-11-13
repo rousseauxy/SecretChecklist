@@ -31,6 +31,37 @@ SC.entries = {
 	},
 
 	-- ------------------------------------------------
+	-- QUESTS
+	-- ------------------------------------------------
+	-- The Cozy Sleeping Bag is an ordinary item here, not a toy, so the entry
+	-- completes on the chain's last quest. itemID makes it show under the
+	-- item's name rather than that quest's title.
+	{ name = "Cozy Sleeping Bag", kind = "quest", questID = 79976, itemID = 211527,
+	  source = "Quest chain across Azeroth from level 14; also rewards 5 Student Fodder along the way.",
+	  guideURL = "https://www.wowhead.com/forever/guide/cozy-sleeping-bag-locations-rewards",
+	  steps = {
+		{ label = "Burned-Out Remains — start the chain", questIDs = { 79008, 79007 }, note = "Requires level 14. Alliance and Horde visit the same two sites in the opposite order.",
+		  factionSubsteps = {
+			alliance = {
+				{ label = "Westfall, Alexston Farmstead — click the Burned-Out Remains by the wrecked cart and accept the quest", questIDs = { 79008, 79007 }, waypoint = { mapID = 1436, x = 0.370, y = 0.500 } },
+				{ label = "The Barrens, burnt tower south of Camp Taurajo — click the remains, turn in and take Stepping Stones from the board", questIDs = { 79008, 79007 }, waypoint = { mapID = 1413, x = 0.460, y = 0.740 } },
+			},
+			horde = {
+				{ label = "The Barrens, burnt tower south of Camp Taurajo — click the Burned-Out Remains and accept the quest", questIDs = { 79008, 79007 }, waypoint = { mapID = 1413, x = 0.460, y = 0.740 } },
+				{ label = "Westfall, Alexston Farmstead — click the remains by the wrecked cart, turn in and take Stepping Stones", questIDs = { 79008, 79007 }, waypoint = { mapID = 1436, x = 0.370, y = 0.500 } },
+			},
+		  },
+		},
+		{ label = "Stepping Stones — abandoned camp, Stonetalon Mountains", questID = 79192, note = "Take the path northeast of Sun Rock Retreat @ 50.9, 52.3 up to the camp and click the Pocket Litter on top of a box.", waypoint = { mapID = 1442, x = 0.406, y = 0.524 } },
+		{ label = "Optional: Rekindle — the camp's fire pit", questID = 80001, note = "Light the fire pit in the middle of the camp with the Simple Wood and Flint and Tinder from the previous quest. Not needed for the bag." },
+		{ label = "Scramble — Mound of Dirt", questID = 79980, note = "From the camp, climb the hill straight north and jump across to the Mound of Dirt.", waypoint = { mapID = 1442, x = 0.396, y = 0.498 } },
+		{ label = "Wet Job — Eagle Figurine, Loch Modan dam", questID = 79974, note = "Jump onto the carved heads facing the Wetlands to reach the figurine. Tricky to reach safely as Horde.", waypoint = { mapID = 1432, x = 0.494, y = 0.129 } },
+		{ label = "Eagle's Fist — Messenger Bag, Thoradin's Wall", questID = 79975, note = "Use the cart on the Hillsbrad side to climb into the wall, go through the room and look outside to the right for the hanging bag.", waypoint = { mapID = 1424, x = 0.873, y = 0.496 } },
+		{ label = "This Must Be The Place — Hastily Rolled-Up Satchel", questID = 79976, itemID = 211527, note = "Click the satchel below the Messenger Bag to finish the chain and receive the Cozy Sleeping Bag." },
+	  },
+	},
+
+	-- ------------------------------------------------
 	-- MYSTERIES (unsolved)
 	-- ------------------------------------------------
 	{ name = "Dawn Waker", kind = "mystery",
