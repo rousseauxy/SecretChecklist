@@ -60,6 +60,18 @@ SC.entries = {
 		{ label = "This Must Be The Place — Hastily Rolled-Up Satchel", questID = 79976, itemID = 211527, note = "Click the satchel below the Messenger Bag to finish the chain and receive the Cozy Sleeping Bag." },
 	  },
 	},
+	-- The Chicken Egg teaches a companion, but the pet checker needs a species
+	-- id that is not confirmed for Forever yet; completing CLUCK! is what
+	-- awards the egg, so the quest is the reliable signal.
+	{ name = "Chicken Egg", kind = "quest", questID = 3861, itemID = 11110,
+	  source = "Alliance only. Befriend a farm chicken with /chicken and feed it for the CLUCK! quest; the reward is the Chicken Egg companion.",
+	  guideURL = "https://www.wowhead.com/forever/quest=3861/cluck",
+	  steps = {
+		{ label = "/chicken at a farm chicken until it offers CLUCK!", note = "Alliance only. Target a farm chicken and /chicken at it, repeatedly: it can take many tries before the chicken looks at you expectantly and offers the quest. The Southshore farms in Hillsbrad have several.", waypoint = { mapID = 1424, x = 0.504, y = 0.546 } },
+		{ label = "Buy Special Chicken Feed", itemID = 11109, note = "Sold by NPC vendors; Wowhead's Sold By list on the item shows where." },
+		{ label = "CLUCK! — /cheer, then hand over the feed", questID = 3861, itemID = 11110, note = "Return to your befriended chicken, /cheer at it first, then give it the Special Chicken Feed. Look underneath it for the Chicken Egg." },
+	  },
+	},
 
 	-- ------------------------------------------------
 	-- MYSTERIES (unsolved)
