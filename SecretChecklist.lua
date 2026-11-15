@@ -516,6 +516,18 @@ do
 	end
 
 	checkers.quest = function(entry)
+		-- questIDs: one reward carried by a different quest id per faction or
+		-- version (Greater Friend of the Library has three); any one counts.
+		if type(entry.questIDs) == "table" then
+			local anyKnown = false
+			for _, id in ipairs(entry.questIDs) do
+				local done = SC:IsQuestDone(id)
+				if done then return true, "quest" end
+				anyKnown = anyKnown or done ~= nil
+			end
+			if not anyKnown then return nil, "Quest API unavailable." end
+			return false, "quest"
+		end
 		if type(entry.questID) ~= "number" then
 			return nil, "Quest entry missing questID."
 		end

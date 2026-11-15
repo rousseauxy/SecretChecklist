@@ -29,6 +29,19 @@ SC.entries = {
 		{ label = "Collect 6 Fractured Insignia and combine them", itemID = 279450, count = 6, note = "The Fractured Insignia is tradeable: buy the other five or trade with friends. Combining all six teaches the Alcaz Operative Insignia toy (a Defias disguise)." },
 	  },
 	},
+	-- Found by SeventeenUncles where Season of Discovery hid the Rainbow
+	-- Generator quest. No waypoints: the steps are all inside the dungeon.
+	{ name = "Traveler's Symbols", kind = "toy", itemID = 221315,
+	  source = "Blackrock Depths: a parkour route over the lava east of the Ring of Law.",
+	  guideURL = "https://www.wowhead.com/forever/guide/travelers-symbols-toy-secret-walkthrough",
+	  steps = {
+		{ label = "Blackrock Depths — the bridge north of the Ring of Law", note = "Find the platform just east of the Ring of Law. A bridge leads north over the lava from there. A level 60 dungeon: bring a group." },
+		{ label = "Clear the bridge", note = "While on the bridge, clear the Blazing Fireguards and Shadowforge Dwarves in front of you before you start jumping." },
+		{ label = "Parkour to the hidden spot — Traveler's Symbols", itemID = 221315, note = "The route the Rainbow Generator quest used in Season of Discovery. The Wowhead guide and SeventeenUncles' video show the jumps." },
+		{ label = "Optional: Premo's Poise-Demanding Uniform", itemID = 221316, note = "A shirt found in the same place. Using it turns you to face your target; it was key to the Seventeen & the Secret Agents secret in Season of Discovery, so keep it." },
+		{ label = "Optional: Student Fodder", itemID = 216619, note = "Also found there. Food, so this step goes back to not done once you have eaten it all." },
+	  },
+	},
 
 	-- ------------------------------------------------
 	-- QUESTS
@@ -58,6 +71,81 @@ SC.entries = {
 		{ label = "Wet Job — Eagle Figurine, Loch Modan dam", questID = 79974, note = "Jump onto the carved heads facing the Wetlands to reach the figurine. Tricky to reach safely as Horde.", waypoint = { mapID = 1432, x = 0.494, y = 0.129 } },
 		{ label = "Eagle's Fist — Messenger Bag, Thoradin's Wall", questID = 79975, note = "Use the cart on the Hillsbrad side to climb into the wall, go through the room and look outside to the right for the hanging bag.", waypoint = { mapID = 1424, x = 0.873, y = 0.496 } },
 		{ label = "This Must Be The Place — Hastily Rolled-Up Satchel", questID = 79976, itemID = 211527, note = "Click the satchel below the Messenger Bag to finish the chain and receive the Cozy Sleeping Bag." },
+	  },
+	},
+	-- The Chicken Egg teaches a companion, but the pet checker needs a species
+	-- id that is not confirmed for Forever yet; completing CLUCK! is what
+	-- awards the egg, so the quest is the reliable signal.
+	{ name = "Chicken Egg", kind = "quest", questID = 3861, itemID = 11110,
+	  source = "Alliance only. Befriend a farm chicken with /chicken and feed it for the CLUCK! quest; the reward is the Chicken Egg companion.",
+	  guideURL = "https://www.wowhead.com/forever/quest=3861/cluck",
+	  steps = {
+		{ label = "/chicken at a farm chicken until it offers CLUCK!", note = "Alliance only. Target a chicken and /chicken at it, repeatedly (a macro helps): it can take many tries before the chicken offers the quest. The Southshore farms in Hillsbrad have several.", waypoint = { mapID = 1424, x = 0.504, y = 0.546 } },
+		{ label = "Buy Special Chicken Feed from Farmer Saldean", itemID = 11109, note = "Westfall, Saldean's Farm @ 56.0, 31.2.", waypoint = { mapID = 1436, x = 0.560, y = 0.312 } },
+		{ label = "CLUCK! — /chicken again, then hand over the feed", questID = 3861, itemID = 11110, note = "Return to the same chicken that gave you the quest, target it and /chicken (not /cheer, whatever the quest text says). Wait a few seconds for the question mark, then give it the feed. It lays the Chicken Egg and runs off: pick up the egg." },
+	  },
+	},
+
+	-- Library books: one turn-in quest per book, and the two reward tiers are
+	-- quests of their own. Greater Friend of the Library has three quest ids
+	-- (questIDs), any of which counts as collected.
+	{ name = "Library Books", kind = "quest", questIDs = { 79536, 82208, 84394 }, icon = "Interface\\Icons\\INV_Misc_Book_09",
+	  source = "Find books across Azeroth and donate them to the library. 10 books: Friend of the Library. 20 books: Greater Friend of the Library.",
+	  guideURL = "https://www.wowhead.com/forever/guide/library-book-locations-and-rewards",
+	  steps = {
+		{ label = "Where to donate", note = "Hand each book in as its own quest. Alliance: Garion Wendell, top of the mage tower in Stormwind. Horde: Owen Thadd in Undercity. All 40 in one route: https://www.youtube.com/watch?v=reF3hqSufkA",
+		  factionWaypoint = {
+			alliance = { mapID = 1453, x = 0.378, y = 0.802 },
+			horde    = { mapID = 1458, x = 0.734, y = 0.330 },
+		  },
+		},
+		{ label = "Friend of the Library — 10 books", questID = 78150, note = "Reward: Scholarly Pendant or Erudite's Amulet." },
+		{ label = "Greater Friend of the Library — 20 books", questIDs = { 79536, 82208, 84394 }, note = "Reward: Field Researcher's Loop or Philanthropist's Ring." },
+		{ label = "Everyday Etiquette — Azshara", questID = 81952, itemID = 220348, note = "Solo. @ 20.7, 62.0.", waypoint = { mapID = 1447, x = 0.207, y = 0.620 } },
+		{ label = "Nar'thalas Almanac, Vol. 74 — Darkshore", questID = 78124, itemID = 209843, note = "Solo. @ 59.6, 22.2.", waypoint = { mapID = 1439, x = 0.596, y = 0.222 } },
+		{ label = "Demons and You — Desolace", questID = 79950, itemID = 215817, note = "Group. @ 55.1, 26.2.", waypoint = { mapID = 1443, x = 0.551, y = 0.262 } },
+		{ label = "RwlRwlRwlRwl! — Dustwallow Marsh", questID = 79952, itemID = 215822, note = "Group. @ 57.2, 20.8.", waypoint = { mapID = 1445, x = 0.572, y = 0.208 } },
+		{ label = "Northern Kalimdor - A Comprehensive Guide — Felwood", questID = 84397, itemID = 228134, note = "Solo, hard. @ 65.2, 3.3.", waypoint = { mapID = 1448, x = 0.652, y = 0.033 } },
+		{ label = "The Liminal and the Arcane — not obtainable in Forever", itemID = 220347, note = "Skip it. In Season of Discovery this book needed the Emerald Dream phase, which Forever does not have, and its turn-in quest has been removed. The book is in the game data, but nobody has found it. The old location was Feralas @ 50.6, 15.7." },
+		{ label = "The Lessons of Ta'zo — Orgrimmar", questID = 79094, itemID = 207972, note = "Solo. @ 38.7, 78.4.", waypoint = { mapID = 1454, x = 0.387, y = 0.784 } },
+		{ label = "Fury of the Land — Stonetalon Mountains", questID = 78149, itemID = 209851, note = "Solo. @ 74.4, 85.7.", waypoint = { mapID = 1442, x = 0.744, y = 0.857 } },
+		{ label = "Legends of the Tidesages — Tanaris", questID = 81949, itemID = 220346, note = "Group, hard. @ 72.7, 47.8.", waypoint = { mapID = 1446, x = 0.727, y = 0.478 } },
+		{ label = "Arcanic Systems Manual — The Barrens", questID = 78145, itemID = 209847, note = "Solo. @ 56.3, 8.8.", waypoint = { mapID = 1413, x = 0.563, y = 0.088 } },
+		{ label = "Baxtan: On Destructive Magics — The Barrens", questID = 79097, itemID = 208800, note = "Solo. @ 62.7, 36.3.", waypoint = { mapID = 1413, x = 0.627, y = 0.363 } },
+		{ label = "Secrets of the Dreamers — The Barrens", questID = 78143, itemID = 209846, note = "Solo. The pin is the entrance of the Cavern of Mists @ 46.0, 36.5; the scrolls are inside, around 52.8, 54.7 on the cave map.", waypoint = { mapID = 1413, x = 0.460, y = 0.365 } },
+		{ label = "Geomancy: The Stone-Cold Truth — Thousand Needles", questID = 79947, itemID = 215683, note = "Group, level 28. @ 34.4, 40.1.", waypoint = { mapID = 1441, x = 0.344, y = 0.401 } },
+		{ label = "Ka-Boom! — Winterspring", questID = 84399, itemID = 228136, note = "Solo, hard, long run. @ 60.7, 37.7.", waypoint = { mapID = 1452, x = 0.607, y = 0.377 } },
+		{ label = "Defensive Magics 101 — Alterac Mountains", questID = 79948, itemID = 215815, note = "Solo. @ 48.4, 57.6.", waypoint = { mapID = 1416, x = 0.484, y = 0.576 } },
+		{ label = "A Web of Lies: Debunking Myths and Legends — Arathi Highlands", questID = 79949, itemID = 215816, note = "Depends. @ 73.6, 65.2.", waypoint = { mapID = 1417, x = 0.736, y = 0.652 } },
+		{ label = "Mummies: A Guide to the Unsavory Undead — Badlands", questID = 79951, itemID = 215820, note = "Solo. @ 56.7, 39.9.", waypoint = { mapID = 1418, x = 0.567, y = 0.399 } },
+		{ label = "Conjurer's Codex — Blasted Lands", questID = 81956, itemID = 220353, note = "Solo, may need a wait. @ 55.4, 32.2.", waypoint = { mapID = 1419, x = 0.554, y = 0.322 } },
+		{ label = "Stonewrought Design — Burning Steppes", questID = 81953, itemID = 220349, note = "Solo. @ 29.0, 28.9.", waypoint = { mapID = 1428, x = 0.290, y = 0.289 } },
+		{ label = "Magma or Lava? — Burning Steppes", questID = 84396, itemID = 228133, note = "Solo. @ 29.6, 28.2.", waypoint = { mapID = 1428, x = 0.296, y = 0.282 } },
+		{ label = "Crimes Against Anatomy — Duskwood", questID = 78147, itemID = 209849, note = "Solo. @ 16.6, 28.5.", waypoint = { mapID = 1431, x = 0.166, y = 0.285 } },
+		{ label = "A Study of the Light — Eastern Plaguelands", questID = 84398, itemID = 228135, note = "Solo. @ 71.8, 48.2.", waypoint = { mapID = 1423, x = 0.718, y = 0.482 } },
+		{ label = "Scourge: Undead Menace or Misunderstood? — Eastern Plaguelands", questID = 84401, itemID = 228140, note = "Solo. @ 31.3, 21.0.", waypoint = { mapID = 1423, x = 0.313, y = 0.210 } },
+		{ label = "The Knight and the Lady — Eastern Plaguelands", questID = 84400, itemID = 228138, note = "Solo. @ 47.3, 42.3.", waypoint = { mapID = 1423, x = 0.473, y = 0.423 } },
+		{ label = "Archmage Theocritus' Research Journal — Elwynn Forest", questID = 79092, itemID = 203755, note = "Solo. @ 65.4, 70.1.", waypoint = { mapID = 1429, x = 0.654, y = 0.701 } },
+		{ label = "Venomous Journeys — The Hinterlands", questID = 81954, itemID = 220350, note = "Solo. @ 36.0, 72.8.", waypoint = { mapID = 1425, x = 0.360, y = 0.728 } },
+		{ label = "Archmage Antonidas: The Unabridged Autobiography — Ironforge", questID = 79091, itemID = 203754, note = "Depends, easy for Alliance. @ 75.7, 10.5.", waypoint = { mapID = 1455, x = 0.757, y = 0.105 } },
+		{ label = "Rumi of Gnomeregan: The Collected Works — Westfall or Loch Modan", questID = 79093, itemID = 208860, note = "Solo. On a table in the Sentinel Hill inn, Westfall @ 52.7, 53.8 (the inn, not the tower). Also on the table in front of Drac Roughcut in the Thelsamar inn, Loch Modan @ 35.6, 48.9, but Horde cannot enter that one. Horde: stand behind the Westfall inn and loot it through the wall, or zoom out and look through the hole in the roof; the interact key helps.",
+		  waypoints = {
+			{ mapID = 1436, x = 0.527, y = 0.538, label = "Sentinel Hill inn, Westfall" },
+			{ mapID = 1432, x = 0.356, y = 0.489, label = "Thelsamar inn, Loch Modan (Alliance)" },
+		  },
+		},
+		{ label = "Runes of the Sorcerer-Kings — Loch Modan", questID = 78148, itemID = 209850, note = "Solo. @ 77.4, 14.0.", waypoint = { mapID = 1432, x = 0.774, y = 0.140 } },
+		{ label = "A Mind of Metal — Searing Gorge", questID = 81955, itemID = 220352, note = "Group, hard. @ 37.8, 49.3.", waypoint = { mapID = 1427, x = 0.378, y = 0.493 } },
+		{ label = "Ataeric: On Arcane Curiosities — Silverpine Forest", questID = 79096, itemID = 210177, note = "Solo. @ 43.4, 41.2.", waypoint = { mapID = 1421, x = 0.434, y = 0.412 } },
+		{ label = "The Dalaran Digest, Vol. 23 — Silverpine Forest", questID = 78127, itemID = 209844, note = "Solo. @ 63.5, 63.1.", waypoint = { mapID = 1421, x = 0.635, y = 0.631 } },
+		{ label = "Basilisks: Should Petrification be Feared? — Stranglethorn Vale", questID = 79535, itemID = 213165, note = "Group, or a pet. @ 41.4, 50.9.", waypoint = { mapID = 1434, x = 0.414, y = 0.509 } },
+		{ label = "A Luddite's Guide to Caring for Your Demonic Pet — Swamp of Sorrows", itemID = 215824, note = "Possibly not obtainable yet. The book is inside the Rusted Cage, west of the goblin enclave @ 61.4, 22.4. It can no longer be looted through the bars: you need the Rusted Cage Key, said to drop from the Lost One mobs, but players report hours of farming with no drop. Its turn-in quest has also been removed, so this step only shows done while the book is in your bags.", waypoint = { mapID = 1435, x = 0.614, y = 0.224 } },
+		{ label = "Sanguine Sorcery — Swamp of Sorrows", questID = 81947, itemID = 220345, note = "Solo. On top of the Sunken Temple, outside the dungeon @ 70.0, 51.0.", waypoint = { mapID = 1435, x = 0.700, y = 0.510 } },
+		{ label = "The Apothecary's Metaphysical Primer — Tirisfal Glades", questID = 79095, itemID = 208185, note = "Depends, easy for Horde. @ 59.4, 52.3.", waypoint = { mapID = 1420, x = 0.594, y = 0.523 } },
+		{ label = "Necromancy 101 — Western Plaguelands", questID = 84402, itemID = 228141, note = "Solo. @ 69.4, 72.8.", waypoint = { mapID = 1422, x = 0.694, y = 0.728 } },
+		{ label = "Undead Potatoes — Western Plaguelands", questID = 84395, itemID = 228132, note = "Solo. @ 38.3, 54.6.", waypoint = { mapID = 1422, x = 0.383, y = 0.546 } },
+		{ label = "Bewitchments and Glamours — Westfall", questID = 78142, itemID = 209845, note = "Solo. @ 45.4, 70.5.", waypoint = { mapID = 1436, x = 0.454, y = 0.705 } },
+		{ label = "Goaz Scrolls — Wetlands", questID = 78146, itemID = 209848, note = "Solo. Whelgar's Excavation Site @ 33.6, 47.8 (not the new dungeon with a similar name). From the entrance head south past the second wooden bridge: the scrolls are inside a large half-buried vase lying on its side.", waypoint = { mapID = 1437, x = 0.336, y = 0.478 } },
 	  },
 	},
 

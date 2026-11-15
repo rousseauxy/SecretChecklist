@@ -27,7 +27,7 @@ local REQUIRED_ID = {
 	pet         = { "speciesID" },
 	toy         = { "itemID" },
 	achievement = { "achievementID" },
-	quest       = { "questID" },
+	quest       = { "questID", "questIDs" },
 	transmog    = { "itemID" },
 	housing     = { "itemID" },
 }

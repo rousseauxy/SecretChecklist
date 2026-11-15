@@ -1,18 +1,15 @@
-# 2.2.0
+# 2.2.1
 
-- **WoW: Forever is supported.** The same download now works in both games,
-  and each one only shows its own secrets. Forever starts with four:
-  - **Alcaz Operative Insignia** — the Defias disguise toy from Alcaz Prison.
-  - **Cozy Sleeping Bag** — the quest chain across Azeroth, with the
-    different Alliance and Horde starts.
-  - **Dawn Waker** — still being solved. Every known step is listed, up to the
-    current one at Altairus.
-  - **Manual Scavenger Hunt** — still being solved. Every hidden object found
-    so far, with its clue and whether it has moved.
-
-  The Forever steps come from the Forever secret-finding community and the
-  Wowhead guides linked on each entry. Thanks to everyone digging.
-- **Three Russian guide lines now actually show in Russian.** Lines that
-  contain a line break were translated but never displayed.
+- **Three new WoW: Forever secrets:**
+  - **Traveler's Symbols** — the signpost toy hidden over the lava in
+    Blackrock Depths, with Premo's Poise-Demanding Uniform and Student Fodder
+    found in the same place. Found by SeventeenUncles.
+  - **Chicken Egg** — the Alliance-only CLUCK! quest: /chicken at a chicken,
+    buy the feed from Farmer Saldean, and /chicken again to hand it in (not
+    /cheer, whatever the quest text says).
+  - **Library Books** — all 40 books with a map pin each, the donation NPCs
+    for both factions, and both reward tiers. Each book ticks off once you
+    hand it in. Two books cannot be handed in in Forever at the moment, and
+    their steps say so.
 
 Full history: https://github.com/rousseauxy/SecretChecklist/blob/main/CHANGELOG.md
