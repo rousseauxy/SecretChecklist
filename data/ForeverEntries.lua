@@ -29,6 +29,19 @@ SC.entries = {
 		{ label = "Collect 6 Fractured Insignia and combine them", itemID = 279450, count = 6, note = "The Fractured Insignia is tradeable: buy the other five or trade with friends. Combining all six teaches the Alcaz Operative Insignia toy (a Defias disguise)." },
 	  },
 	},
+	-- Found by SeventeenUncles where Season of Discovery hid the Rainbow
+	-- Generator quest. No waypoints: the steps are all inside the dungeon.
+	{ name = "Traveler's Symbols", kind = "toy", itemID = 221315,
+	  source = "Blackrock Depths: a parkour route over the lava east of the Ring of Law.",
+	  guideURL = "https://www.wowhead.com/forever/guide/travelers-symbols-toy-secret-walkthrough",
+	  steps = {
+		{ label = "Blackrock Depths — the bridge north of the Ring of Law", note = "Find the platform just east of the Ring of Law. A bridge leads north over the lava from there. A level 60 dungeon: bring a group." },
+		{ label = "Clear the bridge", note = "While on the bridge, clear the Blazing Fireguards and Shadowforge Dwarves in front of you before you start jumping." },
+		{ label = "Parkour to the hidden spot — Traveler's Symbols", itemID = 221315, note = "The route the Rainbow Generator quest used in Season of Discovery. The Wowhead guide and SeventeenUncles' video show the jumps." },
+		{ label = "Optional: Premo's Poise-Demanding Uniform", itemID = 221316, note = "A shirt found in the same place. Using it turns you to face your target; it was key to the Seventeen & the Secret Agents secret in Season of Discovery, so keep it." },
+		{ label = "Optional: Student Fodder", itemID = 216619, note = "Also found there. Food, so this step goes back to not done once you have eaten it all." },
+	  },
+	},
 
 	-- ------------------------------------------------
 	-- QUESTS
