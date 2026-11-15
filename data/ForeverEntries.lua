@@ -128,7 +128,7 @@ SC.entries = {
 		{ label = "Archmage Theocritus' Research Journal — Elwynn Forest", questID = 79092, itemID = 203755, note = "Solo. @ 65.4, 70.1.", waypoint = { mapID = 1429, x = 0.654, y = 0.701 } },
 		{ label = "Venomous Journeys — The Hinterlands", questID = 81954, itemID = 220350, note = "Solo. @ 36.0, 72.8.", waypoint = { mapID = 1425, x = 0.360, y = 0.728 } },
 		{ label = "Archmage Antonidas: The Unabridged Autobiography — Ironforge", questID = 79091, itemID = 203754, note = "Depends, easy for Alliance. @ 75.7, 10.5.", waypoint = { mapID = 1455, x = 0.757, y = 0.105 } },
-		{ label = "Rumi of Gnomeregan: The Collected Works — Loch Modan", questID = 79093, itemID = 208860, note = "Solo. Reported @ 52.7, 53.8, but the source's map does not match this zone: confirm in game." },
+		{ label = "Rumi of Gnomeregan: The Collected Works — Westfall or Loch Modan", questID = 79093, itemID = 208860, note = "Solo. On a table in the Sentinel Hill inn, Westfall @ 52.7, 53.8 (the inn, not the tower). Also on the table in front of Drac Roughcut in the Thelsamar inn, Loch Modan, but Horde cannot enter that one. Horde: stand behind the Westfall inn and loot it through the wall, or zoom out and look through the hole in the roof; the interact key helps.", waypoint = { mapID = 1436, x = 0.527, y = 0.538 } },
 		{ label = "Runes of the Sorcerer-Kings — Loch Modan", questID = 78148, itemID = 209850, note = "Solo. @ 77.4, 14.0.", waypoint = { mapID = 1432, x = 0.774, y = 0.140 } },
 		{ label = "A Mind of Metal — Searing Gorge", questID = 81955, itemID = 220352, note = "Group, hard. @ 37.8, 49.3.", waypoint = { mapID = 1427, x = 0.378, y = 0.493 } },
 		{ label = "Ataeric: On Arcane Curiosities — Silverpine Forest", questID = 79096, itemID = 210177, note = "Solo. @ 43.4, 41.2.", waypoint = { mapID = 1421, x = 0.434, y = 0.412 } },
@@ -140,7 +140,7 @@ SC.entries = {
 		{ label = "Necromancy 101 — Western Plaguelands", questID = 84402, itemID = 228141, note = "Solo. @ 69.4, 72.8.", waypoint = { mapID = 1422, x = 0.694, y = 0.728 } },
 		{ label = "Undead Potatoes — Western Plaguelands", questID = 84395, itemID = 228132, note = "Solo. @ 38.3, 54.6.", waypoint = { mapID = 1422, x = 0.383, y = 0.546 } },
 		{ label = "Bewitchments and Glamours — Westfall", questID = 78142, itemID = 209845, note = "Solo. @ 45.4, 70.5.", waypoint = { mapID = 1436, x = 0.454, y = 0.705 } },
-		{ label = "Goaz Scrolls — Wetlands", questID = 78146, itemID = 209848, note = "Solo. Reported @ 33.6, 47.9, but the source's map does not match this zone: confirm in game." },
+		{ label = "Goaz Scrolls — Wetlands", questID = 78146, itemID = 209848, note = "Solo. Whelgar's Excavation Site @ 33.6, 47.8 (not the new dungeon with a similar name). From the entrance head south past the second wooden bridge: the scrolls are inside a large half-buried vase lying on its side.", waypoint = { mapID = 1437, x = 0.336, y = 0.478 } },
 	  },
 	},
 
