@@ -10,7 +10,12 @@
 --
 -- Two of these are unsolved, so they use kind "mystery": the entry only shows
 -- as collected once every step is done, and a step that the community has not
--- worked out yet is written as a note with no id.
+-- worked out yet is written as a note with no id. The Scarlet Banner is solved
+-- but uses the same kind, because nothing else tracks a plain item.
+--
+-- sequential = true marks a chain that can only be done in order: a done step
+-- then counts every step before it as done, and the entry completes on its
+-- last step. Use it where earlier steps leave nothing to detect.
 
 local SC = _G.SecretChecklist
 if not SC then return end
@@ -71,6 +76,44 @@ SC.entries = {
 		{ label = "Wet Job — Eagle Figurine, Loch Modan dam", questID = 79974, note = "Jump onto the carved heads facing the Wetlands to reach the figurine. Tricky to reach safely as Horde.", waypoint = { mapID = 1432, x = 0.494, y = 0.129 } },
 		{ label = "Eagle's Fist — Messenger Bag, Thoradin's Wall", questID = 79975, note = "Use the cart on the Hillsbrad side to climb into the wall, go through the room and look outside to the right for the hanging bag.", waypoint = { mapID = 1424, x = 0.873, y = 0.496 } },
 		{ label = "This Must Be The Place — Hastily Rolled-Up Satchel", questID = 79976, itemID = 211527, note = "Click the satchel below the Messenger Bag to finish the chain and receive the Cozy Sleeping Bag." },
+	  },
+	},
+	-- The torch is an ordinary item; An Unfortunate End is the instant turn-in
+	-- that hands it out, so the quest is the record that survives losing it.
+	{ name = "Night Watchman's Torch", kind = "quest", questID = 98372, itemID = 280612,
+	  source = "An instant turn-in from a slain Night Watch Guard in Duskwood. Both factions, any level. Also needed for Dawn Waker and the scavenger hunt.",
+	  guideURL = "https://www.wowhead.com/forever/guide/night-watchmans-torch-guide-quest-location",
+	  steps = {
+		{ label = "Find the slain Night Watch Guard — Duskwood", note = "First found at the top of Raven Hill Cemetery among level 25 ghouls, but the guard moves between several spots in Duskwood: check each pin.",
+		  waypoints = {
+			{ mapID = 1431, x = 0.210, y = 0.320, label = "Raven Hill Cemetery (top)" },
+			{ mapID = 1431, x = 0.209, y = 0.344, label = "Raven Hill Cemetery" },
+			{ mapID = 1431, x = 0.459, y = 0.783, label = "Night Watch Guard" },
+			{ mapID = 1431, x = 0.478, y = 0.594, label = "Night Watch Guard" },
+			{ mapID = 1431, x = 0.170, y = 0.540, label = "Night Watch Guard" },
+			{ mapID = 1431, x = 0.300, y = 0.674, label = "Night Watch Guard" },
+		  },
+		},
+		{ label = "An Unfortunate End — accept and hand straight back", questID = 98372, itemID = 280612, note = "The dead guard still offers the quest. It is an instant turn-in: accept it and return it to him for the torch. It lights up dark places anywhere except inns and capital cities." },
+	  },
+	},
+	-- The banner is an ordinary item with no quest behind it and no kind that
+	-- tracks a plain item, so it is a sequential mystery that completes when
+	-- the banner is in your bags.
+	{ name = "Scarlet Banner", kind = "mystery", sequential = true,
+	  source = "A four-zone puzzle ending in the Scarlet Monastery Library (the Season of Discovery Pain Suppression rune). A cosmetic campsite banner. Level 28+.",
+	  guideURL = "https://www.wowhead.com/forever/guide/collections/scarlet-banner-puzzle-locations",
+	  steps = {
+		{ label = "Collect the four Echoes from graves",
+		  substeps = {
+			{ label = "Graveyard Echo — Scarlet Monastery Graveyard", itemID = 215426, note = "About halfway down the grave area of the Graveyard wing, on the left inside a fenced area." },
+			{ label = "Arathi Echo — Go'shek Farm, Arathi Highlands", itemID = 215427, waypoint = { mapID = 1417, x = 0.620, y = 0.540 } },
+			{ label = "Theramore Echo — Grave, Dustwallow Marsh", itemID = 215428, waypoint = { mapID = 1445, x = 0.637, y = 0.425 } },
+			{ label = "Swamp Echo — Swamp of Sorrows", itemID = 215425, waypoint = { mapID = 1435, x = 0.168, y = 0.538 } },
+		  },
+		},
+		{ label = "Scarlet Monastery Library — activate the Echoes at the statues", note = "With all four Echoes in your bags, use each at its statue in this order: Warrior Statue: Swamp Echo. Mage Statue: Arathi Echo. Paladin Statue: Theramore Echo. Priest Statue: Graveyard Echo." },
+		{ label = "Loot the glowing object — Scarlet Banner", itemID = 278030, note = "Appears in the middle of the room once every statue is done. Needs a Campfire nearby to raise it." },
 	  },
 	},
 	-- The Chicken Egg teaches a companion, but the pet checker needs a species
@@ -152,7 +195,10 @@ SC.entries = {
 	-- ------------------------------------------------
 	-- MYSTERIES (unsolved)
 	-- ------------------------------------------------
-	{ name = "Dawn Waker", kind = "mystery",
+	-- sequential: talking to NPCs leaves no trace and the globe, the cleansing
+	-- items and the Arcanum are used up later, so a done step vouches for
+	-- every step before it.
+	{ name = "Dawn Waker", kind = "mystery", sequential = true,
 	  source = "Unsolved. The rewards look like the blades Eluvi'ana and Eluvi'tor.",
 	  guideURL = "https://www.wowhead.com/forever/guide/dawn-waker-secret-walkthrough",
 	  steps = {
@@ -165,7 +211,7 @@ SC.entries = {
 			{ mapID = 2521, x = 0.417, y = 0.234, label = "Heirloom Ring (top floor)" },
 		  },
 		},
-		{ label = "Get the Night Watchman's Torch", itemID = 280612, note = "Needed to reveal the Ancient Hilt (and several scavenger-hunt objects)." },
+		{ label = "Get the Night Watchman's Torch", questID = 98372, itemID = 280612, note = "From the slain Night Watch Guard in Duskwood (see the Night Watchman's Torch entry). Needed to reveal the Ancient Hilt (and several scavenger-hunt objects)." },
 		{ label = "The Ancient Hilt — Ruins of Ban'aethal", questID = 93161, note = "Use the Night Watchman's Torch at the Ruins of Ban'aethal on Zephras Isle to uncover the Ancient Hilt, then take it to Ealaane Nimbuswalker @ 65.94, 74.37.", waypoint = { mapID = 2521, x = 0.5813, y = 0.2406 } },
 		{ label = "Eluvi'ana — find the Ancient Skyborne Blade", questID = 97029, itemID = 276188, note = "The blade (item 264501) is somewhere on Zephras Isle; four spawn points are known. Bring it to Ealaane Nimbuswalker for Eluvi'ana.",
 		  waypoints = {
@@ -200,7 +246,7 @@ SC.entries = {
 	  source = "Unsolved. Hidden objects that seem based on the old printed game manuals; the end goal is unknown.",
 	  guideURL = "https://www.wowhead.com/forever/item=280612/night-watchmans-torch",
 	  steps = {
-		{ label = "Night Watchman's Torch (tool)", itemID = 280612, note = "Found in Duskwood. Must be out and lit to see several of the stashes below." },
+		{ label = "Night Watchman's Torch (tool)", questID = 98372, itemID = 280612, note = "Found in Duskwood. Must be out and lit to see several of the stashes below." },
 		{ label = "Keystone Fragment — Torn Pages, Undercity sewers", itemIDs = { 281350, 284092, 284093 }, note = "Back entrance of the Undercity sewers, barrel with a Torn Page and a knife. Page reads: 'The furrowed gaze of the orcish warrior lays upon the map, and reveals the key. Page 155'. Reported missing or moved on 06/11.", waypoint = { mapID = 1458, x = 0.2286, y = 0.3619 } },
 		{ label = "Stone Key — small pack, Riverglades", itemID = 281358, note = "Behind a sleeping Twilight Peon; jump off at 26.72, 47.74. Formerly in Blackrock Mountain. Reported missing or moved on 06/11.", waypoint = { mapID = 2548, x = 0.2656, y = 0.4558 } },
 		{ label = "Burnt Page — Dreadmaul Hold, Blasted Lands", itemID = 281356, note = "Needs the Stone Key. 'Behind three places of mystery is a map. The top of the key is within the first body...' Reported missing or moved on 06/11.", waypoint = { mapID = 1419, x = 0.4519, y = 0.1647 } },
