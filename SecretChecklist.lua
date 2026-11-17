@@ -610,6 +610,14 @@ do
 
 	checkers.mystery = function(entry)
 		if entry.steps and #entry.steps > 0 then
+			-- A sequential chain is finished once its last step is: the earlier
+			-- steps may have left nothing to detect (see TabGuides).
+			if entry.sequential then
+				if SC:GetStepStatus(entry.steps[#entry.steps]) == "done" then
+					return true, "mystery"
+				end
+				return nil, "Reward unknown – in active investigation"
+			end
 			local allDone = true
 			for _, step in ipairs(entry.steps) do
 				if SC:GetStepStatus(step) ~= "done" then

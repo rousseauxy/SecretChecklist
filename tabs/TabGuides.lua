@@ -1379,6 +1379,19 @@ function SC:BuildGuidesPanel(frame, L)
 	-- When debug mode is active the override is suppressed so individual step states remain visible.
 	local entryDone = (entry.stepsOverrideOnDone ~= false) and not SecretChecklistDB.debugMode and SC.GetEntryStatus and
 	(SC:GetEntryStatus(entry)) == "collected"
+	-- sequential = true: the chain can only be done in order, so a done step
+	-- implies every step before it. That covers steps the game leaves no trace
+	-- of (talking to an NPC) and items a later step uses up, which would
+	-- otherwise turn an earlier step red again. Debug mode shows raw states.
+	local doneThrough = 0
+	if (entry.sequential or stepsEntry.sequential) and not SecretChecklistDB.debugMode then
+		for i = numSteps, 1, -1 do
+			if SC:GetStepStatus(steps[i]) == "done" then
+				doneThrough = i
+				break
+			end
+		end
+	end
 	local doneCount = 0
 	for i = 1, numSteps do
 		local step = steps[i]
@@ -1396,7 +1409,7 @@ function SC:BuildGuidesPanel(frame, L)
 			if resolvedSubs then
 				subsDone, subsTotal = SC:GetSubstepProgress(step)
 			end
-			local st = entryDone and "done" or (SC:GetStepStatus(step) or "missing")
+			local st = (entryDone or i < doneThrough) and "done" or (SC:GetStepStatus(step) or "missing")
 			-- Status dot colour + label text colour
 			if st == "done" then
 				doneCount = doneCount + 1
