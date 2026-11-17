@@ -156,7 +156,15 @@ SC.entries = {
 	  source = "Unsolved. The rewards look like the blades Eluvi'ana and Eluvi'tor.",
 	  guideURL = "https://www.wowhead.com/forever/guide/dawn-waker-secret-walkthrough",
 	  steps = {
-		{ label = "Coming of Age — Ancient Heirloom ring", questID = 92460, itemID = 264908, note = "Zephras Isle, Thendal Village: Ailee Farheart gives the quest; turn it in to Rorian the Dayseeker nearby for the ring. A second ring is on the top floor @ 41.7, 23.4. Wear it: several later steps only appear with the ring equipped.", waypoint = { mapID = 2521, x = 0.4283, y = 0.2345 } },
+		-- No questID: Coming of Age is only offered to players with Skyborne
+		-- access, and everyone else takes the ring from the top floor, so
+		-- holding the ring is what marks this step done.
+		{ label = "Ancient Heirloom ring — Thendal Village, Zephras Isle", itemID = 264908, note = "With Skyborne access: accept Coming of Age from Ailee Farheart and turn it in to Rorian the Dayseeker nearby for the ring. Without it: take the ring from the top floor of a nearby building @ 41.7, 23.4. Wear it: several later steps only appear with the ring equipped.",
+		  waypoints = {
+			{ mapID = 2521, x = 0.4283, y = 0.2345, label = "Ailee Farheart (Skyborne only)" },
+			{ mapID = 2521, x = 0.417, y = 0.234, label = "Heirloom Ring (top floor)" },
+		  },
+		},
 		{ label = "Get the Night Watchman's Torch", itemID = 280612, note = "Needed to reveal the Ancient Hilt (and several scavenger-hunt objects)." },
 		{ label = "The Ancient Hilt — Ruins of Ban'aethal", questID = 93161, note = "Use the Night Watchman's Torch at the Ruins of Ban'aethal on Zephras Isle to uncover the Ancient Hilt, then take it to Ealaane Nimbuswalker @ 65.94, 74.37.", waypoint = { mapID = 2521, x = 0.5813, y = 0.2406 } },
 		{ label = "Eluvi'ana — find the Ancient Skyborne Blade", questID = 97029, itemID = 276188, note = "The blade (item 264501) is somewhere on Zephras Isle; four spawn points are known. Bring it to Ealaane Nimbuswalker for Eluvi'ana.",
@@ -168,7 +176,7 @@ SC.entries = {
 			{ mapID = 2521, x = 0.6594, y = 0.7437, label = "Ealaane Nimbuswalker" },
 		  },
 		},
-		{ label = "Befouled Water Globe", itemID = 282337, note = "Horde: kill Baron Aquanis in Blackfathom Deeps for the Strange Water Globe, turn it in to Je'neu at Zoram'gar Outpost, then talk to him again to get the globe back. Alliance: combine 20 Mathystra Amulet Fragments from the naga at the Ruins of Mathystra, use the amulet at the water structure @ 58.9, 22.6 in Darkshore, kill Baron Marinous, turn his globe in to Onu at the Grove of the Ancients and talk to him again.",
+		{ label = "Befouled Water Globe", itemID = 282337, note = "Around level 22. Horde: kill Baron Aquanis in Blackfathom Deeps for the Strange Water Globe, turn it in to Je'neu at Zoram'gar Outpost, then talk to him again to get the globe back. Alliance: combine 20 Mathystra Amulet Fragments from the naga at the Ruins of Mathystra, use the amulet at the water structure @ 58.9, 22.6 in Darkshore, kill Baron Marinous, turn his globe in to Onu at the Grove of the Ancients and talk to him again.",
 		  factionWaypoint = { horde = { mapID = 1440, x = 0.116, y = 0.342 }, alliance = { mapID = 1439, x = 0.436, y = 0.764 } } },
 		{ label = "Zoram Strand — speak with the Highborne Spirit", note = "With the ring equipped and the globe in your bags, a Highborne Spirit appears and sends you to the Tower of Althalaxx in Darkshore.", waypoint = { mapID = 1440, x = 0.1568, y = 0.1933 } },
 		{ label = "Narassin's Tome — Tower of Althalaxx", itemID = 282404, note = "Kill Narassin at the top of the tower for the Azsharan Key, open the strongbox behind him for the tome, then return to the Highborne Spirit.", waypoint = { mapID = 1439, x = 0.564, y = 0.265 } },
@@ -181,9 +189,9 @@ SC.entries = {
 		  },
 		},
 		{ label = "Cleanse the globe at the Shrine of Coalescence, Hyjal", itemID = 282699, note = "Bring the three items and the globe; use the globe from your bags at the shrine for the Cleansed Water Globe. Show it to Mordent, who sends you to Prince Tortheldrin in Dire Maul.", waypoint = { mapID = 2482, x = 0.727, y = 0.372 } },
-		{ label = "Reach Honored with the Shen'dralar", repReq = { factionID = 809, standingID = 6, standingName = "Honored" }, note = "Prince Tortheldrin only speaks of Eluvi'ana and Eluvi'tor to those Honored with his court." },
+		{ label = "Speak to Prince Tortheldrin — \"Honored in his Court\"", note = "He tells of two blades, Eluvi'ana and Eluvi'tor, and says knowledge of them is reserved for those Honored in his Court. That is not simply Honored with the Shen'dralar: a player who reached it got no new dialogue, so the requirement is something else or something extra." },
 		{ label = "Craft the Arcanum of Binding", itemID = 282707, note = "From the Libram of Binding (drops in Dire Maul): 1 Pristine Black Diamond, 2 Large Brilliant Shard, 1 Arcane Crystal." },
-		{ label = "Use the Arcanum on the Ancient Hilt — Scrawled Note", itemID = 283387, note = "Speak with Prince Tortheldrin again for the Scrawled Note: \"As night dances on, so must day wake / To rejoin one, its pair must await / So only pure of heart may wield / Blade high or perfect dark must yield // In flames born of air it must be cast / Only then will the spirit bind at last\"" },
+		{ label = "Use the Arcanum on the Ancient Hilt — Scrawled Note", itemID = 283387, note = "Speak with Prince Tortheldrin again for the Scrawled Note: \"As night dances on, so must day wake / To rejoin one, its pair must await / So only pure of heart may wield / Blade high or perfect dark must yield // In flames born of air it must be cast / Only then will the spirit bind at last\" (signed: L)" },
 		{ label = "UNSOLVED — the hilt and Altairus's breath", note = "Current step. Placing the Ancient Hilt in front of Altairus and having him breathe on it makes him fly away. Clicking the placed hilt with the Night Dancer in your bags channels for 10 seconds, raising the blade high. Nothing happens afterwards yet." },
 	  },
 	},
