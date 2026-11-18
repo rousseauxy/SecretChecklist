@@ -613,7 +613,7 @@ do
 			-- A sequential chain is finished once its last step is: the earlier
 			-- steps may have left nothing to detect (see TabGuides).
 			if entry.sequential then
-				if SC:GetStepStatus(entry.steps[#entry.steps]) == "done" then
+				if SC:GetChainProgress(entry.name, entry.steps) == #entry.steps then
 					return true, "mystery"
 				end
 				return nil, "Reward unknown – in active investigation"
@@ -762,6 +762,59 @@ end
 -- rather than the completion", so they have to see questIDs too.
 local function StepHasQuest(step)
 	return step.questID ~= nil or step.questIDs ~= nil
+end
+
+-- Furthest step reached on an in-order chain (sequential = true). The live
+-- answer is the last step the game still shows as done, but a chain can go
+-- quiet: after a step that leaves no trace (talking to an NPC) or that uses up
+-- the item an earlier step tracked, nothing later may be done yet. So the
+-- furthest step is also remembered per character, by its label rather than its
+-- position so that a data update which inserts or reorders steps cannot shift
+-- it. Returns the index of that step (0 if none).
+local function CharacterKey()
+	local name, realm = UnitName("player"), GetRealmName()
+	if not name or not realm or realm == "" then return nil end
+	return name .. "-" .. realm
+end
+
+function SC:GetChainProgress(chainName, steps)
+	if type(steps) ~= "table" then return 0 end
+	local live = 0
+	for i = #steps, 1, -1 do
+		if SC:GetStepStatus(steps[i]) == "done" then
+			live = i
+			break
+		end
+	end
+	local key = CharacterKey()
+	if not key or type(SecretChecklistDB) ~= "table" then return live end
+	SecretChecklistDB.chainProgress = SecretChecklistDB.chainProgress or {}
+	local mine = SecretChecklistDB.chainProgress[key] or {}
+	SecretChecklistDB.chainProgress[key] = mine
+	local savedIndex = 0
+	if mine[chainName] then
+		for i, step in ipairs(steps) do
+			if step.label == mine[chainName] then
+				savedIndex = i
+				break
+			end
+		end
+	end
+	if live > savedIndex then
+		mine[chainName] = steps[live].label
+		return live
+	end
+	return savedIndex
+end
+
+-- Records progress on every in-order chain. Run on bag and quest changes, so an
+-- item that is used up while the window is closed still counts.
+function SC:RecordChainProgress()
+	for _, entry in ipairs(SC.entries or {}) do
+		if entry.sequential and entry.steps then
+			SC:GetChainProgress(entry.name, entry.steps)
+		end
+	end
 end
 
 function SC:GetStepStatus(step)

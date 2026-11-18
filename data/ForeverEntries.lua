@@ -15,7 +15,9 @@
 --
 -- sequential = true marks a chain that can only be done in order: a done step
 -- then counts every step before it as done, and the entry completes on its
--- last step. Use it where earlier steps leave nothing to detect.
+-- last step. Use it where earlier steps leave nothing to detect. The furthest
+-- step is remembered per character, so it holds even after the item that
+-- marked it is used up.
 
 local SC = _G.SecretChecklist
 if not SC then return end

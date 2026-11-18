@@ -1037,6 +1037,9 @@ do
 			-- MOUNT_JOURNAL_SEARCH_UPDATED -- events that fire dozens of times a
 			-- second while the player scrolls or types in their Pet/Mount Journal.
 			-- Coalescing to one scan per 100ms burst is imperceptible for a toast.
+			-- Before the collection scan: a sequential chain's status reads the
+			-- progress this records.
+			if SC.RecordChainProgress then SC:RecordChainProgress() end
 			if SC.CheckForNewCollections then SC:CheckForNewCollections() end
 			if frame:IsShown() and SC.currentTab == "overview" and SC.refreshOverviewDisplay then
 				SC.refreshOverviewDisplay(frame.currentPage or 1)
