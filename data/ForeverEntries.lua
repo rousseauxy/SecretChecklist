@@ -18,6 +18,9 @@
 -- last step. Use it where earlier steps leave nothing to detect. The furthest
 -- step is remembered per character, so it holds even after the item that
 -- marked it is used up.
+--
+-- onQuestID on a step: done once that quest is in the quest log (or handed in),
+-- for a step whose result is being offered a quest.
 
 local SC = _G.SecretChecklist
 if not SC then return end
@@ -125,7 +128,7 @@ SC.entries = {
 	  source = "Alliance only. Befriend a farm chicken with /chicken and feed it for the CLUCK! quest; the reward is the Chicken Egg companion.",
 	  guideURL = "https://www.wowhead.com/forever/quest=3861/cluck",
 	  steps = {
-		{ label = "/chicken at a farm chicken until it offers CLUCK!", note = "Alliance only. Target a chicken and /chicken at it, repeatedly (a macro helps): it can take many tries before the chicken offers the quest. The Southshore farms in Hillsbrad have several.", waypoint = { mapID = 1424, x = 0.504, y = 0.546 } },
+		{ label = "/chicken at a farm chicken until it offers CLUCK!", onQuestID = 3861, note = "Alliance only. Target a chicken and /chicken at it, repeatedly (a macro helps): it can take many tries before the chicken offers the quest. The Southshore farms in Hillsbrad have several.", waypoint = { mapID = 1424, x = 0.504, y = 0.546 } },
 		{ label = "Buy Special Chicken Feed from Farmer Saldean", itemID = 11109, note = "Westfall, Saldean's Farm @ 56.0, 31.2.", waypoint = { mapID = 1436, x = 0.560, y = 0.312 } },
 		{ label = "CLUCK! — /chicken again, then hand over the feed", questID = 3861, itemID = 11110, note = "Return to the same chicken that gave you the quest, target it and /chicken (not /cheer, whatever the quest text says). Wait a few seconds for the question mark, then give it the feed. It lays the Chicken Egg and runs off: pick up the egg." },
 	  },

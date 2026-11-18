@@ -764,6 +764,18 @@ local function StepHasQuest(step)
 	return step.questID ~= nil or step.questIDs ~= nil
 end
 
+-- Whether a quest sits in the player's quest log right now (accepted, not yet
+-- handed in). Classic-based clients may lack C_QuestLog.IsOnQuest.
+local function IsOnQuest(questID)
+	if C_QuestLog and C_QuestLog.IsOnQuest then
+		return C_QuestLog.IsOnQuest(questID) == true
+	end
+	if GetQuestLogIndexByID then
+		return (GetQuestLogIndexByID(questID) or 0) > 0
+	end
+	return false
+end
+
 -- Furthest step reached on an in-order chain (sequential = true). The live
 -- answer is the last step the game still shows as done, but a chain can go
 -- quiet: after a step that leaves no trace (talking to an NPC) or that uses up
@@ -819,6 +831,11 @@ end
 
 function SC:GetStepStatus(step)
 	if StepQuestCompleted(step) then
+		return "done"
+	end
+	-- onQuestID: the step is getting a quest offered, so it is done as soon as
+	-- that quest is in the log, or once it has been handed in.
+	if step.onQuestID and (IsOnQuest(step.onQuestID) or SC:IsQuestDone(step.onQuestID)) then
 		return "done"
 	end
 	if step.criteriaID and step.achievementID and GetAchievementCriteriaInfoByID then

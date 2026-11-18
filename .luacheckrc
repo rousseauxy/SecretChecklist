@@ -110,6 +110,7 @@ read_globals = {
 	"GetCursorPosition",
 	"GetLocale",
 	"GetNumGroupMembers",
+	"GetQuestLogIndexByID", -- classic quest log; C_QuestLog.IsOnQuest where present
 	"GetRaidRosterInfo",
 	"GetRealmName",
 	"GetTime",

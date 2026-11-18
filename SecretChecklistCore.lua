@@ -1060,6 +1060,8 @@ do
 	collectionFrame:RegisterEvent("TOYS_UPDATED")
 	collectionFrame:RegisterEvent("ACHIEVEMENT_EARNED")
 	collectionFrame:RegisterEvent("QUEST_TURNED_IN")
+	-- Steps with onQuestID are done once their quest is accepted.
+	collectionFrame:RegisterEvent("QUEST_ACCEPTED")
 	collectionFrame:SetScript("OnEvent", function()
 		ScheduleCollectionRefresh()
 	end)
