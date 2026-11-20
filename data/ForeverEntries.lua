@@ -80,7 +80,7 @@ SC.entries = {
 		{ label = "Optional: Rekindle — the camp's fire pit", questID = 80001, note = "Light the fire pit in the middle of the camp with the Simple Wood and Flint and Tinder from the previous quest. Not needed for the bag." },
 		{ label = "Scramble — Mound of Dirt", questID = 79980, note = "From the camp, climb the hill straight north and jump across to the Mound of Dirt.", waypoint = { mapID = 1442, x = 0.396, y = 0.498 } },
 		{ label = "Wet Job — Eagle Figurine, Loch Modan dam", questID = 79974, note = "Jump onto the carved heads facing the Wetlands to reach the figurine. Tricky to reach safely as Horde.", waypoint = { mapID = 1432, x = 0.494, y = 0.129 } },
-		{ label = "Eagle's Fist — Messenger Bag, Thoradin's Wall", questID = 79975, note = "Use the cart on the Hillsbrad side to climb into the wall, go through the room and look outside to the right for the hanging bag.", waypoint = { mapID = 1424, x = 0.873, y = 0.496 } },
+		{ label = "Eagle's Fist — Messenger Bag, Thoradin's Wall", questID = 79975, note = "Use the cart on the Hillsbrad side to climb into the wall, go through the room and look outside to the right for the hanging bag. The climb: at the cart, jump on the cylinder first, then to the higher beam on the right, then over to the ladder. On the next wall, start on the lower-left cluster of rocks and work up the bigger ones. For the last section, start on the beam on the left. Turn off speed boosts such as Aspect of the Cheetah.", waypoint = { mapID = 1424, x = 0.873, y = 0.496 } },
 		{ label = "This Must Be The Place — Hastily Rolled-Up Satchel", questID = 79976, itemID = 211527, note = "Click the satchel below the Messenger Bag to finish the chain and receive the Cozy Sleeping Bag." },
 	  },
 	},

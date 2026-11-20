@@ -959,7 +959,7 @@ T["Take the path northeast of Sun Rock Retreat @ 50.9, 52.3 up to the camp and c
 T["Light the fire pit in the middle of the camp with the Simple Wood and Flint and Tinder from the previous quest. Not needed for the bag."] = ""
 T["From the camp, climb the hill straight north and jump across to the Mound of Dirt."] = ""
 T["Jump onto the carved heads facing the Wetlands to reach the figurine. Tricky to reach safely as Horde."] = ""
-T["Use the cart on the Hillsbrad side to climb into the wall, go through the room and look outside to the right for the hanging bag."] = ""
+T["Use the cart on the Hillsbrad side to climb into the wall, go through the room and look outside to the right for the hanging bag. The climb: at the cart, jump on the cylinder first, then to the higher beam on the right, then over to the ladder. On the next wall, start on the lower-left cluster of rocks and work up the bigger ones. For the last section, start on the beam on the left. Turn off speed boosts such as Aspect of the Cheetah."] = ""
 T["Click the satchel below the Messenger Bag to finish the chain and receive the Cozy Sleeping Bag."] = ""
 T["First found at the top of Raven Hill Cemetery among level 25 ghouls, but the guard moves between several spots in Duskwood: check each pin."] = ""
 T["The dead guard still offers the quest. It is an instant turn-in: accept it and return it to him for the torch. It lights up dark places anywhere except inns and capital cities."] = ""
