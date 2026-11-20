@@ -35,7 +35,8 @@ SC.entries = {
 	  steps = {
 		{ label = "Alcaz Prison — skip The Questioner, free Mason Connery", note = "Do NOT kill the first boss, The Questioner, on the way in. At the end of the dungeon the prisoner Mason Connery asks you to kill The Questioner and bring back his key. Kill him, return the key to Mason." },
 		{ label = "More Valuable Than Gold — Moonbrook inn, Westfall", questID = 96337, note = "Mason gives this quest and a note reading 'WF, 43.4, 67.8'. It leads to the second floor of the Moonbrook inn: interact with the floorboards by the box, then turn the quest in for a Document Box. It vendors for 25g — do NOT sell it.", waypoint = { mapID = 1436, x = 0.434, y = 0.678 } },
-		{ label = "State Secrets — hand in the Document Box", itemID = 274041, questIDs = { 96376, 96377, 96379 }, note = "Horde: Rix Xizzix in Booty Bay, near the auction house. Alliance: Renzik \"The Shiv\" in the SI:7 building, Old Town, Stormwind. Rewards a Fractured Insignia, gold and experience." },
+		{ label = "State Secrets — hand in the Document Box", itemID = 274041, questIDs = { 96376, 96377, 96379 }, note = "Horde: Rix Xizzix in Booty Bay, near the auction house. Alliance: Renzik \"The Shiv\" in the SI:7 building, Old Town, Stormwind. Rewards a Fractured Insignia, gold and experience.",
+		  factionWaypoint = { horde = { mapID = 1434, x = 0.284, y = 0.758 }, alliance = { mapID = 1453, x = 0.788, y = 0.708 } } },
 		{ label = "Collect 6 Fractured Insignia and combine them", itemID = 279450, count = 6, note = "The Fractured Insignia is tradeable: buy the other five or trade with friends. Combining all six teaches the Alcaz Operative Insignia toy (a Defias disguise)." },
 	  },
 	},
