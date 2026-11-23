@@ -101,6 +101,20 @@ the Scarlet Banner, the library books, and two chains the community is still
 solving: Dawn Waker and the manual scavenger hunt. Your saved settings are kept
 separately per game.
 
+#### Help automate the Forever steps
+
+Many Forever steps can't tick themselves yet, because the hidden quest the game
+completes behind each step isn't known. You can help find them:
+
+1. Install **[QuestsChanged](https://github.com/kemayo/wow-questschanged)** by
+   Kemayo. It logs every quest ID that flips to completed, hidden ones included.
+   WoW: Forever support is merged upstream; until its next release, add
+   `, 16001` to the end of the `## Interface:` line in `QuestsChanged.toc`.
+2. Do a secret step, then type `/questschanged` and note the quest IDs that
+   appeared right after it (with the step and where you were).
+3. Report them in a [GitHub issue](https://github.com/rousseauxy/SecretChecklist/issues)
+   or on CurseForge. Each ID found lets that step tick off on its own for everyone.
+
 ## Beledar Orchestra Helper
 
 The Radiant Singer secret needs a 40-player raid performing a set sequence of
