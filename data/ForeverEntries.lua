@@ -107,7 +107,7 @@ SC.entries = {
 	-- tracks a plain item, so it is a sequential mystery that completes when
 	-- the banner is in your bags.
 	{ name = "Scarlet Banner", kind = "mystery", sequential = true,
-	  source = "A four-zone puzzle ending in the Scarlet Monastery Library (the Season of Discovery Pain Suppression rune). A cosmetic campsite banner. Level 28+.",
+	  source = "A four-zone puzzle ending in the Scarlet Monastery Library (the Season of Discovery Pain Suppression rune). A cosmetic campsite banner. Level 33+ for the Library.",
 	  guideURL = "https://www.wowhead.com/forever/guide/collections/scarlet-banner-puzzle-locations",
 	  steps = {
 		{ label = "Collect the four Echoes from graves",
