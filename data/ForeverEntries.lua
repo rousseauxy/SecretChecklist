@@ -15,7 +15,12 @@
 --
 -- sequential = true marks a chain that can only be done in order: a done step
 -- then counts every step before it as done, and the entry completes on its
--- last step. Use it where earlier steps leave nothing to detect.
+-- last step. Use it where earlier steps leave nothing to detect. The furthest
+-- step is remembered per character, so it holds even after the item that
+-- marked it is used up.
+--
+-- onQuestID on a step: done once that quest is in the quest log (or handed in),
+-- for a step whose result is being offered a quest.
 
 local SC = _G.SecretChecklist
 if not SC then return end
@@ -30,7 +35,8 @@ SC.entries = {
 	  steps = {
 		{ label = "Alcaz Prison — skip The Questioner, free Mason Connery", note = "Do NOT kill the first boss, The Questioner, on the way in. At the end of the dungeon the prisoner Mason Connery asks you to kill The Questioner and bring back his key. Kill him, return the key to Mason." },
 		{ label = "More Valuable Than Gold — Moonbrook inn, Westfall", questID = 96337, note = "Mason gives this quest and a note reading 'WF, 43.4, 67.8'. It leads to the second floor of the Moonbrook inn: interact with the floorboards by the box, then turn the quest in for a Document Box. It vendors for 25g — do NOT sell it.", waypoint = { mapID = 1436, x = 0.434, y = 0.678 } },
-		{ label = "State Secrets — hand in the Document Box", itemID = 274041, questIDs = { 96376, 96377, 96379 }, note = "Horde: Rix Xizzix in Booty Bay, near the auction house. Alliance: Renzik \"The Shiv\" in the SI:7 building, Old Town, Stormwind. Rewards a Fractured Insignia, gold and experience." },
+		{ label = "State Secrets — hand in the Document Box", itemID = 274041, questIDs = { 96376, 96377, 96379 }, note = "Horde: Rix Xizzix in Booty Bay, near the auction house. Alliance: Renzik \"The Shiv\" in the SI:7 building, Old Town, Stormwind. Rewards a Fractured Insignia, gold and experience.",
+		  factionWaypoint = { horde = { mapID = 1434, x = 0.284, y = 0.758 }, alliance = { mapID = 1453, x = 0.788, y = 0.708 } } },
 		{ label = "Collect 6 Fractured Insignia and combine them", itemID = 279450, count = 6, note = "The Fractured Insignia is tradeable: buy the other five or trade with friends. Combining all six teaches the Alcaz Operative Insignia toy (a Defias disguise)." },
 	  },
 	},
@@ -74,7 +80,7 @@ SC.entries = {
 		{ label = "Optional: Rekindle — the camp's fire pit", questID = 80001, note = "Light the fire pit in the middle of the camp with the Simple Wood and Flint and Tinder from the previous quest. Not needed for the bag." },
 		{ label = "Scramble — Mound of Dirt", questID = 79980, note = "From the camp, climb the hill straight north and jump across to the Mound of Dirt.", waypoint = { mapID = 1442, x = 0.396, y = 0.498 } },
 		{ label = "Wet Job — Eagle Figurine, Loch Modan dam", questID = 79974, note = "Jump onto the carved heads facing the Wetlands to reach the figurine. Tricky to reach safely as Horde.", waypoint = { mapID = 1432, x = 0.494, y = 0.129 } },
-		{ label = "Eagle's Fist — Messenger Bag, Thoradin's Wall", questID = 79975, note = "Use the cart on the Hillsbrad side to climb into the wall, go through the room and look outside to the right for the hanging bag.", waypoint = { mapID = 1424, x = 0.873, y = 0.496 } },
+		{ label = "Eagle's Fist — Messenger Bag, Thoradin's Wall", questID = 79975, note = "Use the cart on the Hillsbrad side to climb into the wall, go through the room and look outside to the right for the hanging bag. The climb: at the cart, jump on the cylinder first, then to the higher beam on the right, then over to the ladder. On the next wall, start on the lower-left cluster of rocks and work up the bigger ones. For the last section, start on the beam on the left. Turn off speed boosts such as Aspect of the Cheetah.", waypoint = { mapID = 1424, x = 0.873, y = 0.496 } },
 		{ label = "This Must Be The Place — Hastily Rolled-Up Satchel", questID = 79976, itemID = 211527, note = "Click the satchel below the Messenger Bag to finish the chain and receive the Cozy Sleeping Bag." },
 	  },
 	},
@@ -101,7 +107,7 @@ SC.entries = {
 	-- tracks a plain item, so it is a sequential mystery that completes when
 	-- the banner is in your bags.
 	{ name = "Scarlet Banner", kind = "mystery", sequential = true,
-	  source = "A four-zone puzzle ending in the Scarlet Monastery Library (the Season of Discovery Pain Suppression rune). A cosmetic campsite banner. Level 28+.",
+	  source = "A four-zone puzzle ending in the Scarlet Monastery Library (the Season of Discovery Pain Suppression rune). A cosmetic campsite banner. Level 33+ for the Library.",
 	  guideURL = "https://www.wowhead.com/forever/guide/collections/scarlet-banner-puzzle-locations",
 	  steps = {
 		{ label = "Collect the four Echoes from graves",
@@ -123,7 +129,7 @@ SC.entries = {
 	  source = "Alliance only. Befriend a farm chicken with /chicken and feed it for the CLUCK! quest; the reward is the Chicken Egg companion.",
 	  guideURL = "https://www.wowhead.com/forever/quest=3861/cluck",
 	  steps = {
-		{ label = "/chicken at a farm chicken until it offers CLUCK!", note = "Alliance only. Target a chicken and /chicken at it, repeatedly (a macro helps): it can take many tries before the chicken offers the quest. The Southshore farms in Hillsbrad have several.", waypoint = { mapID = 1424, x = 0.504, y = 0.546 } },
+		{ label = "/chicken at a farm chicken until it offers CLUCK!", onQuestID = 3861, note = "Alliance only. Target a chicken and /chicken at it, repeatedly (a macro helps): it can take many tries before the chicken offers the quest. The Southshore farms in Hillsbrad have several.", waypoint = { mapID = 1424, x = 0.504, y = 0.546 } },
 		{ label = "Buy Special Chicken Feed from Farmer Saldean", itemID = 11109, note = "Westfall, Saldean's Farm @ 56.0, 31.2.", waypoint = { mapID = 1436, x = 0.560, y = 0.312 } },
 		{ label = "CLUCK! — /chicken again, then hand over the feed", questID = 3861, itemID = 11110, note = "Return to the same chicken that gave you the quest, target it and /chicken (not /cheer, whatever the quest text says). Wait a few seconds for the question mark, then give it the feed. It lays the Chicken Egg and runs off: pick up the egg." },
 	  },
