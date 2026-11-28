@@ -12,6 +12,8 @@
   step.
 - **Scarlet Banner:** level 33+ for the Scarlet Monastery Library, per the
   updated Wowhead guide.
+- **Night Watchman's Torch:** ten map pins for the slain guard, up from six,
+  per the 26 November guide.
 - **Help automate WoW: Forever:** the README explains how to find the hidden
   quest IDs behind a step with QuestsChanged and report them, so more steps
   can tick off on their own.
