@@ -1,5 +1,8 @@
 # 2.2.3
 
+- **New WoW: Forever secret: Excitable Slime** (Horde) — buy sludge from
+  Boyle in Undercity, /dance at a slime in the canal and hand in WRIGGLE.
+  for the pet.
 - **In-order chains remember how far you got.** Dawn Waker and the other
   secrets that must be done in order now save your furthest step per
   character, so a step stays done after the item it relied on is used up or

@@ -139,6 +139,16 @@ SC.entries = {
 	  },
 	},
 
+	{ name = "Excitable Slime", kind = "quest", questID = 97583, itemID = 275682,
+	  source = "Horde only. Dance with a slime in the Undercity canal and feed it sludge for the WRIGGLE. quest; the reward is the Excitable Slime companion.",
+	  guideURL = "https://warcraft-secrets.com/guides/excitable-slime",
+	  steps = {
+		{ label = "Buy Nutritious Slime Sludge from Boyle — Undercity", itemID = 278265, note = "Horde only. Boyle @ 55.5, 64.1.", waypoint = { mapID = 1458, x = 0.555, y = 0.641 } },
+		{ label = "/dance at an Excitable Slime in the canal", onQuestID = 97583, note = "Target a slime in the canal sludge and /dance at it, repeatedly, until chat says it wriggles in place while facing you. Stand on the edge, not in the sludge: you can't dance while swimming." },
+		{ label = "WRIGGLE. — inspect the slime and hand it straight back", questID = 97583, itemID = 275682, note = "Click the slime to accept WRIGGLE., then turn it in to receive the Excitable Slime pet." },
+	  },
+	},
+
 	-- Library books: one turn-in quest per book, and the two reward tiers are
 	-- quests of their own. Greater Friend of the Library has three quest ids
 	-- (questIDs), any of which counts as collected.
