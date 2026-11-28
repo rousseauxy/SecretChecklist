@@ -29,7 +29,7 @@ Works in both retail and **WoW: Forever** from the same download. Each game show
 - **Click-to-Navigate**: Click any icon in the Overview to jump directly to its Guides entry; Shift+Click (or Ctrl+Click) inserts an item or achievement link into your active chat box
 - **Mystery Category**: Track community secrets still being investigated (e.g. active discoveries from the Secret Finding Discord)
 - **Custom Lists**: Easily edit the list to track the secrets you want
-- **Pre-Configured**: Comes with 54 retail secrets and 9 WoW: Forever secrets ready to track
+- **Pre-Configured**: Comes with 54 retail secrets and 10 WoW: Forever secrets ready to track
 - **Live Requirement Checks**: Step progress automatically checks renown level, faction reputation, and Mind-Seeker secret count from the game API — shown inline as e.g. `(5 / 8)` when not yet complete
 - **Themes**: Default, ElvUI, and EllesmereUI looks, matching whichever UI you run
 - **Accessible Status Icons**: Collected and missing are marked with a checkmark and a cross, not colour alone
@@ -96,7 +96,7 @@ file instead of `data/SecretEntries.lua`, and leaves out the retail-only Beledar
 helper. Everything else (the window, guides, waypoints and toasts) is shared.
 
 It tracks the Alcaz Operative Insignia and Traveler's Symbols toys, the Cozy
-Sleeping Bag chain, the Chicken Egg from CLUCK!, the Night Watchman's Torch,
+Sleeping Bag chain, the Chicken Egg from CLUCK!, the Excitable Slime, the Night Watchman's Torch,
 the Scarlet Banner, the library books, and two chains the community is still
 solving: Dawn Waker and the manual scavenger hunt. Your saved settings are kept
 separately per game.
