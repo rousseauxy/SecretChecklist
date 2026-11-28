@@ -1,4 +1,14 @@
-# 2.2.3
+# 2.2.4
+
+- **Dawn Waker follows the 27 November warcraft-secrets guide:**
+  - Showing the tome to Mordent Evenshade now ticks off on its own (keep
+    Narassin's Tome in your bags when you speak with him).
+  - A fifth Ancient Sword spawn on the mountainside.
+  - Tears of Anguish: you need 20, shown as a counter.
+  - Prince Tortheldrin talks once you wear the Royal Seal of Eldre'Thalas from
+    your class book quest; Lorekeeper Lydros makes the Arcanum of Binding.
+
+Includes everything from 2.2.3:
 
 - **New WoW: Forever secret: Excitable Slime** (Horde) — buy sludge from
   Boyle in Undercity, /dance at a slime in the canal and hand in WRIGGLE.
